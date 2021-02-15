@@ -52,7 +52,7 @@ std::string to_string(const Register_16_bit reg)
     }
 }
 
-std::string to_string_hex(const uint8_t byte, const uint16_t digits = 2)
+std::string to_string_hex(const uint8_t byte, const uint8_t digits = 2)
 {
     std::stringstream buffer;
     buffer << std::setw(digits) << std::setfill('0') << std::fixed
@@ -61,82 +61,122 @@ std::string to_string_hex(const uint8_t byte, const uint16_t digits = 2)
     return buffer.str();
 }
 
+class Instruction;
+using InstructionPtr = std::unique_ptr<const Instruction>;
+
 class Instruction
 {
 public:
     Instruction() = default;
     virtual ~Instruction() = default;
 
-    virtual std::string str() = 0;
-    virtual bytestring bytestr() = 0;
+    virtual std::string str() const = 0;
+    virtual bytestring bytestr() const = 0;
 
-    //virtual void emulate() = 0;
+    //virtual void emulate(VirtualGameboy& gameboy) = 0;
     //virtual std::string additional_info() = 0;
 
 };
 
-class LD_REG8_IMMEDIATE8 : public Instruction
+class LoadImmediateA : public Instruction
 {
 public:
-    LD_REG8_IMMEDIATE8() = default;
-    ~LD_REG8_IMMEDIATE8() = default;
+    static constexpr uint8_t OPCODE{0x3E};
+    static constexpr char NAME[]{"LD A"};
 
-    std::string str()
+    LoadImmediateA(const uint8_t immediate)
+    : _immediate(immediate)
+    {}
+
+    std::string str() const
     {
-        return "LD " + to_string(_destination) + ", " + to_string_hex(_immediate);
+        return NAME + (", " + to_string_hex(_immediate));
     }
 
-    bytestring bytestr()
+    bytestring bytestr() const
     {
-        bytestring code(2);
-        switch (_destination)
-        {
-            case Register_8_bit::A: code[0] = 0x0; break;
-            case Register_8_bit::B: code[0] = 0x0; break;
-            case Register_8_bit::C: code[0] = 0x0; break;
-            case Register_8_bit::D: code[0] = 0x0; break;
-            case Register_8_bit::E: code[0] = 0x0; break;
-            case Register_8_bit::H: code[0] = 0x0; break;
-            case Register_8_bit::L: code[0] = 0x0; break;
-
-        }
+        return bytestring{OPCODE, _immediate};
     }
+
 private:
-    Register_8_bit _destination;
     uint8_t _immediate;
 };
 
-class NOP : public Instruction
+//
+//class LD_REG8_IMMEDIATE8 : public Instruction
+//{
+//public:
+//    LD_REG8_IMMEDIATE8(const Register_8_bit destination, const uint8_t immediate)
+//    : _destination(destination),
+//    _immediate(immediate)
+//    {}
+//
+//    ~LD_REG8_IMMEDIATE8() = default;
+//
+//    std::string str()
+//    {
+//        return "LD " + to_string(_destination) + ", " + to_string_hex(_immediate);
+//    }
+//
+//    bytestring bytestr()
+//    {
+//        bytestring code(2);
+//        switch (_destination)
+//        {
+//            case Register_8_bit::A: code[0] = 0x3E; break;
+//            case Register_8_bit::B: code[0] = 0x06; break;
+//            case Register_8_bit::C: code[0] = 0x0; break;
+//            case Register_8_bit::D: code[0] = 0x0; break;
+//            case Register_8_bit::E: code[0] = 0x0; break;
+//            case Register_8_bit::H: code[0] = 0x0; break;
+//            case Register_8_bit::L: code[0] = 0x0; break;
+//
+//        }
+//        code[1] = _immediate;
+//
+//        return code;
+//    }
+//private:
+//    Register_8_bit _destination;
+//    uint8_t _immediate;
+//};
+
+class Nop : public Instruction
 {
 public:
-    NOP() = default;
-    ~NOP() = default;
+    static constexpr uint8_t OPCODE{0x00};
+    static constexpr char NAME[]{"NOP"};
 
-    std::string str()
+    Nop() = default;
+    ~Nop() = default;
+
+    std::string str() const
     {
-        return "NOP";
+        return NAME;
     }
 
-    bytestring bytestr()
+    bytestring bytestr() const
     {
-        return bytestring{0x00};
+        return bytestring{OPCODE};
     }
 };
 
-class UNKNOWN : public Instruction
+class Unknown : public Instruction
 {
+    static constexpr uint8_t OPCODE{0x00};
+    static constexpr char NAME[]{"???"};
 public:
-    UNKNOWN() = default;
-    ~UNKNOWN() = default;
+    Unknown() = default;
+    ~Unknown() = default; // 0xXY LD (immediate), SP
 
     std::string str()
     {
-        return "???";
+        return NAME;
     }
 
     bytestring bytestr()
     {
-        return bytestring{};
+        return bytestring{OPCODE};
     }
 };
 
