@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.17)
-project(gameboy_debug)
+project(gameboy_disassemble)
 
 set(CMAKE_CXX_STANDARD 17)
 
-add_executable(gameboy_debug main.cpp disassembler.cpp disassembler.h instructions.cpp instructions.h)
+add_executable(gameboy_debug main.cpp disassembler.cpp disassembler.h instructions/instructions.cpp instructions/instructions.h instructions/instructions_constants.h instructions/instructions_conversions.h instructions/instructions_conversions.cpp instructions/instructions_load_8bit.h instructions/instructions_load_8bit.cpp instructions/instructions_conversions.hpp instructions/instructions_load_16bit.h instructions/instructions_load_16bit.cpp instructions/instructions_rotation.cpp instructions/instructions_rotation.h instructions/instructions_increment_decrement.cpp instructions/instructions_increment_decrement.h)

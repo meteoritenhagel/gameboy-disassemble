@@ -2,11 +2,9 @@
 #define GAMEBOY_DEBUG_DISASSEMBLER_H
 
 #include <iomanip>
-#include <sstream>
 #include <stdexcept>
-#include <string>
 
-#include "instructions.h"
+#include "instructions/instructions.h"
 
 class Disassembler
 {
@@ -15,19 +13,24 @@ public:
             :_startOfByteCode{startOfByteCode}, _sizeOfByteCode{sizeOfByteCode}
     {}
 
+    bool is_out_of_range() const
+    {
+        return (_programCounter >= _sizeOfByteCode);
+    }
+
     std::string disassemble()
     {
         std::string displayedText;
-        uint8_t opcode = 0;
+        Opcode opcode = 0;
 
         try // to get opcode
         {
-            displayedText += "0x" + to_string_hex(_programCounter, 4);
+            displayedText += "0x" + to_string_hex(_programCounter);
 
-            opcode = fetch();
-            displayedText += " : " "[0x" + to_string_hex(opcode) + "] ";
+            opcode = fetch_opcode();
+            displayedText += " : " "[0x" + to_string_hex(opcode, 2) + "] ";
 
-            displayedText += decode(opcode).str();
+            displayedText += decode(opcode)->str();
         }
         catch(const std::out_of_range &e)
         {
@@ -41,71 +44,37 @@ public:
     {
         switch (opcode)
         {
-            case Nop::OPCODE: return std::make_unique<Nop>();
-
+            case opcodes::NOP: return std::make_unique<Nop>();
+            case opcodes::LOAD_IMMEDIATE_INTO_BC: return std::make_unique<LoadImmediateIntoBC>(fetch_word());
+            case opcodes::LOAD_A_INTO_ADDRESS_BC: return std::make_unique<LoadAIntoAddressBC>();
+            case opcodes::INCREMENT_BC: return std::make_unique<IncrementBC>();
+            case opcodes::INCREMENT_B: return std::make_unique<IncrementB>();
+            case opcodes::DECREMENT_B: return std::make_unique<DecrementB>();
+            case opcodes::LOAD_IMMEDIATE_INTO_B: return std::make_unique<LoadImmediateIntoB>(fetch_byte());
+            case opcodes::ROTATE_LEFT_CONTENTS_A: return std::make_unique<RotateLeftContentsA>();
+            case opcodes::LOAD_SP_INTO_ADDRESS_IMMEDIATE: return std::make_unique<LoadSPIntoAddressImmediate>(fetch_word());
+            case opcodes::ADD_HL_AND_BC: return std::make_unique<AddHLAndBC>();
+            case opcodes::LOAD_ADDRESS_BC_INTO_A: return std::make_unique<LoadAddressBCIntoA>();
+            case opcodes::DECREMENT_BC: return std::make_unique<DecrementBC>();
+            case opcodes::INCREMENT_C: return std::make_unique<IncrementC>();
+            case opcodes::DECREMENT_C: return std::make_unique<DecrementC>();
+            case opcodes::LOAD_IMMEDIATE_INTO_C: return std::make_unique<LoadImmediateIntoC>(fetch_byte());
+            case opcodes::ROTATE_RIGHT_CONTENTS_A: return std::make_unique<RotateRightContentsA>();
                 /*
-                case 0x01:
-                {
-                    const uint8_t lsb = fetch();
-                    const uint8_t msb = fetch();
-                    instruction = "LD BC, 0x" + to_string_hex(msb) + to_string_hex(lsb);
-                    break;
-                }
-                case 0x02:
-                    instruction = "LD (BC), A";
-                    break;
-                case 0x03:
-                    instruction = "INC BC";
-                    break;
-                case 0x04:
-                    instruction = "INC B";
-                    break;
-                case 0x05:
-                    instruction = "DEC B";
-                    break;
-                case 0x06:
-                    instruction = "LD B, 0x" + to_string_hex(fetch());
-                    break;
-                case 0x07:
-                    instruction = "RLC A";
-                    break;
-                case 0x08:
-                {
-                    const uint8_t lsb = fetch();
-                    const uint8_t msb = fetch();
-                    instruction = "LD (0x" + to_string_hex(msb) + to_string_hex(lsb) + "), SP";
-                    break;
-                }
-                case 0x09:
-                    instruction = "ADD HL, BC";
-                    break;
-                case 0x0A:
-                    instruction = "LD A, (BC)";
-                    break;
-                case 0x0B:
-                    instruction = "DEC BC";
-                    break;
-                case 0x0C:
-                    instruction = "INC C";
-                    break;
-                case 0x0D:
-                    instruction = "DEC C";
-                    break;
                 case 0x0E:
-                    instruction = "LD C, 0x" + to_string_hex(fetch());
+                    instruction = "LD C, 0x" + to_string_hex(fetch_byte());
                     break;
                 case 0x0F:
                     instruction = "RRC A";
                     break;
                 */
 
-            case LoadImmediateA::OPCODE: return std::make_unique<LoadImmediateA>(fetch());
+            case opcodes::LOAD_IMMEDIATE_A: return std::make_unique<LoadImmediateIntoA>(fetch_byte());
 
 
             default: return std::make_unique<Unknown>();
 
         }
-        return instruction;
     }
 
 private:
@@ -116,11 +85,6 @@ private:
         {
             ++_programCounter;
         }
-    }
-
-    bool is_out_of_range() const
-    {
-        return (_programCounter >= _sizeOfByteCode);
     }
 
     // throws std::out_of_range if program counter out of range.
@@ -136,12 +100,39 @@ private:
 
     // throws std::out_of_range if program counter out of range.
     // only increments program counter after reading if not out of range.
-    uint8_t fetch()
+    uint8_t fetch_byte()
     {
         const uint8_t currentByte = read_byte();
         increment_program_counter();
 
         return currentByte;
+    }
+
+    // throws std::out_of_range if program counter out of range.
+    // only increments program counter after reading if not out of range.
+    // returns the value according to the word (LSB, MSB)
+    // i.e. (0x34, 0x12) is mapped to the value 0x1234
+    uint16_t fetch_word()
+    {
+        const uint8_t lsb = fetch_byte();
+        const uint8_t msb = fetch_byte();
+
+        return little_endian_to_number(lsb, msb); // note that evaluation order is not fixed in C++!
+    }
+
+    // throws std::out_of_range if program counter out of range.
+    // only increments program counter after reading if not out of range.
+    Opcode fetch_opcode()
+    {
+        uint16_t opcode = fetch_byte();
+
+        // check if prefix
+        if (opcode == 0xCB)
+        {
+            opcode = big_endian_to_number(0xCB, fetch_byte());
+        }
+
+        return opcode;
     }
 
 private:
