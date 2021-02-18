@@ -51,7 +51,7 @@ public:
             case opcodes::INCREMENT_B: return std::make_unique<IncrementB>();
             case opcodes::DECREMENT_B: return std::make_unique<DecrementB>();
             case opcodes::LOAD_IMMEDIATE_INTO_B: return std::make_unique<LoadImmediateIntoB>(fetch_byte());
-            case opcodes::ROTATE_LEFT_CONTENTS_A: return std::make_unique<RotateLeftContentsA>();
+            case opcodes::ROTATE_LEFT_CONTENTS_A_AND_CLEAR_ZERO: return std::make_unique<RotateLeftContentsA>();
             case opcodes::LOAD_SP_INTO_ADDRESS_IMMEDIATE: return std::make_unique<LoadSPIntoAddressImmediate>(fetch_word());
             case opcodes::ADD_HL_AND_BC: return std::make_unique<AddHLAndBC>();
             case opcodes::LOAD_ADDRESS_BC_INTO_A: return std::make_unique<LoadAddressBCIntoA>();
@@ -69,7 +69,7 @@ public:
                     break;
                 */
 
-            case opcodes::LOAD_IMMEDIATE_A: return std::make_unique<LoadImmediateIntoA>(fetch_byte());
+            case opcodes::LOAD_IMMEDIATE_INTO_A: return std::make_unique<LoadImmediateIntoA>(fetch_byte());
 
 
             default: return std::make_unique<Unknown>();

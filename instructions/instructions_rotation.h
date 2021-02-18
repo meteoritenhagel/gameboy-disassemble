@@ -1,27 +1,44 @@
 #ifndef GAMEBOY_DISASSEMBLE_INSTRUCTIONS_ROTATION_H
 #define GAMEBOY_DISASSEMBLE_INSTRUCTIONS_ROTATION_H
 
-#include "instructions_constants.h"
-#include "instructions_conversions.h"
+#include "instructions_interface.h"
 
-class RotateLeftContentsA : public Instruction
+// Rotate A and clear Zero Flag
+
+class RotateLeftAAndClearZero : public Instruction
 {
 public:
-    Opcode opcode() const;
-    std::string str() const;
-    bytestring bytestr() const;
-private:
-    static constexpr char NAME[]{"RLC A"};
+    RotateLeftAAndClearZero()
+            : Instruction(opcodes::ROTATE_LEFT_A_AND_CLEAR_ZERO,
+                          "RLA")
+    {}
 };
 
-class RotateRightContentsA : public Instruction
+class RotateRightAAndClearZero : public Instruction
 {
 public:
-    Opcode opcode() const;
-    std::string str() const;
-    bytestring bytestr() const;
-private:
-    static constexpr char NAME[]{"RRC A"};
+    RotateRightAAndClearZero()
+            : Instruction(opcodes::ROTATE_RIGHT_A_AND_CLEAR_ZERO,
+                          "RRA")
+    {}
+};
+
+class RotateLeftContentsAAndClearZero : public Instruction
+{
+public:
+    RotateLeftContentsAAndClearZero()
+    : Instruction(opcodes::ROTATE_LEFT_CONTENTS_A_AND_CLEAR_ZERO,
+                  "RLCA")
+    {}
+};
+
+class RotateRightContentsAAndClearZero : public Instruction
+{
+public:
+    RotateRightContentsAAndClearZero()
+    : Instruction(opcodes::ROTATE_RIGHT_CONTENTS_A_AND_CLEAR_ZERO,
+                  "RRCA")
+    {}
 };
 
 #endif //GAMEBOY_DISASSEMBLE_INSTRUCTIONS_ROTATION_H

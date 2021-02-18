@@ -2,7 +2,11 @@
 #define GAMEBOY_DISASSEMBLE_INSTRUCTIONS_CONVERSIONS_H
 
 #include "instructions_constants.h"
+
 #include <string>
+
+template<typename T>
+bool is_negative(const T number);
 
 uint8_t get_least_significant_byte(const uint16_t word);
 
@@ -21,6 +25,9 @@ std::string to_string_hex(const T number, const uint8_t digits = 2*sizeof(T));
 
 template<typename T>
 std::string to_string_hex_prefixed(const T number, const uint8_t digits = 2*sizeof(T));
+
+template<typename T>
+std::string to_string_hex_signed_prefixed(const T number, const uint8_t digits = 2*sizeof(T));
 
 bytestring to_bytestring_little_endian(const uint16_t number);
 

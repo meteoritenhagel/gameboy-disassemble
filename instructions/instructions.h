@@ -1,75 +1,48 @@
 #ifndef GAMEBOY_DEBUG_INSTRUCTIONS_H
 #define GAMEBOY_DEBUG_INSTRUCTIONS_H
 
-#include "instructions_conversions.h"
-#include "instructions_constants.h"
+#include "instructions_interface.h"
 
 #include "instructions_increment_decrement.h"
+#include "instructions_add_subtract.h"
+#include "instructions_jump.h"
 #include "instructions_load_8bit.h"
 #include "instructions_load_16bit.h"
 #include "instructions_rotation.h"
 
 #include <memory>
-#include <vector>
+#include <vector>;
 
 class Nop : public Instruction
 {
 public:
-    Opcode opcode() const override;
-    std::string str() const override;
-    bytestring bytestr() const override;
+    Nop()
+    : Instruction(opcodes::NOP,
+                  "NOP")
+    {}
+};
 
+class Stop : public Instruction
+{
+public:
+    Stop(const uint8_t ignored)
+    : Instruction(opcodes::STOP,
+                  "STOP")
+    {}
 private:
-    static constexpr char NAME[]{"NOP"};
+    uint8_t _ignored;
+};
+
+class Halt : public Instruction
+{
+public:
+    Halt()
+    : Instruction(opcodes::HALT,
+                  "HALT")
+    {}
 };
 
 //
-
-
-class AddHLAndBC : public Instruction
-{
-public:
-    Opcode opcode() const
-    {
-        return opcodes::ADD_HL_AND_BC;
-    }
-
-    std::string str() const
-    {
-        return NAME;
-    }
-
-    bytestring bytestr() const
-    {
-        return opcode_to_bytestring(opcode());
-    }
-
-private:
-    static constexpr char NAME[]{"ADD HL, BC"};
-};
-
-
-class Unknown : public Instruction
-{
-public:
-    Opcode opcode() const
-    {
-        return opcodes::NOP;
-    }
-
-    std::string str() const
-    {
-        return NAME;
-    }
-
-    bytestring bytestr() const
-    {
-        return opcode_to_bytestring(opcode());
-    }
-
-private:
-    static constexpr char NAME[]{"???"};
-};
 
 
 #endif //GAMEBOY_DEBUG_INSTRUCTIONS_H
