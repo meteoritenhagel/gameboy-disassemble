@@ -3,123 +3,112 @@
 
 #include "instructions_interface.h"
 
-class Unused0 : public Instruction
-{
-public:
-    Unused0()
-            : Instruction(opcodes::UNUSED_0,
-                          "??0")
-    {}
-};
-
-class Unused1 : public Instruction
-{
-public:
-    Unused1()
-            : Instruction(opcodes::UNUSED_1,
-                          "??1")
-    {}
-};
-
-class Unused2 : public Instruction
-{
-public:
-    Unused2()
-            : Instruction(opcodes::UNUSED_2),
-                          "??2")
-    {}
-};
-
-class Unused3 : public Instruction
-{
-public:
-    Unused3()
-            : Instruction(opcodes::UNUSED_3,
-                          "??3")
-    {}
-};
-
-class Unused4 : public Instruction
-{
-public:
-    Unused4()
-            : Instruction(opcodes::UNUSED_4,
-                          "??4")
-    {}
-};
-
-class Unused5 : public Instruction
-{
-public:
-    Unused5()
-            : Instruction(opcodes::UNUSED_5,
-                          "??5")
-    {}
-};
-
-class Unused6 : public Instruction
-{
-public:
-    Unused6()
-            : Instruction(opcodes::UNUSED_6,
-                          "??6")
-    {}
-};
-
-class Unused7 : public Instruction
-{
-public:
-    Unused7()
-            : Instruction(opcodes::UNUSED_7,
-                          "??7")
-    {}
-};
-
-class Unused8 : public Instruction
-{
-public:
-    Unused8()
-            : Instruction(opcodes::UNUSED_8,
-                          "??8")
-    {}
-};
-
-class Unused9 : public Instruction
-{
-public:
-    Unused9()
-            : Instruction(opcodes::UNUSED_9,
-                          "??9")
-    {}
-};
-
-class Unused10 : public Instruction
-{
-public:
-    Unused10()
-            : Instruction(opcodes::UNUSED_10,
-                          "?10")
-    {}
-};
-
-class Unused11 : public Instruction
-{
-public:
-    Unused11()
-            : Instruction(opcodes::UNUSED_11,
-                          "?11")
-    {}
-};
-
 // If not implemented yet
-
-class Unknown : public Instruction
-{
+class Unknown : public Instruction {
 public:
     Unknown()
-            : Instruction(opcodes::NOP,
-                          "???")
-    {}
+            : Instruction("???",
+                          opcodes::NOP) {}
+};
+
+class InstructionUnused : public Instruction {
+protected:
+    InstructionUnused(const std::string &string,
+                      const Opcode opcode)
+            : Instruction(string,
+                          opcode) {}
+
+//    void emulate(VirtualGameboy& gb)
+//    {
+//        return;
+//    }
+};
+
+
+// child classes:
+
+class Unused0 : public InstructionUnused {
+public:
+    Unused0()
+            : InstructionUnused("??0",
+                                opcodes::UNUSED_0) {}
+};
+
+class Unused1 : public InstructionUnused {
+public:
+    Unused1()
+            : InstructionUnused("??1",
+                                opcodes::UNUSED_1) {}
+};
+
+class Unused2 : public InstructionUnused {
+public:
+    Unused2()
+            : InstructionUnused("??2",
+                                opcodes::UNUSED_2) {}
+};
+
+class Unused3 : public InstructionUnused {
+public:
+    Unused3()
+            : InstructionUnused("??3",
+                                opcodes::UNUSED_3) {}
+};
+
+class Unused4 : public InstructionUnused {
+public:
+    Unused4()
+            : InstructionUnused("??4",
+                                opcodes::UNUSED_4) {}
+};
+
+class Unused5 : public InstructionUnused {
+public:
+    Unused5()
+            : InstructionUnused("??5",
+                                opcodes::UNUSED_5) {}
+};
+
+class Unused6 : public InstructionUnused {
+public:
+    Unused6()
+            : InstructionUnused("??6",
+                                opcodes::UNUSED_6) {}
+};
+
+class Unused7 : public InstructionUnused {
+public:
+    Unused7()
+            : InstructionUnused("??7",
+                                opcodes::UNUSED_7) {}
+};
+
+class Unused8 : public InstructionUnused {
+public:
+    Unused8()
+            : InstructionUnused("??8",
+                                opcodes::UNUSED_8) {}
+};
+
+class Unused9 : public InstructionUnused {
+public:
+    Unused9()
+            : InstructionUnused("??9",
+                                opcodes::UNUSED_9) {}
+};
+
+class Unused10 : public InstructionUnused {
+public:
+    Unused10()
+            : InstructionUnused("?10",
+                                opcodes::UNUSED_10) {}
+};
+
+class Unused11 : public InstructionUnused {
+public:
+    Unused11()
+            : InstructionUnused("?11",
+                                opcodes::UNUSED_11) {}
 };
 
 #endif //GAMEBOY_DISASSEMBLE_INSTRUCTIONS_UNUSED_H

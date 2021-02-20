@@ -4,230 +4,231 @@
 #include "instructions_interface.h"
 
 // 8 Bit Registers
+class InstructionIncrement8BitRegister : public Instruction {
+protected:
+    InstructionIncrement8BitRegister(const Register8Bit reg,
+                                     const Opcode opc)
+            : Instruction("INC " + to_string(reg),
+                          opc),
+              _register(reg) {}
 
-class IncrementA : public Instruction
-{
-public:
-    IncrementA()
-            : Instruction(opcodes::INCREMENT_A,
-                          "INC A")
-    {}
+private:
+    const Register8Bit _register;
 };
 
-class DecrementA : public Instruction
-{
-public:
-    DecrementA()
-            : Instruction(opcodes::DECREMENT_A,
-                          "DEC A")
-    {}
+class InstructionDecrement8BitRegister : public Instruction {
+protected:
+    InstructionDecrement8BitRegister(const Register8Bit reg,
+                                     const Opcode opc)
+            : Instruction("DEC " + to_string(reg),
+                          opc),
+              _register(reg) {}
+
+private:
+    const Register8Bit _register;
 };
 
-class IncrementB : public Instruction
-{
+class InstructionIncrement16BitRegister : public Instruction {
+protected:
+    InstructionIncrement16BitRegister(const Register16Bit reg,
+                                      const Opcode opc)
+            : Instruction("INC " + to_string(reg),
+                          opc),
+              _register(reg) {}
+
+private:
+    const Register16Bit _register;
+};
+
+class InstructionDecrement16BitRegister : public Instruction {
+protected:
+    InstructionDecrement16BitRegister(const Register16Bit reg,
+                                      const Opcode opc)
+            : Instruction("DEC " + to_string(reg),
+                          opc),
+              _register(reg) {}
+
+private:
+    const Register16Bit _register;
+};
+
+
+
+
+
+// child classes
+
+// Increment 8 bit register
+
+class IncrementB : public InstructionIncrement8BitRegister {
 public:
     IncrementB()
-    : Instruction(opcodes::INCREMENT_B,
-                  "INC B")
-    {}
+            : InstructionIncrement8BitRegister(Register8Bit::B,
+                                               opcodes::INCREMENT_B) {}
 };
 
-class DecrementB : public Instruction
-{
-public:
-    DecrementB()
-    : Instruction(opcodes::DECREMENT_B,
-                  "DEC B")
-    {}
-};
-
-class IncrementC : public Instruction
-{
+class IncrementC : public InstructionIncrement8BitRegister {
 public:
     IncrementC()
-    : Instruction(opcodes::INCREMENT_C,
-                  "INC B")
-    {}
+            : InstructionIncrement8BitRegister(Register8Bit::C,
+                                               opcodes::INCREMENT_C) {}
 };
 
-class DecrementC : public Instruction
-{
-public:
-    DecrementC()
-    : Instruction(opcodes::DECREMENT_C,
-                  "DEC C")
-    {}
-};
-
-class IncrementD : public Instruction
-{
+class IncrementD : public InstructionIncrement8BitRegister {
 public:
     IncrementD()
-            : Instruction(opcodes::INCREMENT_D,
-                          "INC D")
-    {}
+            : InstructionIncrement8BitRegister(Register8Bit::D,
+                                               opcodes::INCREMENT_D) {}
 };
 
-class DecrementD : public Instruction
-{
-public:
-    DecrementD()
-            : Instruction(opcodes::DECREMENT_D,
-                          "DEC D")
-    {}
-};
-
-class IncrementE : public Instruction
-{
+class IncrementE : public InstructionIncrement8BitRegister {
 public:
     IncrementE()
-            : Instruction(opcodes::INCREMENT_E,
-                          "INC E")
-    {}
+            : InstructionIncrement8BitRegister(Register8Bit::E,
+                                               opcodes::INCREMENT_E) {}
 };
 
-class DecrementE : public Instruction
-{
-public:
-    DecrementE()
-            : Instruction(opcodes::DECREMENT_E,
-                          "DEC E")
-    {}
-};
-
-class IncrementH : public Instruction
-{
+class IncrementH : public InstructionIncrement8BitRegister {
 public:
     IncrementH()
-            : Instruction(opcodes::INCREMENT_H,
-                          "INC H")
-    {}
+            : InstructionIncrement8BitRegister(Register8Bit::H,
+                                               opcodes::INCREMENT_H) {}
 };
 
-class DecrementH : public Instruction
-{
-public:
-    DecrementH()
-            : Instruction(opcodes::DECREMENT_H,
-                          "DEC H")
-    {}
-};
-
-class IncrementL : public Instruction
-{
+class IncrementL : public InstructionIncrement8BitRegister {
 public:
     IncrementL()
-            : Instruction(opcodes::INCREMENT_L,
-                          "INC L")
-    {}
+            : InstructionIncrement8BitRegister(Register8Bit::L,
+                                               opcodes::INCREMENT_L) {}
 };
 
-class DecrementL : public Instruction
-{
-public:
-    DecrementL()
-            : Instruction(opcodes::DECREMENT_L,
-                          "DEC L")
-    {}
-};
-
-// Increment contents of memory location
-
-class IncrementAddressHL : public Instruction
-{
+class IncrementAddressHL : public InstructionIncrement8BitRegister {
 public:
     IncrementAddressHL()
-            : Instruction(opcodes::INCREMENT_ADDRESS_HL,
-                          "INC (HL)")
-    {}
+            : InstructionIncrement8BitRegister(Register8Bit::ADDRESS_HL,
+                                               opcodes::INCREMENT_ADDRESS_HL) {}
 };
 
-class DecrementAddressHL : public Instruction
-{
+class IncrementA : public InstructionIncrement8BitRegister {
+public:
+    IncrementA()
+            : InstructionIncrement8BitRegister(Register8Bit::A,
+                                               opcodes::INCREMENT_A) {}
+};
+
+// Decrement 8 bit register
+class DecrementB : public InstructionDecrement8BitRegister {
+public:
+    DecrementB()
+            : InstructionDecrement8BitRegister(Register8Bit::B,
+                                               opcodes::DECREMENT_B) {}
+};
+
+class DecrementC : public InstructionDecrement8BitRegister {
+public:
+    DecrementC()
+            : InstructionDecrement8BitRegister(Register8Bit::C,
+                                               opcodes::DECREMENT_C) {}
+};
+
+class DecrementD : public InstructionDecrement8BitRegister {
+public:
+    DecrementD()
+            : InstructionDecrement8BitRegister(Register8Bit::D,
+                                               opcodes::DECREMENT_D) {}
+};
+
+class DecrementE : public InstructionDecrement8BitRegister {
+public:
+    DecrementE()
+            : InstructionDecrement8BitRegister(Register8Bit::E,
+                                               opcodes::DECREMENT_E) {}
+};
+
+class DecrementH : public InstructionDecrement8BitRegister {
+public:
+    DecrementH()
+            : InstructionDecrement8BitRegister(Register8Bit::H,
+                                               opcodes::DECREMENT_H) {}
+};
+
+class DecrementL : public InstructionDecrement8BitRegister {
+public:
+    DecrementL()
+            : InstructionDecrement8BitRegister(Register8Bit::L,
+                                               opcodes::DECREMENT_L) {}
+};
+
+class DecrementAddressHL : public InstructionDecrement8BitRegister {
 public:
     DecrementAddressHL()
-            : Instruction(opcodes::DECREMENT_ADDRESS_HL,
-                          "DEC (HL)")
-    {}
+            : InstructionDecrement8BitRegister(Register8Bit::ADDRESS_HL,
+                                               opcodes::DECREMENT_ADDRESS_HL) {}
 };
 
+class DecrementA : public InstructionDecrement8BitRegister {
+public:
+    DecrementA()
+            : InstructionDecrement8BitRegister(Register8Bit::A,
+                                               opcodes::DECREMENT_A) {}
+};
 
-// 16 Bit Registers
-
-class IncrementBC : public Instruction
-{
+// increment 16 Bit Registers
+class IncrementBC : public InstructionIncrement16BitRegister {
 public:
     IncrementBC()
-    : Instruction(opcodes::INCREMENT_BC,
-                  "INC BC")
-    {}
+            : InstructionIncrement16BitRegister(Register16Bit::BC,
+                                                opcodes::INCREMENT_BC) {}
 };
 
-class DecrementBC : public Instruction
-{
-public:
-    DecrementBC()
-    : Instruction(opcodes::DECREMENT_BC,
-                  "DEC BC")
-    {}
-
-};
-
-class IncrementDE : public Instruction
-{
+class IncrementDE : public InstructionIncrement16BitRegister {
 public:
     IncrementDE()
-            : Instruction(opcodes::INCREMENT_DE,
-                          "INC DE")
-    {}
+            : InstructionIncrement16BitRegister(Register16Bit::DE,
+                                                opcodes::INCREMENT_DE) {}
 };
 
-class DecrementDE : public Instruction
-{
-public:
-    DecrementDE()
-            : Instruction(opcodes::DECREMENT_DE,
-                          "DEC DE")
-    {}
-
-};
-
-class IncrementHL : public Instruction
-{
+class IncrementHL : public InstructionIncrement16BitRegister {
 public:
     IncrementHL()
-            : Instruction(opcodes::INCREMENT_HL,
-                          "INC HL")
-    {}
+            : InstructionIncrement16BitRegister(Register16Bit::HL,
+                                                opcodes::INCREMENT_HL) {}
 };
 
-class DecrementHL : public Instruction
-{
-public:
-    DecrementHL()
-            : Instruction(opcodes::DECREMENT_HL,
-                          "DEC HL")
-    {}
-
-};
-
-class IncrementSP : public Instruction
-{
+class IncrementSP : public InstructionIncrement16BitRegister {
 public:
     IncrementSP()
-            : Instruction(opcodes::INCREMENT_SP,
-                          "INC SP")
-    {}
+            : InstructionIncrement16BitRegister(Register16Bit::SP,
+                                                opcodes::INCREMENT_SP) {}
 };
 
-class DecrementSP : public Instruction
-{
+// decrement 16 Bit Registers
+class DecrementBC : public InstructionDecrement16BitRegister {
+public:
+    DecrementBC()
+            : InstructionDecrement16BitRegister(Register16Bit::BC,
+                                                opcodes::DECREMENT_BC) {}
+};
+
+class DecrementDE : public InstructionDecrement16BitRegister {
+public:
+    DecrementDE()
+            : InstructionDecrement16BitRegister(Register16Bit::DE,
+                                                opcodes::DECREMENT_DE) {}
+};
+
+class DecrementHL : public InstructionDecrement16BitRegister {
+public:
+    DecrementHL()
+            : InstructionDecrement16BitRegister(Register16Bit::HL,
+                                                opcodes::DECREMENT_HL) {}
+};
+
+class DecrementSP : public InstructionDecrement16BitRegister {
 public:
     DecrementSP()
-            : Instruction(opcodes::DECREMENT_SP,
-                          "DEC SP")
-    {}
-
+            : InstructionDecrement16BitRegister(Register16Bit::SP,
+                                                opcodes::DECREMENT_SP) {}
 };
 
 #endif //GAMEBOY_DISASSEMBLE_INSTRUCTIONS_INCREMENT_DECREMENT_H

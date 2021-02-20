@@ -8,32 +8,43 @@
 template<typename T>
 bool is_negative(const T number);
 
-uint8_t get_least_significant_byte(const uint16_t word);
+byte get_least_significant_byte(const word wrd);
 
-uint8_t get_most_significant_byte(const uint16_t word);
+byte get_most_significant_byte(const word wrd);
 
-uint16_t little_endian_to_number(const uint8_t lsb, const uint8_t msb);
+word little_endian_to_number(const byte lsb, const byte msb);
 
-uint16_t big_endian_to_number(const uint8_t msb, const uint8_t lsb);
+word big_endian_to_number(const byte msb, const byte lsb);
 
-std::string to_string(const Register_8_bit reg);
+word extend_sign(const byte number);
 
-std::string to_string(const Register_16_bit reg);
+std::string to_string(const Register8Bit reg);
 
-template<typename T>
-std::string to_string_hex(const T number, const uint8_t digits = 2*sizeof(T));
+std::string to_string(const Register16Bit reg);
 
-template<typename T>
-std::string to_string_hex_prefixed(const T number, const uint8_t digits = 2*sizeof(T));
+std::string to_string(const FlagCondition flagCondition);
 
 template<typename T>
-std::string to_string_hex_signed_prefixed(const T number, const uint8_t digits = 2*sizeof(T));
+T twos_complement(const T number);
 
-bytestring to_bytestring_little_endian(const uint16_t number);
+template<typename T>
+std::string to_string_hex(const T number, const byte digits = 2 * sizeof(T));
+
+template<typename T>
+std::string to_string_dec(const T number);
+
+template<typename T>
+std::string to_string_hex_prefixed(const T number, const byte digits = 2 * sizeof(T));
+
+template<typename T>
+std::string to_string_hex_signed_prefixed(const T number, const byte digits = 2 * sizeof(T));
+
+bytestring to_bytestring_little_endian(const word number);
 
 bytestring opcode_to_bytestring(const Opcode opcode);
 
-bytestring to_bytestring(const Opcode opcode, const bytestring& arguments);
+bytestring to_bytestring(const Opcode opcode, const bytestring &arguments);
 
 #include "instructions_conversions.hpp"
+
 #endif //GAMEBOY_DISASSEMBLE_INSTRUCTIONS_CONVERSIONS_H

@@ -4,11 +4,10 @@
 
 #include "instructions_interface.h"
 
-Instruction::Instruction(const Opcode opcode, const std::string &string, const bytestring &arguments)
+Instruction::Instruction(const std::string &string, const Opcode opcode, const bytestring &arguments)
         : _opcode(opcode),
           _string(string),
-          _arguments(arguments)
-{}
+          _arguments(arguments) {}
 
 Opcode Instruction::opcode() const {
     return _opcode;

@@ -5,8 +5,8 @@
 
 void test1()
 {
-    const std::vector<uint8_t> byteCode{0x00, 0x3E, 0xFF, 0x00, 0x00, 0x00};
-    uint8_t const * const startOfByteCode = byteCode.data();
+    const std::vector<byte> byteCode{0x00, 0x3E, 0xFF, 0x00, 0x00, 0x00};
+    byte const * const startOfByteCode = byteCode.data();
 
     Disassembler disassembler(startOfByteCode, byteCode.size());
 
@@ -16,8 +16,8 @@ void test1()
 
 void test_eof()
 {
-    const std::vector<uint8_t> byteCode{0x00, 0x3E};
-    uint8_t const * const startOfByteCode = byteCode.data();
+    const std::vector<byte> byteCode{0x00, 0x3E};
+    byte const * const startOfByteCode = byteCode.data();
 
     Disassembler disassembler(startOfByteCode, byteCode.size());
 
@@ -27,7 +27,7 @@ void test_eof()
 
 int main()
 {
-    const std::vector<uint8_t> byteCode{0x00,
+    const std::vector<byte> byteCode{0x00,
                                         0x01, 0x34, 0x12,
                                         0x02,
                                         0x03,
@@ -43,7 +43,7 @@ int main()
                                         0x0D,
                                         0x0E, 0xCC,
                                         0x0F,};
-    uint8_t const * const startOfByteCode = byteCode.data();
+    byte const * const startOfByteCode = byteCode.data();
 
     Disassembler disassembler(startOfByteCode, byteCode.size());
 

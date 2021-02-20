@@ -7,12 +7,12 @@
 #include <string>
 
 class Instruction;
+
 using InstructionPtr = std::unique_ptr<const Instruction>;
 
-class Instruction
-{
+class Instruction {
 public:
-    Instruction(const Opcode opcode, const std::string& string, const bytestring& arguments = {});
+    Instruction(const std::string &string, const Opcode opcode, const bytestring &arguments = {});
 
     virtual ~Instruction() = default;
 

@@ -3,46 +3,23 @@
 
 #include "instructions_interface.h"
 
+#include "instructions_add.h"
+#include "instructions_bit_complement.h"
 #include "instructions_increment_decrement.h"
-#include "instructions_add_subtract.h"
 #include "instructions_jump.h"
 #include "instructions_load_8bit.h"
 #include "instructions_load_16bit.h"
+#include "instructions_logical.h"
+#include "instructions_machine.h"
+#include "instructions_push_pop.h"
+#include "instructions_reset.h"
 #include "instructions_rotation.h"
+#include "instructions_set.h"
+#include "instructions_shift_swap.h"
+#include "instructions_subtract.h"
+#include "instructions_unused.h"
 
 #include <memory>
-#include <vector>;
-
-class Nop : public Instruction
-{
-public:
-    Nop()
-    : Instruction(opcodes::NOP,
-                  "NOP")
-    {}
-};
-
-class Stop : public Instruction
-{
-public:
-    Stop(const uint8_t ignored)
-    : Instruction(opcodes::STOP,
-                  "STOP")
-    {}
-private:
-    uint8_t _ignored;
-};
-
-class Halt : public Instruction
-{
-public:
-    Halt()
-    : Instruction(opcodes::HALT,
-                  "HALT")
-    {}
-};
-
-//
-
+#include <vector>
 
 #endif //GAMEBOY_DEBUG_INSTRUCTIONS_H
