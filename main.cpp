@@ -52,12 +52,21 @@ void test_disassembler_longer()
         std::cout << disassembler.disassemble() << std::endl;
 }
 
+#include <string>
 int main()
 {
-    std::string line = "LD (HL), A ;abc abcde\noh no, second line!";
+    std::string code = std::string("LD (HL), A ;abc abcde\n") +
+                       "LD (HL), 12\n" +
+                       "LD (HL), 0xABCD\n" +
+                       "JR -0x04\n" +
+                       "oh no, second line!";
 
-    auto vec = tokenize_line(line);
-    print_vector_of_tokens(vec);
+    Tokenizer tokenizer(code);
+
+    while (!tokenizer.is_out_of_range())
+    {
+        tokenizer.get_next_token().print();
+    }
 
     return 0;
 }
