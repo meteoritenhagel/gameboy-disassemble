@@ -1,8 +1,8 @@
 #ifndef GAMEBOY_DISASSEMBLE_PARSER_H
 #define GAMEBOY_DISASSEMBLE_PARSER_H
 
-#include "instructions/constants.h"
-#include "instructions/instructions.h"
+#include "../instructions/constants.h"
+#include "../instructions/instructions.h"
 #include "tokenizer.h"
 
 class Parser {

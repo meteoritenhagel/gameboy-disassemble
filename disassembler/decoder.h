@@ -4,7 +4,7 @@
 #include <iomanip>
 #include <stdexcept>
 
-#include "instructions/instructions.h"
+#include "../instructions/instructions.h"
 
 class Decoder
 {

@@ -1,8 +1,8 @@
 #include <iostream>
 #include <vector>
 
-#include "tokenizer.h"
-#include "decoder.h"
+#include "assembler/tokenizer.h"
+#include "disassembler/decoder.h"
 
 void test_disassembler()
 {
