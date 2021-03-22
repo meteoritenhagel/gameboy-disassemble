@@ -51,11 +51,15 @@ std::string to_string(const Register8Bit reg);
 
 std::string to_string(const Register16Bit reg);
 
-std::string to_string(const Register reg);
+std::string to_string(const Register& reg);
 
 std::string to_string(const FlagCondition flagCondition);
 
 Register to_register(const std::string &str);
+
+Register8Bit to_register_8_bit(const Register& reg);
+
+Register16Bit to_register_16_bit(const Register& reg);
 
 bool is_valid(const Register &reg);
 
@@ -609,6 +613,8 @@ namespace opcodes {
     constexpr Opcode SET_BIT_7_OF_L                             {0xCBFD};
     constexpr Opcode SET_BIT_7_OF_ADDRESS_HL                    {0xCBFE};
     constexpr Opcode SET_BIT_7_OF_A                             {0xCBFF};
+
+    constexpr Opcode INVALID_OPCODE                             {0xFFFF};
 }
 
 #endif //GAMEBOY_DISASSEMBLE_CONSTANTS_H

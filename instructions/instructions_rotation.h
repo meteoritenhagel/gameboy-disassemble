@@ -3,57 +3,105 @@
 
 #include "interface.h"
 
-/**********************************************************+
- * Helper classes ******************************************
- ***********************************************************/
-
-class InstructionRotateRight8BitRegister : public Instruction {
-protected:
-    InstructionRotateRight8BitRegister(const Register8Bit reg, const Opcode opc)
+class RotateRight8BitRegister : public Instruction {
+public:
+    RotateRight8BitRegister(const Register8Bit reg)
             : Instruction("RR " + to_string(reg),
-                          opc),
+                          determine_opcode(reg)),
               _register(reg) {}
 
 private:
+    Opcode determine_opcode(const Register8Bit reg) const {
+        switch (reg) {
+            case Register8Bit::B:          return opcodes::ROTATE_RIGHT_B;
+            case Register8Bit::C:          return opcodes::ROTATE_RIGHT_C;
+            case Register8Bit::D:          return opcodes::ROTATE_RIGHT_D;
+            case Register8Bit::E:          return opcodes::ROTATE_RIGHT_E;
+            case Register8Bit::H:          return opcodes::ROTATE_RIGHT_H;
+            case Register8Bit::L:          return opcodes::ROTATE_RIGHT_L;
+            case Register8Bit::ADDRESS_HL: return opcodes::ROTATE_RIGHT_ADDRESS_HL;
+            case Register8Bit::A:          return opcodes::ROTATE_RIGHT_A;
+            default:                       return opcodes::INVALID_OPCODE;
+        }
+    }
+
     const Register8Bit _register;
 };
 
-class InstructionRotateLeft8BitRegister : public Instruction {
-protected:
-    InstructionRotateLeft8BitRegister(const Register8Bit reg, const Opcode opc)
+class RotateLeft8BitRegister : public Instruction {
+public:
+    RotateLeft8BitRegister(const Register8Bit reg)
             : Instruction("RL " + to_string(reg),
-                          opc),
+                          determine_opcode(reg)),
               _register(reg) {}
 
 private:
+    Opcode determine_opcode(const Register8Bit reg) const {
+        switch (reg) {
+            case Register8Bit::B:          return opcodes::ROTATE_LEFT_B;
+            case Register8Bit::C:          return opcodes::ROTATE_LEFT_C;
+            case Register8Bit::D:          return opcodes::ROTATE_LEFT_D;
+            case Register8Bit::E:          return opcodes::ROTATE_LEFT_E;
+            case Register8Bit::H:          return opcodes::ROTATE_LEFT_H;
+            case Register8Bit::L:          return opcodes::ROTATE_LEFT_L;
+            case Register8Bit::ADDRESS_HL: return opcodes::ROTATE_LEFT_ADDRESS_HL;
+            case Register8Bit::A:          return opcodes::ROTATE_LEFT_A;
+            default:                       return opcodes::INVALID_OPCODE;
+        }
+    }
+
     const Register8Bit _register;
 };
 
-class InstructionRotateRightContentsOf8BitRegister : public Instruction {
-protected:
-    InstructionRotateRightContentsOf8BitRegister(const Register8Bit reg, const Opcode opc)
+class RotateRightContentsOf8BitRegister : public Instruction {
+public:
+    RotateRightContentsOf8BitRegister(const Register8Bit reg)
             : Instruction("RRC " + to_string(reg),
-                          opc),
+                          determine_opcode(reg)),
               _register(reg) {}
 
 private:
+    Opcode determine_opcode(const Register8Bit reg) const {
+        switch (reg) {
+            case Register8Bit::B:          return opcodes::ROTATE_RIGHT_CONTENTS_OF_B;
+            case Register8Bit::C:          return opcodes::ROTATE_RIGHT_CONTENTS_OF_C;
+            case Register8Bit::D:          return opcodes::ROTATE_RIGHT_CONTENTS_OF_D;
+            case Register8Bit::E:          return opcodes::ROTATE_RIGHT_CONTENTS_OF_E;
+            case Register8Bit::H:          return opcodes::ROTATE_RIGHT_CONTENTS_OF_H;
+            case Register8Bit::L:          return opcodes::ROTATE_RIGHT_CONTENTS_OF_L;
+            case Register8Bit::ADDRESS_HL: return opcodes::ROTATE_RIGHT_CONTENTS_OF_ADDRESS_HL;
+            case Register8Bit::A:          return opcodes::ROTATE_RIGHT_CONTENTS_OF_A;
+            default:                       return opcodes::INVALID_OPCODE;
+        }
+    }
+
     const Register8Bit _register;
 };
 
-class InstructionRotateLeftContentsOf8BitRegister : public Instruction {
-protected:
-    InstructionRotateLeftContentsOf8BitRegister(const Register8Bit reg, const Opcode opc)
+class RotateLeftContentsOf8BitRegister : public Instruction {
+public:
+    RotateLeftContentsOf8BitRegister(const Register8Bit reg)
             : Instruction("RLC " + to_string(reg),
-                          opc),
+                          determine_opcode(reg)),
               _register(reg) {}
 
 private:
+    Opcode determine_opcode(const Register8Bit reg) const {
+        switch (reg) {
+            case Register8Bit::B:          return opcodes::ROTATE_LEFT_CONTENTS_OF_B;
+            case Register8Bit::C:          return opcodes::ROTATE_LEFT_CONTENTS_OF_C;
+            case Register8Bit::D:          return opcodes::ROTATE_LEFT_CONTENTS_OF_D;
+            case Register8Bit::E:          return opcodes::ROTATE_LEFT_CONTENTS_OF_E;
+            case Register8Bit::H:          return opcodes::ROTATE_LEFT_CONTENTS_OF_H;
+            case Register8Bit::L:          return opcodes::ROTATE_LEFT_CONTENTS_OF_L;
+            case Register8Bit::ADDRESS_HL: return opcodes::ROTATE_LEFT_CONTENTS_OF_ADDRESS_HL;
+            case Register8Bit::A:          return opcodes::ROTATE_LEFT_CONTENTS_OF_A;
+            default:                       return opcodes::INVALID_OPCODE;
+        }
+    }
+
     const Register8Bit _register;
 };
-
-/**********************************************************+
- * Public interface ****************************************
- ***********************************************************/
 
 // Rotate A and clear Zero Flag
 class RotateLeftAAndClearZero : public Instruction {
@@ -84,238 +132,5 @@ public:
                           opcodes::ROTATE_RIGHT_CONTENTS_OF_A_AND_CLEAR_ZERO) {}
 };
 
-
-/** Doubly derived classes ***********************************/
-
-// Rotate left
-class RotateLeftB : public InstructionRotateLeft8BitRegister {
-public:
-    RotateLeftB()
-            : InstructionRotateLeft8BitRegister(Register8Bit::B,
-                                                opcodes::ROTATE_LEFT_B) {}
-};
-
-class RotateLeftC : public InstructionRotateLeft8BitRegister {
-public:
-    RotateLeftC()
-            : InstructionRotateLeft8BitRegister(Register8Bit::C,
-                                                opcodes::ROTATE_LEFT_C) {}
-};
-
-class RotateLeftD : public InstructionRotateLeft8BitRegister {
-public:
-    RotateLeftD()
-            : InstructionRotateLeft8BitRegister(Register8Bit::D,
-                                                opcodes::ROTATE_LEFT_D) {}
-};
-
-class RotateLeftE : public InstructionRotateLeft8BitRegister {
-public:
-    RotateLeftE()
-            : InstructionRotateLeft8BitRegister(Register8Bit::E,
-                                                opcodes::ROTATE_LEFT_E) {}
-};
-
-class RotateLeftH : public InstructionRotateLeft8BitRegister {
-public:
-    RotateLeftH()
-            : InstructionRotateLeft8BitRegister(Register8Bit::H,
-                                                opcodes::ROTATE_LEFT_H) {}
-};
-
-class RotateLeftL : public InstructionRotateLeft8BitRegister {
-public:
-    RotateLeftL()
-            : InstructionRotateLeft8BitRegister(Register8Bit::L,
-                                                opcodes::ROTATE_LEFT_L) {}
-};
-
-class RotateLeftAddressHL : public InstructionRotateLeft8BitRegister {
-public:
-    RotateLeftAddressHL()
-            : InstructionRotateLeft8BitRegister(Register8Bit::B,
-                                                opcodes::ROTATE_LEFT_ADDRESS_HL) {}
-};
-
-class RotateLeftA : public InstructionRotateLeft8BitRegister {
-public:
-    RotateLeftA()
-            : InstructionRotateLeft8BitRegister(Register8Bit::A,
-                                                opcodes::ROTATE_LEFT_A) {}
-};
-
-// Rotate right
-
-class RotateRightB : public InstructionRotateRight8BitRegister {
-public:
-    RotateRightB()
-            : InstructionRotateRight8BitRegister(Register8Bit::B,
-                                                 opcodes::ROTATE_RIGHT_B) {}
-};
-
-class RotateRightC : public InstructionRotateRight8BitRegister {
-public:
-    RotateRightC()
-            : InstructionRotateRight8BitRegister(Register8Bit::C,
-                                                 opcodes::ROTATE_RIGHT_C) {}
-};
-
-class RotateRightD : public InstructionRotateRight8BitRegister {
-public:
-    RotateRightD()
-            : InstructionRotateRight8BitRegister(Register8Bit::D,
-                                                 opcodes::ROTATE_RIGHT_D) {}
-};
-
-class RotateRightE : public InstructionRotateRight8BitRegister {
-public:
-    RotateRightE()
-            : InstructionRotateRight8BitRegister(Register8Bit::E,
-                                                 opcodes::ROTATE_RIGHT_E) {}
-};
-
-class RotateRightH : public InstructionRotateRight8BitRegister {
-public:
-    RotateRightH()
-            : InstructionRotateRight8BitRegister(Register8Bit::H,
-                                                 opcodes::ROTATE_RIGHT_H) {}
-};
-
-class RotateRightL : public InstructionRotateRight8BitRegister {
-public:
-    RotateRightL()
-            : InstructionRotateRight8BitRegister(Register8Bit::L,
-                                                 opcodes::ROTATE_RIGHT_L) {}
-};
-
-class RotateRightAddressHL : public InstructionRotateRight8BitRegister {
-public:
-    RotateRightAddressHL()
-            : InstructionRotateRight8BitRegister(Register8Bit::B,
-                                                 opcodes::ROTATE_RIGHT_ADDRESS_HL) {}
-};
-
-class RotateRightA : public InstructionRotateRight8BitRegister {
-public:
-    RotateRightA()
-            : InstructionRotateRight8BitRegister(Register8Bit::A,
-                                                 opcodes::ROTATE_RIGHT_A) {}
-};
-
-// Rotate left contents
-
-class RotateLeftContentsOfB : public InstructionRotateLeftContentsOf8BitRegister {
-public:
-    RotateLeftContentsOfB()
-            : InstructionRotateLeftContentsOf8BitRegister(Register8Bit::B,
-                                                          opcodes::ROTATE_LEFT_CONTENTS_OF_B) {}
-};
-
-class RotateLeftContentsOfC : public InstructionRotateLeftContentsOf8BitRegister {
-public:
-    RotateLeftContentsOfC()
-            : InstructionRotateLeftContentsOf8BitRegister(Register8Bit::C,
-                                                          opcodes::ROTATE_LEFT_CONTENTS_OF_C) {}
-};
-
-class RotateLeftContentsOfD : public InstructionRotateLeftContentsOf8BitRegister {
-public:
-    RotateLeftContentsOfD()
-            : InstructionRotateLeftContentsOf8BitRegister(Register8Bit::D,
-                                                          opcodes::ROTATE_LEFT_CONTENTS_OF_D) {}
-};
-
-class RotateLeftContentsOfE : public InstructionRotateLeftContentsOf8BitRegister {
-public:
-    RotateLeftContentsOfE()
-            : InstructionRotateLeftContentsOf8BitRegister(Register8Bit::E,
-                                                          opcodes::ROTATE_LEFT_CONTENTS_OF_E) {}
-};
-
-class RotateLeftContentsOfH : public InstructionRotateLeftContentsOf8BitRegister {
-public:
-    RotateLeftContentsOfH()
-            : InstructionRotateLeftContentsOf8BitRegister(Register8Bit::H,
-                                                          opcodes::ROTATE_LEFT_CONTENTS_OF_H) {}
-};
-
-class RotateLeftContentsOfL : public InstructionRotateLeftContentsOf8BitRegister {
-public:
-    RotateLeftContentsOfL()
-            : InstructionRotateLeftContentsOf8BitRegister(Register8Bit::L,
-                                                          opcodes::ROTATE_LEFT_CONTENTS_OF_L) {}
-};
-
-class RotateLeftContentsOfAddressHL : public InstructionRotateLeftContentsOf8BitRegister {
-public:
-    RotateLeftContentsOfAddressHL()
-            : InstructionRotateLeftContentsOf8BitRegister(Register8Bit::B,
-                                                          opcodes::ROTATE_LEFT_CONTENTS_OF_ADDRESS_HL) {}
-};
-
-class RotateLeftContentsOfA : public InstructionRotateLeftContentsOf8BitRegister {
-public:
-    RotateLeftContentsOfA()
-            : InstructionRotateLeftContentsOf8BitRegister(Register8Bit::A,
-                                                          opcodes::ROTATE_LEFT_CONTENTS_OF_A) {}
-};
-
-// Rotate right contents
-
-class RotateRightContentsOfB : public InstructionRotateRightContentsOf8BitRegister {
-public:
-    RotateRightContentsOfB()
-            : InstructionRotateRightContentsOf8BitRegister(Register8Bit::B,
-                                                           opcodes::ROTATE_RIGHT_CONTENTS_OF_B) {}
-};
-
-class RotateRightContentsOfC : public InstructionRotateRightContentsOf8BitRegister {
-public:
-    RotateRightContentsOfC()
-            : InstructionRotateRightContentsOf8BitRegister(Register8Bit::C,
-                                                           opcodes::ROTATE_RIGHT_CONTENTS_OF_C) {}
-};
-
-class RotateRightContentsOfD : public InstructionRotateRightContentsOf8BitRegister {
-public:
-    RotateRightContentsOfD()
-            : InstructionRotateRightContentsOf8BitRegister(Register8Bit::D,
-                                                           opcodes::ROTATE_RIGHT_CONTENTS_OF_D) {}
-};
-
-class RotateRightContentsOfE : public InstructionRotateRightContentsOf8BitRegister {
-public:
-    RotateRightContentsOfE()
-            : InstructionRotateRightContentsOf8BitRegister(Register8Bit::E,
-                                                           opcodes::ROTATE_RIGHT_CONTENTS_OF_E) {}
-};
-
-class RotateRightContentsOfH : public InstructionRotateRightContentsOf8BitRegister {
-public:
-    RotateRightContentsOfH()
-            : InstructionRotateRightContentsOf8BitRegister(Register8Bit::H,
-                                                           opcodes::ROTATE_RIGHT_CONTENTS_OF_H) {}
-};
-
-class RotateRightContentsOfL : public InstructionRotateRightContentsOf8BitRegister {
-public:
-    RotateRightContentsOfL()
-            : InstructionRotateRightContentsOf8BitRegister(Register8Bit::L,
-                                                           opcodes::ROTATE_RIGHT_CONTENTS_OF_L) {}
-};
-
-class RotateRightContentsOfAddressHL : public InstructionRotateRightContentsOf8BitRegister {
-public:
-    RotateRightContentsOfAddressHL()
-            : InstructionRotateRightContentsOf8BitRegister(Register8Bit::B,
-                                                           opcodes::ROTATE_RIGHT_CONTENTS_OF_ADDRESS_HL) {}
-};
-
-class RotateRightContentsOfA : public InstructionRotateRightContentsOf8BitRegister {
-public:
-    RotateRightContentsOfA()
-            : InstructionRotateRightContentsOf8BitRegister(Register8Bit::A,
-                                                           opcodes::ROTATE_RIGHT_CONTENTS_OF_A) {}
-};
 
 #endif //GAMEBOY_DISASSEMBLE_INSTRUCTIONS_ROTATION_H

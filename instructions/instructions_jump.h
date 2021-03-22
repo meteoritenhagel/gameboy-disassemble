@@ -3,64 +3,6 @@
 
 #include "interface.h"
 
-/**********************************************************+
- * Helper classes ******************************************
- ***********************************************************/
-
-class InstructionJumpRelativeConditional : public Instruction {
-protected:
-    InstructionJumpRelativeConditional(const FlagCondition flagCondition, const byte relativePosition, const Opcode opc)
-            : Instruction("JR " + to_string(flagCondition) + ", " + to_string_hex_signed_prefixed(relativePosition),
-                          opc,
-                          bytestring{relativePosition}),
-              _flagCondition(flagCondition),
-              _relativePosition(relativePosition) {}
-
-private:
-    const FlagCondition _flagCondition;
-    const byte _relativePosition;
-};
-
-
-class InstructionCallConditional : public Instruction {
-protected:
-    InstructionCallConditional(const FlagCondition flagCondition, const word address, const Opcode opc)
-            : Instruction("CALL " + to_string(flagCondition) + ", " + to_string_hex_prefixed(address),
-                          opc,
-                          to_bytestring_little_endian(address)),
-              _flagCondition(flagCondition),
-              _address(address) {}
-
-private:
-    const FlagCondition _flagCondition;
-    const word _address;
-};
-
-class InstructionReturnConditional : public Instruction {
-protected:
-    InstructionReturnConditional(const FlagCondition flagCondition, const Opcode opc)
-            : Instruction("RET " + to_string(flagCondition), opc),
-              _flagCondition(flagCondition) {}
-
-private:
-    const FlagCondition _flagCondition;
-};
-
-class InstructionRestart : public Instruction {
-protected:
-    InstructionRestart(const uint8_t jumpIndex, const Opcode opc)
-            : Instruction("RST " + to_string_dec(jumpIndex),
-                          opc),
-              _jumpIndex(jumpIndex) {}
-
-private:
-    const uint8_t _jumpIndex;
-};
-
-/**********************************************************+
- * Public interface ****************************************
- ***********************************************************/
-
 class Jump : public Instruction {
 public:
     Jump(const word address)
@@ -70,6 +12,29 @@ public:
               _address(address) {}
 
 private:
+    const word _address;
+};
+
+class JumpConditional : public Instruction {
+public:
+    JumpConditional(const FlagCondition flagCondition, const word address)
+            : Instruction("JP " + to_string(flagCondition) + ", " + to_string_hex_prefixed(address),
+                          determine_opcode(flagCondition),
+                          to_bytestring_little_endian(address)),
+              _flagCondition(flagCondition),
+              _address(address) {}
+
+private:
+    Opcode determine_opcode(const FlagCondition flagCondition) const {
+        switch (flagCondition) {
+            case FlagCondition::NOT_ZERO:  return opcodes::JUMP_IF_NOT_ZERO;
+            case FlagCondition::ZERO:      return opcodes::JUMP_IF_ZERO;
+            case FlagCondition::NOT_CARRY: return opcodes::JUMP_IF_NOT_CARRY;
+            case FlagCondition::CARRY:     return opcodes::JUMP_IF_CARRY;
+            default:                       return opcodes::INVALID_OPCODE;
+        }
+    }
+    const FlagCondition _flagCondition;
     const word _address;
 };
 
@@ -91,6 +56,30 @@ private:
     const byte _relativePosition;
 };
 
+class JumpRelativeConditional : public Instruction {
+public:
+    JumpRelativeConditional(const FlagCondition flagCondition, const byte relativePosition)
+            : Instruction("JR " + to_string(flagCondition) + ", " + to_string_hex_signed_prefixed(relativePosition),
+                          determine_opcode(flagCondition),
+                          bytestring{relativePosition}),
+              _flagCondition(flagCondition),
+              _relativePosition(relativePosition) {}
+
+private:
+    Opcode determine_opcode(const FlagCondition flagCondition) const {
+        switch (flagCondition) {
+            case FlagCondition::NOT_ZERO:  return opcodes::JUMP_RELATIVE_IF_NOT_ZERO;
+            case FlagCondition::ZERO:      return opcodes::JUMP_RELATIVE_IF_ZERO;
+            case FlagCondition::NOT_CARRY: return opcodes::JUMP_RELATIVE_IF_NOT_CARRY;
+            case FlagCondition::CARRY:     return opcodes::JUMP_RELATIVE_IF_CARRY;
+            default:                       return opcodes::INVALID_OPCODE;
+        }
+    }
+
+    const FlagCondition _flagCondition;
+    const byte _relativePosition;
+};
+
 class Call : public Instruction {
 public:
     Call(const word address)
@@ -103,10 +92,55 @@ private:
     const word _address;
 };
 
+
+class CallConditional : public Instruction {
+public:
+    CallConditional(const FlagCondition flagCondition, const word address)
+            : Instruction("CALL " + to_string(flagCondition) + ", " + to_string_hex_prefixed(address),
+                          determine_opcode(flagCondition),
+                          to_bytestring_little_endian(address)),
+              _flagCondition(flagCondition),
+              _address(address) {}
+
+private:
+    Opcode determine_opcode(const FlagCondition flagCondition) const {
+        switch (flagCondition) {
+            case FlagCondition::NOT_ZERO:  return opcodes::CALL_IF_NOT_ZERO;
+            case FlagCondition::ZERO:      return opcodes::CALL_IF_ZERO;
+            case FlagCondition::NOT_CARRY: return opcodes::CALL_IF_NOT_CARRY;
+            case FlagCondition::CARRY:     return opcodes::CALL_IF_CARRY;
+            default:                       return opcodes::INVALID_OPCODE;
+        }
+    }
+
+    const FlagCondition _flagCondition;
+    const word _address;
+};
+
 class Return : public Instruction {
 public:
     Return()
             : Instruction("RET", opcodes::RETURN) {}
+};
+
+class ReturnConditional : public Instruction {
+public:
+    ReturnConditional(const FlagCondition flagCondition)
+            : Instruction("RET " + to_string(flagCondition), determine_opcode(flagCondition)),
+              _flagCondition(flagCondition) {}
+
+private:
+    Opcode determine_opcode(const FlagCondition flagCondition) const {
+        switch (flagCondition) {
+            case FlagCondition::NOT_ZERO:  return opcodes::RETURN_IF_NOT_ZERO;
+            case FlagCondition::ZERO:      return opcodes::RETURN_IF_ZERO;
+            case FlagCondition::NOT_CARRY: return opcodes::RETURN_IF_NOT_CARRY;
+            case FlagCondition::CARRY:     return opcodes::RETURN_IF_CARRY;
+            default:                       return opcodes::INVALID_OPCODE;
+        }
+    }
+
+    const FlagCondition _flagCondition;
 };
 
 class ReturnFromInterrupt : public Instruction {
@@ -115,197 +149,29 @@ public:
             : Instruction("RETI", opcodes::RETURN_FROM_INTERRUPT) {}
 };
 
-class InstructionJumpConditional : public Instruction {
-protected:
-    InstructionJumpConditional(const FlagCondition flagCondition, const word address, const Opcode opc)
-            : Instruction("JP " + to_string(flagCondition) + ", " + to_string_hex_prefixed(address),
-                          opc,
-                          to_bytestring_little_endian(address)),
-              _flagCondition(flagCondition),
-              _address(address) {}
+class Restart : public Instruction {
+public:
+    Restart(const uint8_t jumpIndex)
+            : Instruction("RST " + to_string_dec(jumpIndex),
+                          determine_opcode(jumpIndex)),
+              _jumpIndex(jumpIndex) {}
 
 private:
-    const FlagCondition _flagCondition;
-    const word _address;
-};
+    Opcode determine_opcode(const uint8_t jumpIndex) const {
+        switch (jumpIndex) {
+            case 0:  return opcodes::RESTART_0;
+            case 1:  return opcodes::RESTART_1;
+            case 2:  return opcodes::RESTART_2;
+            case 3:  return opcodes::RESTART_3;
+            case 4:  return opcodes::RESTART_4;
+            case 5:  return opcodes::RESTART_5;
+            case 6:  return opcodes::RESTART_6;
+            case 7:  return opcodes::RESTART_7;
+            default: return opcodes::INVALID_OPCODE;
+        }
+    }
 
-/** Doubly derived classes ***********************************/
-
-// conditional absolute jumps
-class JumpIfNotZero : public InstructionJumpConditional {
-public:
-    JumpIfNotZero(const word address)
-            : InstructionJumpConditional(FlagCondition::NOT_ZERO,
-                                         address,
-                                         opcodes::JUMP_IF_NOT_ZERO) {}
-};
-
-class JumpIfZero : public InstructionJumpConditional {
-public:
-    JumpIfZero(const word address)
-            : InstructionJumpConditional(FlagCondition::ZERO,
-                                         address,
-                                         opcodes::JUMP_IF_ZERO) {}
-};
-
-class JumpIfNotCarry : public InstructionJumpConditional {
-public:
-    JumpIfNotCarry(const word address)
-            : InstructionJumpConditional(FlagCondition::NOT_CARRY,
-                                         address,
-                                         opcodes::JUMP_IF_NOT_CARRY) {}
-};
-
-class JumpIfCarry : public InstructionJumpConditional {
-public:
-    JumpIfCarry(const word address)
-            : InstructionJumpConditional(FlagCondition::CARRY,
-                                         address,
-                                         opcodes::JUMP_IF_CARRY) {}
-};
-
-// Conditional relative jumps
-class JumpRelativeIfNotZero : public InstructionJumpRelativeConditional {
-public:
-    JumpRelativeIfNotZero(const byte address)
-            : InstructionJumpRelativeConditional(FlagCondition::NOT_ZERO,
-                                                 address,
-                                                 opcodes::JUMP_RELATIVE_IF_NOT_ZERO) {}
-};
-
-class JumpRelativeIfZero : public InstructionJumpRelativeConditional {
-public:
-    JumpRelativeIfZero(const byte address)
-            : InstructionJumpRelativeConditional(FlagCondition::ZERO,
-                                                 address,
-                                                 opcodes::JUMP_RELATIVE_IF_ZERO) {}
-};
-
-class JumpRelativeIfNotCarry : public InstructionJumpRelativeConditional {
-public:
-    JumpRelativeIfNotCarry(const byte address)
-            : InstructionJumpRelativeConditional(FlagCondition::NOT_CARRY,
-                                                 address,
-                                                 opcodes::JUMP_RELATIVE_IF_NOT_CARRY) {}
-};
-
-class JumpRelativeIfCarry : public InstructionJumpRelativeConditional {
-public:
-    JumpRelativeIfCarry(const byte address)
-            : InstructionJumpRelativeConditional(FlagCondition::CARRY,
-                                                 address,
-                                                 opcodes::JUMP_RELATIVE_IF_CARRY) {}
-};
-
-// conditional calls
-class CallIfNotZero : public InstructionCallConditional {
-public:
-    CallIfNotZero(const word address)
-            : InstructionCallConditional(FlagCondition::NOT_ZERO,
-                                         address,
-                                         opcodes::CALL_IF_NOT_ZERO) {}
-};
-
-class CallIfZero : public InstructionCallConditional {
-public:
-    CallIfZero(const word address)
-            : InstructionCallConditional(FlagCondition::ZERO,
-                                         address,
-                                         opcodes::CALL_IF_ZERO) {}
-};
-
-class CallIfNotCarry : public InstructionCallConditional {
-public:
-    CallIfNotCarry(const word address)
-            : InstructionCallConditional(FlagCondition::NOT_CARRY,
-                                         address,
-                                         opcodes::CALL_IF_NOT_CARRY) {}
-};
-
-class CallIfCarry : public InstructionCallConditional {
-public:
-    CallIfCarry(const word address)
-            : InstructionCallConditional(FlagCondition::CARRY,
-                                         address,
-                                         opcodes::CALL_IF_CARRY) {}
-};
-
-// conditional returns
-class ReturnIfNotZero : public InstructionReturnConditional {
-public:
-    ReturnIfNotZero()
-            : InstructionReturnConditional(FlagCondition::NOT_ZERO,
-                                           opcodes::RETURN_IF_NOT_ZERO) {}
-};
-
-class ReturnIfZero : public InstructionReturnConditional {
-public:
-    ReturnIfZero()
-            : InstructionReturnConditional(FlagCondition::ZERO,
-                                           opcodes::RETURN_IF_ZERO) {}
-};
-
-class ReturnIfNotCarry : public InstructionReturnConditional {
-public:
-    ReturnIfNotCarry()
-            : InstructionReturnConditional(FlagCondition::NOT_CARRY,
-                                           opcodes::RETURN_IF_NOT_CARRY) {}
-};
-
-class ReturnIfCarry : public InstructionReturnConditional {
-public:
-    ReturnIfCarry()
-            : InstructionReturnConditional(FlagCondition::CARRY,
-                                           opcodes::RETURN_IF_CARRY) {}
-};
-
-// Restart instructions
-class Restart0 : public InstructionRestart {
-public:
-    Restart0()
-            : InstructionRestart(0, opcodes::RESTART_0) {}
-};
-
-class Restart1 : public InstructionRestart {
-public:
-    Restart1()
-            : InstructionRestart(1, opcodes::RESTART_1) {}
-};
-
-class Restart2 : public InstructionRestart {
-public:
-    Restart2()
-            : InstructionRestart(2, opcodes::RESTART_2) {}
-};
-
-class Restart3 : public InstructionRestart {
-public:
-    Restart3()
-            : InstructionRestart(3, opcodes::RESTART_3) {}
-};
-
-class Restart4 : public InstructionRestart {
-public:
-    Restart4()
-            : InstructionRestart(4, opcodes::RESTART_4) {}
-};
-
-class Restart5 : public InstructionRestart {
-public:
-    Restart5()
-            : InstructionRestart(5, opcodes::RESTART_5) {}
-};
-
-class Restart6 : public InstructionRestart {
-public:
-    Restart6()
-            : InstructionRestart(6, opcodes::RESTART_6) {}
-};
-
-class Restart7 : public InstructionRestart {
-public:
-    Restart7()
-            : InstructionRestart(7, opcodes::RESTART_7) {}
+    const uint8_t _jumpIndex;
 };
 
 #endif //GAMEBOY_DISASSEMBLE_INSTRUCTIONS_JUMP_H

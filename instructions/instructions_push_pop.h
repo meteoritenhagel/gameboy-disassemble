@@ -3,82 +3,44 @@
 
 #include "interface.h"
 
-/**********************************************************+
- * Helper classes ******************************************
- ***********************************************************/
-
-class InstructionPush16BitRegister : public Instruction {
-protected:
-    InstructionPush16BitRegister(const Register16Bit reg, const Opcode opc)
-            : Instruction("PUSH " + to_string(reg), opc),
+class Push16BitRegister : public Instruction {
+public:
+    Push16BitRegister(const Register16Bit reg)
+            : Instruction("PUSH " + to_string(reg), determine_opcode(reg)),
               _register(reg) {}
 
 private:
+    Opcode determine_opcode(const Register16Bit reg) {
+        switch(reg) {
+            case Register16Bit::AF: return opcodes::PUSH_AF;
+            case Register16Bit::BC: return opcodes::PUSH_BC;
+            case Register16Bit::DE: return opcodes::PUSH_DE;
+            case Register16Bit::HL: return opcodes::PUSH_HL;
+            default:                return opcodes::INVALID_OPCODE;
+        }
+    }
+
     const Register16Bit _register;
 };
 
-class InstructionPop16BitRegister : public Instruction {
-protected:
-    InstructionPop16BitRegister(const Register16Bit reg, const Opcode opc)
-            : Instruction("POP " + to_string(reg), opc),
+class Pop16BitRegister : public Instruction {
+public:
+    Pop16BitRegister(const Register16Bit reg)
+            : Instruction("POP " + to_string(reg), determine_opcode(reg)),
               _register(reg) {}
 
 private:
+    Opcode determine_opcode(const Register16Bit reg) {
+        switch(reg) {
+            case Register16Bit::AF: return opcodes::POP_AF;
+            case Register16Bit::BC: return opcodes::POP_BC;
+            case Register16Bit::DE: return opcodes::POP_DE;
+            case Register16Bit::HL: return opcodes::POP_HL;
+            default:                return opcodes::INVALID_OPCODE;
+        }
+    }
+
     const Register16Bit _register;
-};
-
-/**********************************************************+
- * Public interface ****************************************
- ***********************************************************/
-
-// Push
-class PushBC : public InstructionPush16BitRegister {
-public:
-    PushBC()
-            : InstructionPush16BitRegister(Register16Bit::BC, opcodes::PUSH_BC) {}
-};
-
-class PushDE : public InstructionPush16BitRegister {
-public:
-    PushDE()
-            : InstructionPush16BitRegister(Register16Bit::DE, opcodes::PUSH_DE) {}
-};
-
-class PushHL : public InstructionPush16BitRegister {
-public:
-    PushHL()
-            : InstructionPush16BitRegister(Register16Bit::HL, opcodes::PUSH_HL) {}
-};
-
-class PushAF : public InstructionPush16BitRegister {
-public:
-    PushAF()
-            : InstructionPush16BitRegister(Register16Bit::AF, opcodes::PUSH_AF) {}
-};
-
-// Pop
-class PopBC : public InstructionPop16BitRegister {
-public:
-    PopBC()
-            : InstructionPop16BitRegister(Register16Bit::BC, opcodes::POP_BC) {}
-};
-
-class PopDE : public InstructionPop16BitRegister {
-public:
-    PopDE()
-            : InstructionPop16BitRegister(Register16Bit::DE, opcodes::POP_DE) {}
-};
-
-class PopHL : public InstructionPop16BitRegister {
-public:
-    PopHL()
-            : InstructionPop16BitRegister(Register16Bit::HL, opcodes::POP_HL) {}
-};
-
-class PopAF : public InstructionPop16BitRegister {
-public:
-    PopAF()
-            : InstructionPop16BitRegister(Register16Bit::AF, opcodes::POP_AF) {}
 };
 
 #endif //GAMEBOY_DISASSEMBLE_INSTRUCTIONS_PUSH_POP_H

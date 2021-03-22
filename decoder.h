@@ -6,10 +6,10 @@
 
 #include "instructions/instructions.h"
 
-class Disassembler
+class Decoder
 {
 public:
-    Disassembler(byte const * const startOfByteCode, const word sizeOfByteCode)
+    Decoder(byte const * const startOfByteCode, const word sizeOfByteCode)
             :_startOfByteCode{startOfByteCode}, _sizeOfByteCode{sizeOfByteCode}
     {}
 
@@ -18,7 +18,7 @@ public:
         return (_programCounter >= _sizeOfByteCode);
     }
 
-    std::string disassemble()
+    std::string disassemble() // TODO: own class
     {
         std::string displayedText;
         Opcode opcode = 0;

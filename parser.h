@@ -1,21 +1,21 @@
-#ifndef GAMEBOY_DISASSEMBLE_ASSEMBLER_H
-#define GAMEBOY_DISASSEMBLE_ASSEMBLER_H
+#ifndef GAMEBOY_DISASSEMBLE_PARSER_H
+#define GAMEBOY_DISASSEMBLE_PARSER_H
 
 #include "instructions/constants.h"
 #include "instructions/instructions.h"
 #include "tokenizer.h"
 
-class Assembler {
+class Parser {
 public:
-    Assembler(const Tokenizer& tokenizer)
+    Parser(const Tokenizer& tokenizer)
     : _tokenizer(tokenizer)
     {}
 
-    void assemble()
+    InstructionPtr parse_next_instruction()
     {
         // All valid commands must start with an identifier
         Token currentToken = fetch_and_expect(TokenType::IDENTIFIER);
-        if (currentToken.get_string() == "ADD") assemble_add();
+        if (currentToken.get_string() == "ADD") return parse_add();
     }
 
 private:
@@ -25,52 +25,23 @@ private:
         return read().get_position_string();
     }
 
-    void assemble_add()
+    InstructionPtr parse_add()
     {
-//        // first operand must be either register A, HL or SP
-//        const Register destination = token_to_register(fetch());
-//        check_register_is_valid(destination);
+//        // first token must always be a register
+//        const Register reg = to_register(fetch_and_expect(TokenType::IDENTIFIER).get_string());
+//        check_register_is_valid(reg);
 //
-//        const Token sourceToken = fetch();
-//
-//        // destination = A
-//        if (is_8_bit_register(destination))
+//        if (is_8_bit_register(reg)) // Case 1: 8-bit (destination is A)
 //        {
-//            expect_register(destination, Register8Bit::A);
-//            Register8Bit destination8Bit = std::get<Register8Bit>(destination);
-//
-//            // can load immediate
-//            if (destination8Bit == Register8Bit::A)
-//            {
-//                if (sourceToken.get_token_type() == TokenType::NUMBER)
-//                {
-//                    append_to_program(AddAAndImmediate(check_range_8_bit(sourceToken.get_numeric())).bytestr());
-//                    return;
-//                }
-//            }
-//
-//            Register8Bit source8Bit = std::get<Register8Bit>(token_to_register(sourceToken));
-//
-//            switch (source8Bit)
-//            {
-//                case Register8Bit::B:
-//                case Register8Bit::C:
-//                case Register8Bit::D:
-//                case Register8Bit::E:
-//                case Register8Bit::H:
-//                case Register8Bit::L:
-//                case Register8Bit::ADDRESS_HL:
-//                case Register8Bit::A:
-//            }
+//            expect_register(reg, Register8Bit::A);
 //        }
-//        else if (is_16_bit_register(destinationString))
+//        else // Case 2: 16-bit (destination is HL or SP)
 //        {
-//            // can load immediate
-//            if (destinationString == "SP")
-//            {
 //
-//            }
 //        }
+//
+//
+
     }
 
     Token read()
@@ -97,21 +68,16 @@ private:
     {
         if (currentType != expectedType)
         {
-            throw std::logic_error(std::string("Assembler error: Found token type ") + to_string(currentType) +
+            throw std::logic_error(std::string("Parser error: Found token type ") + to_string(currentType) +
                                    ". Expected token type " + to_string(expectedType) + " at position " + get_position_string());
         }
-    }
-
-    void append_to_program(const bytestring &code)
-    {
-        append_to_bytestring(_program, code);
     }
 
     // warning: must be called before any subsequent call to fetch(), else the position data is wrong!
     long check_range_8_bit(const long num) {
         if (!((-128 <= num && num <= 127) || (0 <= num && num <= 255)))
         {
-            throw std::range_error("Assembler error: Number " + std::to_string(num) + " is expected to be 8-bit at " + get_position_string());
+            throw std::range_error("Parser error: Number " + std::to_string(num) + " is expected to be 8-bit at " + get_position_string());
         }
     }
 
@@ -119,7 +85,7 @@ private:
     long check_range_16_bit(const long num) {
         if (!((-32768 <= num && num <= 32767) || (0 <= num && num <= 65535)))
         {
-            throw std::range_error("Assembler error: Number " + std::to_string(num) + " is expected to be 16-bit at " + get_position_string());
+            throw std::range_error("Parser error: Number " + std::to_string(num) + " is expected to be 16-bit at " + get_position_string());
         }
     }
 
@@ -139,7 +105,7 @@ private:
     {
         if (is_valid(reg))
         {
-            throw std::logic_error(std::string("Assembler error: Found expression \"") + read().get_string() +
+            throw std::logic_error(std::string("Parser error: Found expression \"") + read().get_string() +
                                    "\". Expected register at position " + get_position_string());
         }
     }
@@ -148,7 +114,7 @@ private:
     {
         if (currentRegister != expectedRegister)
         {
-            throw std::logic_error(std::string("Assembler error: Found register ") + to_string(currentRegister) +
+            throw std::logic_error(std::string("Parser error: Found register ") + to_string(currentRegister) +
                                    ". Expected  register " + to_string(expectedRegister) + " at position " + get_position_string());
         }
     }
@@ -160,7 +126,7 @@ private:
 //        const std::string currentTokenString = token.get_string();
 //        if (currentTokenString != str)
 //        {
-//            throw std::logic_error(std::string("Assembler error: Found token type ") + to_string(currentTokenType) +
+//            throw std::logic_error(std::string("Parser error: Found token type ") + to_string(currentTokenType) +
 //                                   ". Expected token type " + to_string(tokenType) + " at position " + token.get_position_string());
 //        }
 //        return _tokenizer.read();
@@ -168,8 +134,7 @@ private:
 
     Tokenizer _tokenizer;
     Token _currentToken{};
-    bytestring _program{};
 };
 
 
-#endif //GAMEBOY_DISASSEMBLE_ASSEMBLER_H
+#endif //GAMEBOY_DISASSEMBLE_PARSER_H

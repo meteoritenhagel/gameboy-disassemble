@@ -20,3 +20,7 @@ std::string Instruction::str() const {
 bytestring Instruction::bytestr() const {
     return to_bytestring(opcode(), _arguments);
 }
+
+bool Instruction::is_valid() const {
+    return (opcode() != opcodes::INVALID_OPCODE);
+}

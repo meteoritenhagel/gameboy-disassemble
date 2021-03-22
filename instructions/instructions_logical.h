@@ -3,61 +3,104 @@
 
 #include "interface.h"
 
-/**********************************************************+
- * Helper classes ******************************************
- ***********************************************************/
-
-class InstructionAndAAnd8BitRegister : public Instruction {
-protected:
-    InstructionAndAAnd8BitRegister(const Register8Bit source,
-                                   const Opcode opc)
+class AndAAnd8BitRegister : public Instruction {
+public:
+    AndAAnd8BitRegister(const Register8Bit source)
             : Instruction("AND A, " + to_string(source),
-                          opc),
+                          determine_opcode(source)),
               _source(source) {}
 
 private:
+    Opcode determine_opcode(const Register8Bit source) const {
+        switch (source) {
+            case Register8Bit::B:          return opcodes::AND_A_AND_B;
+            case Register8Bit::C:          return opcodes::AND_A_AND_C;
+            case Register8Bit::D:          return opcodes::AND_A_AND_D;
+            case Register8Bit::E:          return opcodes::AND_A_AND_E;
+            case Register8Bit::H:          return opcodes::AND_A_AND_H;
+            case Register8Bit::L:          return opcodes::AND_A_AND_L;
+            case Register8Bit::ADDRESS_HL: return opcodes::AND_A_AND_ADDRESS_HL;
+            case Register8Bit::A:          return opcodes::AND_A_AND_A;
+            default:                       return opcodes::INVALID_OPCODE;
+        }
+    }
+
     const Register8Bit _source;
 };
 
-class InstructionOrAAnd8BitRegister : public Instruction {
-protected:
-    InstructionOrAAnd8BitRegister(const Register8Bit source,
-                                  const Opcode opc)
-            : Instruction("OR A, " + to_string(source),
-                          opc),
+class OrAAnd8BitRegister : public Instruction {
+public:
+    OrAAnd8BitRegister(const Register8Bit source)
+            : Instruction("OR A, " + to_string(source), determine_opcode(source)),
               _source(source) {}
 
 private:
+    Opcode determine_opcode(const Register8Bit source) const {
+        switch (source) {
+            case Register8Bit::B:          return opcodes::OR_A_AND_B;
+            case Register8Bit::C:          return opcodes::OR_A_AND_C;
+            case Register8Bit::D:          return opcodes::OR_A_AND_D;
+            case Register8Bit::E:          return opcodes::OR_A_AND_E;
+            case Register8Bit::H:          return opcodes::OR_A_AND_H;
+            case Register8Bit::L:          return opcodes::OR_A_AND_L;
+            case Register8Bit::ADDRESS_HL: return opcodes::OR_A_AND_ADDRESS_HL;
+            case Register8Bit::A:          return opcodes::OR_A_AND_A;
+            default:                       return opcodes::INVALID_OPCODE;
+        }
+    }
+
     const Register8Bit _source;
 };
 
-class InstructionXorAAnd8BitRegister : public Instruction {
-protected:
-    InstructionXorAAnd8BitRegister(const Register8Bit source,
-                                   const Opcode opc)
+class XorAAnd8BitRegister : public Instruction {
+public:
+    XorAAnd8BitRegister(const Register8Bit source)
             : Instruction("XOR A, " + to_string(source),
-                          opc),
+                          determine_opcode(source)),
               _source(source) {}
 
 private:
+    Opcode determine_opcode(const Register8Bit source) const {
+        switch (source) {
+            case Register8Bit::B:          return opcodes::XOR_A_AND_B;
+            case Register8Bit::C:          return opcodes::XOR_A_AND_C;
+            case Register8Bit::D:          return opcodes::XOR_A_AND_D;
+            case Register8Bit::E:          return opcodes::XOR_A_AND_E;
+            case Register8Bit::H:          return opcodes::XOR_A_AND_H;
+            case Register8Bit::L:          return opcodes::XOR_A_AND_L;
+            case Register8Bit::ADDRESS_HL: return opcodes::XOR_A_AND_ADDRESS_HL;
+            case Register8Bit::A:          return opcodes::XOR_A_AND_A;
+            default:                       return opcodes::INVALID_OPCODE;
+        }
+    }
+
     const Register8Bit _source;
 };
 
-class InstructionCompareAAnd8BitRegister : public Instruction {
-protected:
-    InstructionCompareAAnd8BitRegister(const Register8Bit source,
-                                       const Opcode opc)
+class CompareAAnd8BitRegister : public Instruction {
+public:
+    CompareAAnd8BitRegister(const Register8Bit source)
             : Instruction("CP A, " + to_string(source),
-                          opc),
+                          determine_opcode(source)),
               _source(source) {}
 
 private:
+    Opcode determine_opcode(const Register8Bit source) const {
+        switch (source) {
+            case Register8Bit::B:          return opcodes::COMPARE_A_AND_B;
+            case Register8Bit::C:          return opcodes::COMPARE_A_AND_C;
+            case Register8Bit::D:          return opcodes::COMPARE_A_AND_D;
+            case Register8Bit::E:          return opcodes::COMPARE_A_AND_E;
+            case Register8Bit::H:          return opcodes::COMPARE_A_AND_H;
+            case Register8Bit::L:          return opcodes::COMPARE_A_AND_L;
+            case Register8Bit::ADDRESS_HL: return opcodes::COMPARE_A_AND_ADDRESS_HL;
+            case Register8Bit::A:          return opcodes::COMPARE_A_AND_A;
+            default:                       return opcodes::INVALID_OPCODE;
+        }
+    }
+
     const Register8Bit _source;
 };
-
-/**********************************************************+
- * Public interface ****************************************
- ***********************************************************/
 
 class ComplementA : public Instruction {
 public:
@@ -116,237 +159,4 @@ public:
 private:
     const byte _immediate;
 };
-
-/** Doubly derived classes ***********************************/
-
-// And 8 bit registers
-class AndAAndB : public InstructionAndAAnd8BitRegister {
-public:
-    AndAAndB()
-            : InstructionAndAAnd8BitRegister(Register8Bit::B,
-                                             opcodes::AND_A_AND_B) {}
-};
-
-class AndAAndC : public InstructionAndAAnd8BitRegister {
-public:
-    AndAAndC()
-            : InstructionAndAAnd8BitRegister(Register8Bit::C,
-                                             opcodes::AND_A_AND_C) {}
-};
-
-class AndAAndD : public InstructionAndAAnd8BitRegister {
-public:
-    AndAAndD()
-            : InstructionAndAAnd8BitRegister(Register8Bit::D,
-                                             opcodes::AND_A_AND_D) {}
-};
-
-class AndAAndE : public InstructionAndAAnd8BitRegister {
-public:
-    AndAAndE()
-            : InstructionAndAAnd8BitRegister(Register8Bit::E,
-                                             opcodes::AND_A_AND_E) {}
-};
-
-class AndAAndH : public InstructionAndAAnd8BitRegister {
-public:
-    AndAAndH()
-            : InstructionAndAAnd8BitRegister(Register8Bit::H,
-                                             opcodes::AND_A_AND_H) {}
-};
-
-class AndAAndL : public InstructionAndAAnd8BitRegister {
-public:
-    AndAAndL()
-            : InstructionAndAAnd8BitRegister(Register8Bit::L,
-                                             opcodes::AND_A_AND_L) {}
-};
-
-class AndAAndAddressHL : public InstructionAndAAnd8BitRegister {
-public:
-    AndAAndAddressHL()
-            : InstructionAndAAnd8BitRegister(Register8Bit::ADDRESS_HL,
-                                             opcodes::AND_A_AND_ADDRESS_HL) {}
-};
-
-class AndAAndA : public InstructionAndAAnd8BitRegister {
-public:
-    AndAAndA()
-            : InstructionAndAAnd8BitRegister(Register8Bit::A,
-                                             opcodes::AND_A_AND_A) {}
-};
-
-
-// Or 8 bit registers
-class OrAAndB : public InstructionOrAAnd8BitRegister {
-public:
-    OrAAndB()
-            : InstructionOrAAnd8BitRegister(Register8Bit::B,
-                                            opcodes::OR_A_AND_B) {}
-};
-
-class OrAAndC : public InstructionOrAAnd8BitRegister {
-public:
-    OrAAndC()
-            : InstructionOrAAnd8BitRegister(Register8Bit::C,
-                                            opcodes::OR_A_AND_C) {}
-};
-
-class OrAAndD : public InstructionOrAAnd8BitRegister {
-public:
-    OrAAndD()
-            : InstructionOrAAnd8BitRegister(Register8Bit::D,
-                                            opcodes::OR_A_AND_D) {}
-};
-
-class OrAAndE : public InstructionOrAAnd8BitRegister {
-public:
-    OrAAndE()
-            : InstructionOrAAnd8BitRegister(Register8Bit::E,
-                                            opcodes::OR_A_AND_E) {}
-};
-
-class OrAAndH : public InstructionOrAAnd8BitRegister {
-public:
-    OrAAndH()
-            : InstructionOrAAnd8BitRegister(Register8Bit::H,
-                                            opcodes::OR_A_AND_H) {}
-};
-
-class OrAAndL : public InstructionOrAAnd8BitRegister {
-public:
-    OrAAndL()
-            : InstructionOrAAnd8BitRegister(Register8Bit::L,
-                                            opcodes::OR_A_AND_L) {}
-};
-
-class OrAAndAddressHL : public InstructionOrAAnd8BitRegister {
-public:
-    OrAAndAddressHL()
-            : InstructionOrAAnd8BitRegister(Register8Bit::ADDRESS_HL,
-                                            opcodes::OR_A_AND_ADDRESS_HL) {}
-};
-
-class OrAAndA : public InstructionOrAAnd8BitRegister {
-public:
-    OrAAndA()
-            : InstructionOrAAnd8BitRegister(Register8Bit::A,
-                                            opcodes::OR_A_AND_A) {}
-};
-
-// Xor 8 bit registers
-class XorAAndB : public InstructionXorAAnd8BitRegister {
-public:
-    XorAAndB()
-            : InstructionXorAAnd8BitRegister(Register8Bit::B,
-                                             opcodes::XOR_A_AND_B) {}
-};
-
-class XorAAndC : public InstructionXorAAnd8BitRegister {
-public:
-    XorAAndC()
-            : InstructionXorAAnd8BitRegister(Register8Bit::C,
-                                             opcodes::XOR_A_AND_C) {}
-};
-
-class XorAAndD : public InstructionXorAAnd8BitRegister {
-public:
-    XorAAndD()
-            : InstructionXorAAnd8BitRegister(Register8Bit::D,
-                                             opcodes::XOR_A_AND_D) {}
-};
-
-class XorAAndE : public InstructionXorAAnd8BitRegister {
-public:
-    XorAAndE()
-            : InstructionXorAAnd8BitRegister(Register8Bit::E,
-                                             opcodes::XOR_A_AND_E) {}
-};
-
-class XorAAndH : public InstructionXorAAnd8BitRegister {
-public:
-    XorAAndH()
-            : InstructionXorAAnd8BitRegister(Register8Bit::H,
-                                             opcodes::XOR_A_AND_H) {}
-};
-
-class XorAAndL : public InstructionXorAAnd8BitRegister {
-public:
-    XorAAndL()
-            : InstructionXorAAnd8BitRegister(Register8Bit::L,
-                                             opcodes::XOR_A_AND_L) {}
-};
-
-class XorAAndAddressHL : public InstructionXorAAnd8BitRegister {
-public:
-    XorAAndAddressHL()
-            : InstructionXorAAnd8BitRegister(Register8Bit::ADDRESS_HL,
-                                             opcodes::XOR_A_AND_ADDRESS_HL) {}
-};
-
-class XorAAndA : public InstructionXorAAnd8BitRegister {
-public:
-    XorAAndA()
-            : InstructionXorAAnd8BitRegister(Register8Bit::A,
-                                             opcodes::XOR_A_AND_A) {}
-};
-
-// Compare 8 bit registers
-class CompareAAndB : public InstructionCompareAAnd8BitRegister {
-public:
-    CompareAAndB()
-            : InstructionCompareAAnd8BitRegister(Register8Bit::B,
-                                                 opcodes::COMPARE_A_AND_B) {}
-};
-
-class CompareAAndC : public InstructionCompareAAnd8BitRegister {
-public:
-    CompareAAndC()
-            : InstructionCompareAAnd8BitRegister(Register8Bit::C,
-                                                 opcodes::COMPARE_A_AND_C) {}
-};
-
-class CompareAAndD : public InstructionCompareAAnd8BitRegister {
-public:
-    CompareAAndD()
-            : InstructionCompareAAnd8BitRegister(Register8Bit::D,
-                                                 opcodes::COMPARE_A_AND_D) {}
-};
-
-class CompareAAndE : public InstructionCompareAAnd8BitRegister {
-public:
-    CompareAAndE()
-            : InstructionCompareAAnd8BitRegister(Register8Bit::E,
-                                                 opcodes::COMPARE_A_AND_E) {}
-};
-
-class CompareAAndH : public InstructionCompareAAnd8BitRegister {
-public:
-    CompareAAndH()
-            : InstructionCompareAAnd8BitRegister(Register8Bit::H,
-                                                 opcodes::COMPARE_A_AND_H) {}
-};
-
-class CompareAAndL : public InstructionCompareAAnd8BitRegister {
-public:
-    CompareAAndL()
-            : InstructionCompareAAnd8BitRegister(Register8Bit::L,
-                                                 opcodes::COMPARE_A_AND_L) {}
-};
-
-class CompareAAndAddressHL : public InstructionCompareAAnd8BitRegister {
-public:
-    CompareAAndAddressHL()
-            : InstructionCompareAAnd8BitRegister(Register8Bit::ADDRESS_HL,
-                                                 opcodes::COMPARE_A_AND_ADDRESS_HL) {}
-};
-
-class CompareAAndA : public InstructionCompareAAnd8BitRegister {
-public:
-    CompareAAndA()
-            : InstructionCompareAAnd8BitRegister(Register8Bit::A,
-                                                 opcodes::COMPARE_A_AND_A) {}
-};
-
-
 #endif //GAMEBOY_DISASSEMBLE_INSTRUCTIONS_LOGICAL_H

@@ -1,5 +1,7 @@
 #include "constants.h"
 
+#include <stdexcept>
+
 void append_to_bytestring(bytestring &appendee, const bytestring &other)
 {
     appendee.insert(appendee.end(), other.cbegin(), other.cend());
@@ -73,6 +75,24 @@ Register to_register(const std::string &str) {
     if (str == "HL") return Register16Bit::HL;
     if (str == "SP") return Register16Bit::SP;
     return{};
+}
+
+Register8Bit to_register_8_bit(const Register& reg)
+{
+    if (!is_8_bit_register(reg))
+    {
+        throw std::logic_error(std::string("Error: Found register ") + to_string(reg) + ". Expected 8-bit register.");
+    }
+    return std::get<Register8Bit>(reg);
+}
+
+Register16Bit to_register_16_bit(const Register& reg)
+{
+    if (!is_16_bit_register(reg))
+    {
+        throw std::logic_error(std::string("Error: Found register ") + to_string(reg) + ". Expected 16-bit register.");
+    }
+    return std::get<Register16Bit>(reg);
 }
 
 bool is_valid(const Register &reg) {

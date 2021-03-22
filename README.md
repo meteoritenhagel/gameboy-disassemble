@@ -1,2 +1,2 @@
 # gameboy-disassemble
-Disassembler for gameboy bytecode. Work in progress.
+Decoder for gameboy bytecode. Work in progress.

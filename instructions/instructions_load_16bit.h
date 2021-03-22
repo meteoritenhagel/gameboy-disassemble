@@ -3,37 +3,38 @@
 
 #include "interface.h"
 
-/**********************************************************+
- * Helper class ********************************************
- ***********************************************************/
-
-class InstructionLoadImmediateInto16BitRegister : public Instruction {
-protected:
-    InstructionLoadImmediateInto16BitRegister(const Register16Bit reg,
-                                              const word immediate,
-                                              const Opcode opcode)
-            : Instruction("LD " + to_string(reg) + ", " + to_string_hex_prefixed(immediate),
-                          opcode,
+class LoadImmediateInto16BitRegister : public Instruction {
+public:
+    LoadImmediateInto16BitRegister(const Register16Bit destination,
+                                   const word immediate)
+            : Instruction("LD " + to_string(destination) + ", " + to_string_hex_prefixed(immediate),
+                          determine_opcode(destination),
                           to_bytestring_little_endian(immediate)),
-              _register(reg),
+              _destination(destination),
               _immediate(immediate) {}
 
 //    emulate(VirtualGameboy& gb) const
 //    {
-//        gb.access_register(_destination) = gb.read_register(_register);
+//        gb.access_register(_destination) = gb.read_register(_destination);
 //
 //        unsigned cycles = 3;
 //        gb.wait(cycles)
 //    }
 
 private:
-    const Register16Bit _register;
+    Opcode determine_opcode(const Register16Bit destination) {
+        switch(destination) {
+            case Register16Bit::BC: return opcodes::LOAD_IMMEDIATE_INTO_BC;
+            case Register16Bit::DE: return opcodes::LOAD_IMMEDIATE_INTO_DE;
+            case Register16Bit::HL: return opcodes::LOAD_IMMEDIATE_INTO_HL;
+            case Register16Bit::SP: return opcodes::LOAD_IMMEDIATE_INTO_SP;
+            default:                return opcodes::INVALID_OPCODE;
+        }
+    }
+
+    const Register16Bit _destination;
     const word _immediate;
 };
-
-/**********************************************************+
- * Public interface ****************************************
- ***********************************************************/
 
 class LoadSPIntoAddressImmediate : public Instruction {
 public:
@@ -71,7 +72,7 @@ public:
 class LoadSPShiftedByImmediateIntoHL : public Instruction {
 public:
     LoadSPShiftedByImmediateIntoHL(const byte immediate)
-            : Instruction("LD HL, SP+" + to_string_hex_signed_prefixed(immediate),
+            : Instruction("LDHL SP," + to_string_hex_signed_prefixed(immediate),
                           opcodes::LOAD_SP_SHIFTED_BY_IMMEDIATE_INTO_HL,
                           to_bytestring_little_endian(immediate)),
               _immediate(immediate) {}
@@ -85,40 +86,6 @@ public:
 
 private:
     byte _immediate;
-};
-
-/** Doubly derived classes ***********************************/
-
-class LoadImmediateIntoBC : public InstructionLoadImmediateInto16BitRegister {
-public:
-    LoadImmediateIntoBC(const word immediate)
-            : InstructionLoadImmediateInto16BitRegister(Register16Bit::BC,
-                                                        immediate,
-                                                        opcodes::LOAD_IMMEDIATE_INTO_BC) {}
-};
-
-class LoadImmediateIntoDE : public InstructionLoadImmediateInto16BitRegister {
-public:
-    LoadImmediateIntoDE(const word immediate)
-            : InstructionLoadImmediateInto16BitRegister(Register16Bit::DE,
-                                                        immediate,
-                                                        opcodes::LOAD_IMMEDIATE_INTO_DE) {}
-};
-
-class LoadImmediateIntoHL : public InstructionLoadImmediateInto16BitRegister {
-public:
-    LoadImmediateIntoHL(const word immediate)
-            : InstructionLoadImmediateInto16BitRegister(Register16Bit::HL,
-                                                        immediate,
-                                                        opcodes::LOAD_IMMEDIATE_INTO_HL) {}
-};
-
-class LoadImmediateIntoSP : public InstructionLoadImmediateInto16BitRegister {
-public:
-    LoadImmediateIntoSP(const word immediate)
-            : InstructionLoadImmediateInto16BitRegister(Register16Bit::SP,
-                                                        immediate,
-                                                        opcodes::LOAD_IMMEDIATE_INTO_SP) {}
 };
 
 #endif //GAMEBOY_DISASSEMBLE_INSTRUCTIONS_LOAD_16BIT_H

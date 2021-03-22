@@ -9,6 +9,7 @@
 class Instruction;
 
 using InstructionPtr = std::unique_ptr<const Instruction>;
+using InstructionVector = std::vector<InstructionPtr>;
 
 class Instruction {
 public:
@@ -21,6 +22,8 @@ public:
     std::string str() const;
 
     bytestring bytestr() const;
+
+    bool is_valid() const;
 
     //virtual void emulate(VirtualGameboy& gameboy) = 0;
     //virtual std::string additional_info() = 0;

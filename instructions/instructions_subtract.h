@@ -3,37 +3,55 @@
 
 #include "interface.h"
 
-/**********************************************************+
- * Helper classes ******************************************
- ***********************************************************/
-
-class InstructionSubtractAAnd8BitRegister : public Instruction {
-protected:
-    InstructionSubtractAAnd8BitRegister(const Register8Bit source,
-                                        const Opcode opc)
+class SubtractAAnd8BitRegister : public Instruction {
+public:
+    SubtractAAnd8BitRegister(const Register8Bit source)
             : Instruction("SUB A, " + to_string(source),
-                          opc),
+                          determine_opcode(source)),
               _source(source) {}
 
 private:
+    Opcode determine_opcode(const Register8Bit reg) const {
+        switch (reg) {
+            case Register8Bit::B:          return opcodes::SUBTRACT_A_AND_B;
+            case Register8Bit::C:          return opcodes::SUBTRACT_A_AND_C;
+            case Register8Bit::D:          return opcodes::SUBTRACT_A_AND_D;
+            case Register8Bit::E:          return opcodes::SUBTRACT_A_AND_E;
+            case Register8Bit::H:          return opcodes::SUBTRACT_A_AND_H;
+            case Register8Bit::L:          return opcodes::SUBTRACT_A_AND_L;
+            case Register8Bit::ADDRESS_HL: return opcodes::SUBTRACT_A_AND_ADDRESS_HL;
+            case Register8Bit::A:          return opcodes::SUBTRACT_A_AND_A;
+            default:                       return opcodes::INVALID_OPCODE;
+        }
+    }
+
     const Register8Bit _source;
 };
 
-class InstructionSubtractWithCarryAAnd8BitRegister : public Instruction {
-protected:
-    InstructionSubtractWithCarryAAnd8BitRegister(const Register8Bit source,
-                                                 const Opcode opc)
+class SubtractWithCarryAAnd8BitRegister : public Instruction {
+public:
+    SubtractWithCarryAAnd8BitRegister(const Register8Bit source)
             : Instruction("SBC A, " + to_string(source),
-                          opc),
+                          determine_opcode(source)),
               _source(source) {}
 
 private:
+    Opcode determine_opcode(const Register8Bit reg) const {
+        switch (reg) {
+            case Register8Bit::B:          return opcodes::SUBTRACT_WITH_CARRY_A_AND_B;
+            case Register8Bit::C:          return opcodes::SUBTRACT_WITH_CARRY_A_AND_C;
+            case Register8Bit::D:          return opcodes::SUBTRACT_WITH_CARRY_A_AND_D;
+            case Register8Bit::E:          return opcodes::SUBTRACT_WITH_CARRY_A_AND_E;
+            case Register8Bit::H:          return opcodes::SUBTRACT_WITH_CARRY_A_AND_H;
+            case Register8Bit::L:          return opcodes::SUBTRACT_WITH_CARRY_A_AND_L;
+            case Register8Bit::ADDRESS_HL: return opcodes::SUBTRACT_WITH_CARRY_A_AND_ADDRESS_HL;
+            case Register8Bit::A:          return opcodes::SUBTRACT_WITH_CARRY_A_AND_A;
+            default:                       return opcodes::INVALID_OPCODE;
+        }
+    }
+
     const Register8Bit _source;
 };
-
-/**********************************************************+
- * Public interface ****************************************
- ***********************************************************/
 
 class SubtractAAndImmediate : public Instruction {
 public:
@@ -55,123 +73,6 @@ public:
 
 private:
     const byte _immediate;
-};
-
-/** Doubly derived classes ***********************************/
-
-// Subtract 8 bit registers
-class SubtractAAndB : public InstructionSubtractAAnd8BitRegister {
-public:
-    SubtractAAndB()
-            : InstructionSubtractAAnd8BitRegister(Register8Bit::B,
-                                                  opcodes::SUBTRACT_A_AND_B) {}
-};
-
-class SubtractAAndC : public InstructionSubtractAAnd8BitRegister {
-public:
-    SubtractAAndC()
-            : InstructionSubtractAAnd8BitRegister(Register8Bit::C,
-                                                  opcodes::SUBTRACT_A_AND_C) {}
-};
-
-class SubtractAAndD : public InstructionSubtractAAnd8BitRegister {
-public:
-    SubtractAAndD()
-            : InstructionSubtractAAnd8BitRegister(Register8Bit::D,
-                                                  opcodes::SUBTRACT_A_AND_D) {}
-};
-
-class SubtractAAndE : public InstructionSubtractAAnd8BitRegister {
-public:
-    SubtractAAndE()
-            : InstructionSubtractAAnd8BitRegister(Register8Bit::E,
-                                                  opcodes::SUBTRACT_A_AND_E) {}
-};
-
-class SubtractAAndH : public InstructionSubtractAAnd8BitRegister {
-public:
-    SubtractAAndH()
-            : InstructionSubtractAAnd8BitRegister(Register8Bit::H,
-                                                  opcodes::SUBTRACT_A_AND_H) {}
-};
-
-class SubtractAAndL : public InstructionSubtractAAnd8BitRegister {
-public:
-    SubtractAAndL()
-            : InstructionSubtractAAnd8BitRegister(Register8Bit::L,
-                                                  opcodes::SUBTRACT_A_AND_L) {}
-};
-
-class SubtractAAndAddressHL : public InstructionSubtractAAnd8BitRegister {
-public:
-    SubtractAAndAddressHL()
-            : InstructionSubtractAAnd8BitRegister(Register8Bit::ADDRESS_HL,
-                                                  opcodes::SUBTRACT_A_AND_ADDRESS_HL) {}
-};
-
-class SubtractAAndA : public InstructionSubtractAAnd8BitRegister {
-public:
-    SubtractAAndA()
-            : InstructionSubtractAAnd8BitRegister(Register8Bit::A,
-                                                  opcodes::SUBTRACT_A_AND_A) {}
-};
-
-// Subtract with carry 8 bit registers
-
-class SubtractWithCarryAAndB : public InstructionSubtractWithCarryAAnd8BitRegister {
-public:
-    SubtractWithCarryAAndB()
-            : InstructionSubtractWithCarryAAnd8BitRegister(Register8Bit::B,
-                                                           opcodes::SUBTRACT_WITH_CARRY_A_AND_B) {}
-};
-
-class SubtractWithCarryAAndC : public InstructionSubtractWithCarryAAnd8BitRegister {
-public:
-    SubtractWithCarryAAndC()
-            : InstructionSubtractWithCarryAAnd8BitRegister(Register8Bit::C,
-                                                           opcodes::SUBTRACT_WITH_CARRY_A_AND_C) {}
-};
-
-class SubtractWithCarryAAndD : public InstructionSubtractWithCarryAAnd8BitRegister {
-public:
-    SubtractWithCarryAAndD()
-            : InstructionSubtractWithCarryAAnd8BitRegister(Register8Bit::D,
-                                                           opcodes::SUBTRACT_WITH_CARRY_A_AND_D) {}
-};
-
-class SubtractWithCarryAAndE : public InstructionSubtractWithCarryAAnd8BitRegister {
-public:
-    SubtractWithCarryAAndE()
-            : InstructionSubtractWithCarryAAnd8BitRegister(Register8Bit::E,
-                                                           opcodes::SUBTRACT_WITH_CARRY_A_AND_E) {}
-};
-
-class SubtractWithCarryAAndH : public InstructionSubtractWithCarryAAnd8BitRegister {
-public:
-    SubtractWithCarryAAndH()
-            : InstructionSubtractWithCarryAAnd8BitRegister(Register8Bit::H,
-                                                           opcodes::SUBTRACT_WITH_CARRY_A_AND_H) {}
-};
-
-class SubtractWithCarryAAndL : public InstructionSubtractWithCarryAAnd8BitRegister {
-public:
-    SubtractWithCarryAAndL()
-            : InstructionSubtractWithCarryAAnd8BitRegister(Register8Bit::L,
-                                                           opcodes::SUBTRACT_WITH_CARRY_A_AND_L) {}
-};
-
-class SubtractWithCarryAAndAddressHL : public InstructionSubtractWithCarryAAnd8BitRegister {
-public:
-    SubtractWithCarryAAndAddressHL()
-            : InstructionSubtractWithCarryAAnd8BitRegister(Register8Bit::ADDRESS_HL,
-                                                           opcodes::SUBTRACT_WITH_CARRY_A_AND_ADDRESS_HL) {}
-};
-
-class SubtractWithCarryAAndA : public InstructionSubtractWithCarryAAnd8BitRegister {
-public:
-    SubtractWithCarryAAndA()
-            : InstructionSubtractWithCarryAAnd8BitRegister(Register8Bit::A,
-                                                           opcodes::SUBTRACT_WITH_CARRY_A_AND_A) {}
 };
 
 #endif //GAMEBOY_DISASSEMBLE_INSTRUCTIONS_SUBTRACT_H
