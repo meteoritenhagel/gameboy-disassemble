@@ -1,7 +1,11 @@
 #ifndef GAMEBOY_DISASSEMBLE_INSTRUCTIONS_LOGICAL_H
 #define GAMEBOY_DISASSEMBLE_INSTRUCTIONS_LOGICAL_H
 
-#include "instructions_interface.h"
+#include "interface.h"
+
+/**********************************************************+
+ * Helper classes ******************************************
+ ***********************************************************/
 
 class InstructionAndAAnd8BitRegister : public Instruction {
 protected:
@@ -50,6 +54,10 @@ protected:
 private:
     const Register8Bit _source;
 };
+
+/**********************************************************+
+ * Public interface ****************************************
+ ***********************************************************/
 
 class ComplementA : public Instruction {
 public:
@@ -109,10 +117,7 @@ private:
     const byte _immediate;
 };
 
-
-
-
-// child classes
+/** Doubly derived classes ***********************************/
 
 // And 8 bit registers
 class AndAAndB : public InstructionAndAAnd8BitRegister {

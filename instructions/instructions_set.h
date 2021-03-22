@@ -1,6 +1,10 @@
 #ifndef GAMEBOY_DISASSEMBLE_INSTRUCTIONS_SET_H
 #define GAMEBOY_DISASSEMBLE_INSTRUCTIONS_SET_H
 
+/**********************************************************+
+ * Helper class ********************************************
+ ***********************************************************/
+
 class InstructionSetBitOf8BitRegister : public Instruction {
 protected:
     InstructionSetBitOf8BitRegister(const uint8_t bitIndex, const Register8Bit reg, const Opcode opc)
@@ -14,12 +18,9 @@ private:
     const Register8Bit _register;
 };
 
-
-
-
-
-// child classes
-
+/**********************************************************+
+ * Public interface ****************************************
+ ***********************************************************/
 
 // Register B
 class SetBit0OfB : public InstructionSetBitOf8BitRegister {

@@ -1,7 +1,11 @@
 #ifndef GAMEBOY_DISASSEMBLE_INSTRUCTIONS_RESET_H
 #define GAMEBOY_DISASSEMBLE_INSTRUCTIONS_RESET_H
 
-#include "instructions_interface.h"
+#include "interface.h"
+
+/**********************************************************+
+ * Helper class ********************************************
+ ***********************************************************/
 
 class InstructionResetBitOf8BitRegister : public Instruction {
 protected:
@@ -16,12 +20,9 @@ private:
     const Register8Bit _register;
 };
 
-
-
-
-
-// child classes
-
+/**********************************************************+
+ * Public interface ****************************************
+ ***********************************************************/
 
 // Register B
 class ResetBit0OfB : public InstructionResetBitOf8BitRegister {

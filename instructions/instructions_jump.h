@@ -1,7 +1,65 @@
 #ifndef GAMEBOY_DISASSEMBLE_INSTRUCTIONS_JUMP_H
 #define GAMEBOY_DISASSEMBLE_INSTRUCTIONS_JUMP_H
 
-#include "instructions_interface.h"
+#include "interface.h"
+
+/**********************************************************+
+ * Helper classes ******************************************
+ ***********************************************************/
+
+class InstructionJumpRelativeConditional : public Instruction {
+protected:
+    InstructionJumpRelativeConditional(const FlagCondition flagCondition, const byte relativePosition, const Opcode opc)
+            : Instruction("JR " + to_string(flagCondition) + ", " + to_string_hex_signed_prefixed(relativePosition),
+                          opc,
+                          bytestring{relativePosition}),
+              _flagCondition(flagCondition),
+              _relativePosition(relativePosition) {}
+
+private:
+    const FlagCondition _flagCondition;
+    const byte _relativePosition;
+};
+
+
+class InstructionCallConditional : public Instruction {
+protected:
+    InstructionCallConditional(const FlagCondition flagCondition, const word address, const Opcode opc)
+            : Instruction("CALL " + to_string(flagCondition) + ", " + to_string_hex_prefixed(address),
+                          opc,
+                          to_bytestring_little_endian(address)),
+              _flagCondition(flagCondition),
+              _address(address) {}
+
+private:
+    const FlagCondition _flagCondition;
+    const word _address;
+};
+
+class InstructionReturnConditional : public Instruction {
+protected:
+    InstructionReturnConditional(const FlagCondition flagCondition, const Opcode opc)
+            : Instruction("RET " + to_string(flagCondition), opc),
+              _flagCondition(flagCondition) {}
+
+private:
+    const FlagCondition _flagCondition;
+};
+
+class InstructionRestart : public Instruction {
+protected:
+    InstructionRestart(const uint8_t jumpIndex, const Opcode opc)
+            : Instruction("RST " + to_string_dec(jumpIndex),
+                          opc),
+              _jumpIndex(jumpIndex) {}
+
+private:
+    const uint8_t _jumpIndex;
+};
+
+/**********************************************************+
+ * Public interface ****************************************
+ ***********************************************************/
 
 class Jump : public Instruction {
 public:
@@ -21,20 +79,6 @@ public:
             : Instruction("JP HL", opcodes::JUMP_TO_HL) {}
 };
 
-class InstructionJumpConditional : public Instruction {
-protected:
-    InstructionJumpConditional(const FlagCondition flagCondition, const word address, const Opcode opc)
-            : Instruction("JP " + to_string(flagCondition) + ", " + to_string_hex_prefixed(address),
-                          opc,
-                          to_bytestring_little_endian(address)),
-              _flagCondition(flagCondition),
-              _address(address) {}
-
-private:
-    const FlagCondition _flagCondition;
-    const word _address;
-};
-
 class JumpRelative : public Instruction {
 public:
     JumpRelative(const byte relativePosition)
@@ -44,20 +88,6 @@ public:
               _relativePosition(relativePosition) {}
 
 private:
-    const byte _relativePosition;
-};
-
-class InstructionJumpRelativeConditional : public Instruction {
-protected:
-    InstructionJumpRelativeConditional(const FlagCondition flagCondition, const byte relativePosition, const Opcode opc)
-            : Instruction("JR " + to_string(flagCondition) + ", " + to_string_hex_signed_prefixed(relativePosition),
-                          opc,
-                          bytestring{relativePosition}),
-              _flagCondition(flagCondition),
-              _relativePosition(relativePosition) {}
-
-private:
-    const FlagCondition _flagCondition;
     const byte _relativePosition;
 };
 
@@ -73,10 +103,22 @@ private:
     const word _address;
 };
 
-class InstructionCallConditional : public Instruction {
+class Return : public Instruction {
+public:
+    Return()
+            : Instruction("RET", opcodes::RETURN) {}
+};
+
+class ReturnFromInterrupt : public Instruction {
+public:
+    ReturnFromInterrupt()
+            : Instruction("RETI", opcodes::RETURN_FROM_INTERRUPT) {}
+};
+
+class InstructionJumpConditional : public Instruction {
 protected:
-    InstructionCallConditional(const FlagCondition flagCondition, const word address, const Opcode opc)
-            : Instruction("CALL " + to_string(flagCondition) + ", " + to_string_hex_prefixed(address),
+    InstructionJumpConditional(const FlagCondition flagCondition, const word address, const Opcode opc)
+            : Instruction("JP " + to_string(flagCondition) + ", " + to_string_hex_prefixed(address),
                           opc,
                           to_bytestring_little_endian(address)),
               _flagCondition(flagCondition),
@@ -87,41 +129,7 @@ private:
     const word _address;
 };
 
-class Return : public Instruction {
-public:
-    Return()
-            : Instruction("RET", opcodes::RETURN) {}
-};
-
-class InstructionReturnConditional : public Instruction {
-protected:
-    InstructionReturnConditional(const FlagCondition flagCondition, const Opcode opc)
-            : Instruction("RET " + to_string(flagCondition), opc),
-              _flagCondition(flagCondition) {}
-
-private:
-    const FlagCondition _flagCondition;
-};
-
-class ReturnFromInterrupt : public Instruction {
-public:
-    ReturnFromInterrupt()
-            : Instruction("RETI", opcodes::RETURN_FROM_INTERRUPT) {}
-};
-
-class InstructionRestart : public Instruction {
-protected:
-    InstructionRestart(const uint8_t jumpIndex, const Opcode opc)
-            : Instruction("RST " + to_string_dec(jumpIndex),
-                          opc),
-              _jumpIndex(jumpIndex) {}
-
-private:
-    const uint8_t _jumpIndex;
-};
-
-
-// child classes
+/** Doubly derived classes ***********************************/
 
 // conditional absolute jumps
 class JumpIfNotZero : public InstructionJumpConditional {

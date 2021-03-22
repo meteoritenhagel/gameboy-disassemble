@@ -1,7 +1,11 @@
 #ifndef GAMEBOY_DISASSEMBLE_INSTRUCTIONS_INCREMENT_DECREMENT_H
 #define GAMEBOY_DISASSEMBLE_INSTRUCTIONS_INCREMENT_DECREMENT_H
 
-#include "instructions_interface.h"
+#include "interface.h"
+
+/**********************************************************+
+ * Helper classes ******************************************
+ ***********************************************************/
 
 // 8 Bit Registers
 class InstructionIncrement8BitRegister : public Instruction {
@@ -52,11 +56,9 @@ private:
     const Register16Bit _register;
 };
 
-
-
-
-
-// child classes
+/**********************************************************+
+ * Public interface ****************************************
+ ***********************************************************/
 
 // Increment 8 bit register
 

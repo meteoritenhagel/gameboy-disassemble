@@ -1,7 +1,11 @@
 #ifndef GAMEBOY_DISASSEMBLE_INSTRUCTIONS_SHIFT_SWAP_H
 #define GAMEBOY_DISASSEMBLE_INSTRUCTIONS_SHIFT_SWAP_H
 
-#include "instructions_interface.h"
+#include "interface.h"
+
+/**********************************************************+
+ * Helper classes ******************************************
+ ***********************************************************/
 
 class InstructionShiftLeftArithmetical8BitRegister : public Instruction {
 protected:
@@ -47,11 +51,9 @@ private:
     const Register8Bit _register;
 };
 
-
-
-
-
-// child classes
+/**********************************************************+
+ * Public interface ****************************************
+ ***********************************************************/
 
 // Shift left arithmetical 8 bit registers
 class ShiftLeftArithmeticalB : public InstructionShiftLeftArithmetical8BitRegister {

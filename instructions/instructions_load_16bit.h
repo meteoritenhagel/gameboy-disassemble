@@ -1,7 +1,11 @@
 #ifndef GAMEBOY_DISASSEMBLE_INSTRUCTIONS_LOAD_16BIT_H
 #define GAMEBOY_DISASSEMBLE_INSTRUCTIONS_LOAD_16BIT_H
 
-#include "instructions_interface.h"
+#include "interface.h"
+
+/**********************************************************+
+ * Helper class ********************************************
+ ***********************************************************/
 
 class InstructionLoadImmediateInto16BitRegister : public Instruction {
 protected:
@@ -26,6 +30,10 @@ private:
     const Register16Bit _register;
     const word _immediate;
 };
+
+/**********************************************************+
+ * Public interface ****************************************
+ ***********************************************************/
 
 class LoadSPIntoAddressImmediate : public Instruction {
 public:
@@ -79,8 +87,7 @@ private:
     byte _immediate;
 };
 
-
-// Derived classes
+/** Doubly derived classes ***********************************/
 
 class LoadImmediateIntoBC : public InstructionLoadImmediateInto16BitRegister {
 public:

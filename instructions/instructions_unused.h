@@ -1,15 +1,11 @@
 #ifndef GAMEBOY_DISASSEMBLE_INSTRUCTIONS_UNUSED_H
 #define GAMEBOY_DISASSEMBLE_INSTRUCTIONS_UNUSED_H
 
-#include "instructions_interface.h"
+#include "interface.h"
 
-// If not implemented yet
-class Unknown : public Instruction {
-public:
-    Unknown()
-            : Instruction("???",
-                          opcodes::NOP) {}
-};
+/**********************************************************+
+ * Helper class ********************************************
+ ***********************************************************/
 
 class InstructionUnused : public Instruction {
 protected:
@@ -24,8 +20,19 @@ protected:
 //    }
 };
 
+/**********************************************************+
+ * Public interface ****************************************
+ ***********************************************************/
 
-// child classes:
+// If not implemented yet
+class Unknown : public Instruction {
+public:
+    Unknown()
+            : Instruction("???",
+                          opcodes::NOP) {}
+};
+
+/** Doubly derived classes ***********************************/
 
 class Unused0 : public InstructionUnused {
 public:

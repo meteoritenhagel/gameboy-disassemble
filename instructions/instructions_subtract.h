@@ -1,7 +1,11 @@
 #ifndef GAMEBOY_DISASSEMBLE_INSTRUCTIONS_SUBTRACT_H
 #define GAMEBOY_DISASSEMBLE_INSTRUCTIONS_SUBTRACT_H
 
-#include "instructions_interface.h"
+#include "interface.h"
+
+/**********************************************************+
+ * Helper classes ******************************************
+ ***********************************************************/
 
 class InstructionSubtractAAnd8BitRegister : public Instruction {
 protected:
@@ -27,6 +31,10 @@ private:
     const Register8Bit _source;
 };
 
+/**********************************************************+
+ * Public interface ****************************************
+ ***********************************************************/
+
 class SubtractAAndImmediate : public Instruction {
 public:
     SubtractAAndImmediate(const byte immediate)
@@ -49,12 +57,7 @@ private:
     const byte _immediate;
 };
 
-
-
-
-
-
-// child classes
+/** Doubly derived classes ***********************************/
 
 // Subtract 8 bit registers
 class SubtractAAndB : public InstructionSubtractAAnd8BitRegister {

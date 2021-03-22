@@ -2,12 +2,13 @@
 // Created by tristan on 16.02.21.
 //
 
-#ifndef GAMEBOY_DISASSEMBLE_INSTRUCTIONS_CONSTANTS_H
-#define GAMEBOY_DISASSEMBLE_INSTRUCTIONS_CONSTANTS_H
+#ifndef GAMEBOY_DISASSEMBLE_CONSTANTS_H
+#define GAMEBOY_DISASSEMBLE_CONSTANTS_H
 
 #include <cstdint>
 #include <memory>
 #include <string>
+#include <variant>
 #include <vector>
 
 using byte = uint8_t;
@@ -17,14 +18,14 @@ using bytestring = std::vector<byte>;
 using Opcode = word; // must be literal type, so that it can be used with switch statements
 
 enum class Register8Bit {
-    A,
     B,
     C,
     D,
     E,
     H,
     L,
-    ADDRESS_HL
+    ADDRESS_HL,
+    A
 };
 
 enum class Register16Bit {
@@ -35,12 +36,32 @@ enum class Register16Bit {
     SP
 };
 
+using Register = std::variant<std::monostate, Register8Bit, Register16Bit>;
+
 enum class FlagCondition {
     ZERO,
     NOT_ZERO,
     CARRY,
     NOT_CARRY
 };
+
+void append_to_bytestring(bytestring &appendee, const bytestring &other);
+
+std::string to_string(const Register8Bit reg);
+
+std::string to_string(const Register16Bit reg);
+
+std::string to_string(const Register reg);
+
+std::string to_string(const FlagCondition flagCondition);
+
+Register to_register(const std::string &str);
+
+bool is_valid(const Register &reg);
+
+bool is_8_bit_register(const Register &reg);
+
+bool is_16_bit_register(const Register &reg);
 
 namespace opcodes {
     constexpr Opcode NOP                                        {0x00};
@@ -590,4 +611,4 @@ namespace opcodes {
     constexpr Opcode SET_BIT_7_OF_A                             {0xCBFF};
 }
 
-#endif //GAMEBOY_DISASSEMBLE_INSTRUCTIONS_CONSTANTS_H
+#endif //GAMEBOY_DISASSEMBLE_CONSTANTS_H

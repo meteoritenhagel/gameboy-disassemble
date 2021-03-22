@@ -1,7 +1,11 @@
 #ifndef GAMEBOY_DISASSEMBLE_INSTRUCTIONS_PUSH_POP_H
 #define GAMEBOY_DISASSEMBLE_INSTRUCTIONS_PUSH_POP_H
 
-#include "instructions_interface.h"
+#include "interface.h"
+
+/**********************************************************+
+ * Helper classes ******************************************
+ ***********************************************************/
 
 class InstructionPush16BitRegister : public Instruction {
 protected:
@@ -23,10 +27,9 @@ private:
     const Register16Bit _register;
 };
 
-
-
-
-// child classes
+/**********************************************************+
+ * Public interface ****************************************
+ ***********************************************************/
 
 // Push
 class PushBC : public InstructionPush16BitRegister {

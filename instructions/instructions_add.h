@@ -5,7 +5,11 @@
 #ifndef GAMEBOY_DISASSEMBLE_INSTRUCTIONS_ADD_H
 #define GAMEBOY_DISASSEMBLE_INSTRUCTIONS_ADD_H
 
-#include "instructions_interface.h"
+#include "interface.h"
+
+/**********************************************************+
+ * Helper classes ******************************************
+ ***********************************************************/
 
 class InstructionAddAAnd8BitRegister : public Instruction {
 protected:
@@ -31,6 +35,25 @@ private:
     const Register8Bit _source;
 };
 
+class InstructionAdd16BitRegisterAnd16BitRegister : public Instruction {
+protected:
+    InstructionAdd16BitRegisterAnd16BitRegister(const Register16Bit destination,
+                                                const Register16Bit source,
+                                                const Opcode opc)
+            : Instruction("ADD " + to_string(destination) + ", " + to_string(source),
+                          opc),
+              _destination(destination),
+              _source(source) {}
+
+private:
+    const Register16Bit _destination;
+    const Register16Bit _source;
+};
+
+/**********************************************************+
+ * Public interface ****************************************
+ ***********************************************************/
+
 class AddAAndImmediate : public Instruction {
 public:
     AddAAndImmediate(const byte immediate)
@@ -53,21 +76,6 @@ private:
     const byte _immediate;
 };
 
-class InstructionAdd16BitRegisterAnd16BitRegister : public Instruction {
-protected:
-    InstructionAdd16BitRegisterAnd16BitRegister(const Register16Bit destination,
-                                                const Register16Bit source,
-                                                const Opcode opc)
-            : Instruction("ADD " + to_string(destination) + ", " + to_string(source),
-                          opc),
-              _destination(destination),
-              _source(source) {}
-
-private:
-    const Register16Bit _destination;
-    const Register16Bit _source;
-};
-
 class AddSPAndImmediate : public Instruction {
 public:
     AddSPAndImmediate(const word immediate)
@@ -79,8 +87,7 @@ private:
     const byte _immediate;
 };
 
-
-// child classes
+/** Doubly derived classes ***********************************/
 
 // Add 8 bit registers
 class AddAAndB : public InstructionAddAAnd8BitRegister {

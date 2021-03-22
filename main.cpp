@@ -1,7 +1,7 @@
 #include <iostream>
 #include <vector>
 
-#include "assembler.h"
+#include "tokenizer.h"
 #include "disassembler.h"
 
 void test_disassembler()
@@ -52,21 +52,38 @@ void test_disassembler_longer()
         std::cout << disassembler.disassemble() << std::endl;
 }
 
-#include <string>
-int main()
+void test_tokenizer_1()
 {
     std::string code = std::string("LD (HL), A ;abc abcde\n") +
                        "LD (HL), 12\n" +
-                       "LD (HL), 0xABCD\n" +
+                       "LD (HL), 0xABCDD\n" +
                        "JR -0x04\n" +
-                       "oh no, second line!";
+                       "oh no, second line!!!!";
 
     Tokenizer tokenizer(code);
 
+
     while (!tokenizer.is_out_of_range())
     {
-        tokenizer.get_next_token().print();
+        try
+        {
+            tokenizer.get_next_token().print();
+        }
+        catch (std::exception &e)
+        {
+            std::cerr << e.what() << std::endl;
+        }
     }
+}
+
+#include <string>
+int main()
+{
+    //test_disassembler_longer();
+
+    auto x = LoadImmediateIntoA(210);
+
+    std::cout << x.opcode() << std::endl;
 
     return 0;
 }

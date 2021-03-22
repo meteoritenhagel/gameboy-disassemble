@@ -1,8 +1,8 @@
-#ifndef GAMEBOY_DISASSEMBLE_INSTRUCTIONS_INTERFACE_H
-#define GAMEBOY_DISASSEMBLE_INSTRUCTIONS_INTERFACE_H
+#ifndef GAMEBOY_DISASSEMBLE_INTERFACE_H
+#define GAMEBOY_DISASSEMBLE_INTERFACE_H
 
-#include "instructions_constants.h"
-#include "instructions_conversions.h"
+#include "constants.h"
+#include "conversions.h"
 
 #include <string>
 
@@ -32,4 +32,4 @@ private:
 };
 
 
-#endif //GAMEBOY_DISASSEMBLE_INSTRUCTIONS_INTERFACE_H
+#endif //GAMEBOY_DISASSEMBLE_INTERFACE_H

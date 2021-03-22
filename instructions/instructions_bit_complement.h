@@ -1,7 +1,11 @@
 #ifndef GAMEBOY_DISASSEMBLE_INSTRUCTIONS_BIT_COMPLEMENT_H
 #define GAMEBOY_DISASSEMBLE_INSTRUCTIONS_BIT_COMPLEMENT_H
 
-#include "instructions_interface.h"
+#include "interface.h"
+
+/**********************************************************+
+ * Helper class ********************************************
+ ***********************************************************/
 
 class InstructionBitOf8BitRegisterComplementIntoZero : public Instruction {
 protected:
@@ -15,9 +19,9 @@ private:
     const Register8Bit _register;
 };
 
-
-
-// child classes
+/**********************************************************+
+ * Public interface ****************************************
+ ***********************************************************/
 
 // Register B
 class Bit0OfBComplementIntoZero : public InstructionBitOf8BitRegisterComplementIntoZero {

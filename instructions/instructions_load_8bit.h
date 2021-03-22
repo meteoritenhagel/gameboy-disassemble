@@ -1,8 +1,11 @@
 #ifndef GAMEBOY_DISASSEMBLE_INSTRUCTIONS_LOAD_8BIT_H
 #define GAMEBOY_DISASSEMBLE_INSTRUCTIONS_LOAD_8BIT_H
 
-#include "instructions_interface.h"
+#include "interface.h"
 
+/**********************************************************+
+ * Helper classes ******************************************
+ ***********************************************************/
 
 class InstructionLoadImmediateInto8BitRegister : public Instruction {
 protected:
@@ -59,6 +62,10 @@ private:
     const Register8Bit _source;
     const Register8Bit _destination;
 };
+
+/**********************************************************+
+ * Public interface ****************************************
+ ***********************************************************/
 
 class LoadAIntoAddressImmediate : public Instruction {
 public:
@@ -194,7 +201,7 @@ public:
                           opcodes::LOAD_PORT_ADDRESS_C_INTO_A) {}
 };
 
-// derived classes
+/** Doubly derived classes ***********************************/
 
 class LoadImmediateIntoB : public InstructionLoadImmediateInto8BitRegister {
 public:

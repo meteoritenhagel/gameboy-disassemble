@@ -1,36 +1,11 @@
 #ifndef GAMEBOY_DISASSEMBLE_INSTRUCTIONS_ROTATION_H
 #define GAMEBOY_DISASSEMBLE_INSTRUCTIONS_ROTATION_H
 
-#include "instructions_interface.h"
+#include "interface.h"
 
-// Rotate A and clear Zero Flag
-class RotateLeftAAndClearZero : public Instruction {
-public:
-    RotateLeftAAndClearZero()
-            : Instruction("RLA",
-                          opcodes::ROTATE_LEFT_A_AND_CLEAR_ZERO) {}
-};
-
-class RotateRightAAndClearZero : public Instruction {
-public:
-    RotateRightAAndClearZero()
-            : Instruction("RRA",
-                          opcodes::ROTATE_RIGHT_A_AND_CLEAR_ZERO) {}
-};
-
-class RotateLeftContentsOfAAndClearZero : public Instruction {
-public:
-    RotateLeftContentsOfAAndClearZero()
-            : Instruction("RLCA",
-                          opcodes::ROTATE_LEFT_CONTENTS_OF_A_AND_CLEAR_ZERO) {}
-};
-
-class RotateRightContentsOfAAndClearZero : public Instruction {
-public:
-    RotateRightContentsOfAAndClearZero()
-            : Instruction("RRCA",
-                          opcodes::ROTATE_RIGHT_CONTENTS_OF_A_AND_CLEAR_ZERO) {}
-};
+/**********************************************************+
+ * Helper classes ******************************************
+ ***********************************************************/
 
 class InstructionRotateRight8BitRegister : public Instruction {
 protected:
@@ -76,10 +51,41 @@ private:
     const Register8Bit _register;
 };
 
+/**********************************************************+
+ * Public interface ****************************************
+ ***********************************************************/
+
+// Rotate A and clear Zero Flag
+class RotateLeftAAndClearZero : public Instruction {
+public:
+    RotateLeftAAndClearZero()
+            : Instruction("RLA",
+                          opcodes::ROTATE_LEFT_A_AND_CLEAR_ZERO) {}
+};
+
+class RotateRightAAndClearZero : public Instruction {
+public:
+    RotateRightAAndClearZero()
+            : Instruction("RRA",
+                          opcodes::ROTATE_RIGHT_A_AND_CLEAR_ZERO) {}
+};
+
+class RotateLeftContentsOfAAndClearZero : public Instruction {
+public:
+    RotateLeftContentsOfAAndClearZero()
+            : Instruction("RLCA",
+                          opcodes::ROTATE_LEFT_CONTENTS_OF_A_AND_CLEAR_ZERO) {}
+};
+
+class RotateRightContentsOfAAndClearZero : public Instruction {
+public:
+    RotateRightContentsOfAAndClearZero()
+            : Instruction("RRCA",
+                          opcodes::ROTATE_RIGHT_CONTENTS_OF_A_AND_CLEAR_ZERO) {}
+};
 
 
-
-// child classes:
+/** Doubly derived classes ***********************************/
 
 // Rotate left
 class RotateLeftB : public InstructionRotateLeft8BitRegister {

@@ -1,7 +1,11 @@
 #ifndef GAMEBOY_DISASSEMBLE_INSTRUCTIONS_MACHINE_H
 #define GAMEBOY_DISASSEMBLE_INSTRUCTIONS_MACHINE_H
 
-#include "instructions_interface.h"
+#include "interface.h"
+
+/**********************************************************+
+ * Public interface ****************************************
+ ***********************************************************/
 
 class Nop : public Instruction {
 public:

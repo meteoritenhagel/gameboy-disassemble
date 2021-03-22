@@ -2,7 +2,7 @@
 // Created by tristan on 16.02.21.
 //
 
-#include "instructions_interface.h"
+#include "interface.h"
 
 Instruction::Instruction(const std::string &string, const Opcode opcode, const bytestring &arguments)
         : _opcode(opcode),
