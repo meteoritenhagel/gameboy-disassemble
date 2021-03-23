@@ -4,7 +4,7 @@
 
 #include "interface.h"
 
-Instruction::Instruction(const std::string &string, const Opcode opcode, const bytestring &arguments)
+Instruction::Instruction(const std::string &string, const Opcode opcode, const Bytestring &arguments)
         : _opcode(opcode),
           _string(string),
           _arguments(arguments) {}
@@ -17,7 +17,7 @@ std::string Instruction::str() const {
     return _string;
 }
 
-bytestring Instruction::bytestr() const {
+Bytestring Instruction::bytestr() const {
     return to_bytestring(opcode(), _arguments);
 }
 

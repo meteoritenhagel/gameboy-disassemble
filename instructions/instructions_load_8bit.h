@@ -9,7 +9,7 @@ public:
                                   const byte immediate)
             : Instruction("LD " + to_string(destination) + ", " + to_string_hex_prefixed(immediate),
                           determine_opcode(destination),
-                          bytestring{immediate}),
+                          Bytestring{immediate}),
               _destination(destination),
               _immediate(immediate) {}
 

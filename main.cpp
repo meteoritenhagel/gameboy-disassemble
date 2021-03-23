@@ -3,54 +3,67 @@
 
 #include "assembler/tokenizer.h"
 #include "disassembler/decoder.h"
+#include "disassembler/disassemble.h"
 
-void test_disassembler()
+void test_decoder()
 {
-    const std::vector<byte> byteCode{0x00, 0x3E, 0xFF, 0x00, 0x00, 0x00};
-    byte const * const startOfByteCode = byteCode.data();
+    const Bytestring bytecode {0x00, 0x3E, 0xFF, 0x00, 0x00, 0x00};
+    Decoder decoder(bytecode);
 
-    Decoder disassembler(startOfByteCode, byteCode.size());
+    while (!decoder.is_out_of_range())
+        std::cout << decoder.decode().second->str() << std::endl;
 
-    for (unsigned i = 0; i < 8; ++i)
-        std::cout << disassembler.disassemble() << std::endl;
+
 }
 
-void test_disassembler_eof()
+void test_decoder_eof()
 {
-    const std::vector<byte> byteCode{0x00, 0x3E};
-    byte const * const startOfByteCode = byteCode.data();
+    const Bytestring bytecode {0x00, 0x3E};
+    Decoder decoder(bytecode);
 
-    Decoder disassembler(startOfByteCode, byteCode.size());
+    while (!decoder.is_out_of_range())
+        std::cout << decoder.decode().second->str() << std::endl;
 
-    for (unsigned i = 0; i < 2; ++i)
-        std::cout << disassembler.disassemble() << std::endl;
+
 }
 
-void test_disassembler_longer()
+void test_decoder_longer()
 {
-    const std::vector<byte> byteCode{0x00,
-                                     0x01, 0x34, 0x12,
-                                     0x02,
-                                     0x03,
-                                     0x04,
-                                     0x05,
-                                     0x06, 0xCC,
-                                     0x07,
-                                     0x08, 0x34, 0x12,
-                                     0x09,
-                                     0x0A,
-                                     0x0B,
-                                     0x0C,
-                                     0x0D,
-                                     0x0E, 0xCC,
-                                     0x0F,
-                                     0x8E};
-    byte const * const startOfByteCode = byteCode.data();
+    const Bytestring bytecode {
+        0x00,
+        0x01, 0x34, 0x12,
+        0x02,
+        0x03,
+        0x04,
+        0x05,
+        0x06, 0xCC,
+        0x07,
+        0x08, 0x34, 0x12,
+        0x09,
+        0x0A,
+        0x0B,
+        0x0C,
+        0x0D,
+        0x0E, 0xCC,
+        0x0F,
+        0x8E};
 
-    Decoder disassembler(startOfByteCode, byteCode.size());
+    Decoder decoder(bytecode);
 
-    while (!disassembler.is_out_of_range())
-        std::cout << disassembler.disassemble() << std::endl;
+    while (!decoder.is_out_of_range())
+        std::cout << decoder.decode().second->str() << std::endl;
+
+}
+
+void test_decode_length()
+{
+    bool testPassed = true;
+    testPassed = (testPassed && decode_length(opcodes::JUMP) == 3);
+    testPassed = (testPassed && decode_length(opcodes::ADD_WITH_CARRY_A_AND_IMMEDIATE) == 2);
+    testPassed = (testPassed && decode_length(opcodes::LOAD_ADDRESS_IMMEDIATE_INTO_A) == 3);
+    testPassed = (testPassed && decode_length(opcodes::NOP) == 1);
+
+    std::cout << ((testPassed) ? "Test Passed!" : "Test FAILED!") << '\n';
 }
 
 void test_tokenizer_1()
@@ -80,11 +93,26 @@ void test_tokenizer_1()
 #include <string>
 int main()
 {
-    test_disassembler_longer();
+    const Bytestring bytecode {
+            0x00,
+            0x01, 0x34, 0x12,
+            0x02,
+            0x03,
+            0x04,
+            0x05,
+            0x06, 0xCC,
+            0x07,
+            0x08, 0x34, 0x12,
+            0x09,
+            0x0A,
+            0x0B,
+            0x0C,
+            0x0D,
+            0x0E, 0xCC,
+            0x0F,
+            0x8E};
 
-    auto x = AddAAnd8BitRegister(Register8Bit::ADDRESS_HL);
-
-    std::cout << to_string_hex_prefixed(x.opcode()) << std::endl;
+    disassemble(bytecode);
 
     return 0;
 }

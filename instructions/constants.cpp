@@ -2,7 +2,7 @@
 
 #include <stdexcept>
 
-void append_to_bytestring(bytestring &appendee, const bytestring &other)
+void append_to_bytestring(Bytestring &appendee, const Bytestring &other)
 {
     appendee.insert(appendee.end(), other.cbegin(), other.cend());
 }

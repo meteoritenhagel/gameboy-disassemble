@@ -14,7 +14,9 @@
 using byte = uint8_t;
 using word = uint16_t;
 
-using bytestring = std::vector<byte>;
+using Bytestring = std::vector<byte>;
+using BytestringPtr = std::unique_ptr<Bytestring>;
+
 using Opcode = word; // must be literal type, so that it can be used with switch statements
 
 enum class Register8Bit {
@@ -45,7 +47,7 @@ enum class FlagCondition {
     NOT_CARRY
 };
 
-void append_to_bytestring(bytestring &appendee, const bytestring &other);
+void append_to_bytestring(Bytestring &appendee, const Bytestring &other);
 
 std::string to_string(const Register8Bit reg);
 

@@ -49,7 +49,7 @@ public:
     JumpRelative(const byte relativePosition)
             : Instruction(
             "JR " + to_string_hex_signed_prefixed(relativePosition), opcodes::JUMP_RELATIVE,
-            bytestring{relativePosition}),
+            Bytestring{relativePosition}),
               _relativePosition(relativePosition) {}
 
 private:
@@ -61,7 +61,7 @@ public:
     JumpRelativeConditional(const FlagCondition flagCondition, const byte relativePosition)
             : Instruction("JR " + to_string(flagCondition) + ", " + to_string_hex_signed_prefixed(relativePosition),
                           determine_opcode(flagCondition),
-                          bytestring{relativePosition}),
+                          Bytestring{relativePosition}),
               _flagCondition(flagCondition),
               _relativePosition(relativePosition) {}
 

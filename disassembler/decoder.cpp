@@ -1,6 +1,89 @@
 #include "decoder.h"
 
-InstructionPtr Decoder::decode(Opcode opcode) {
+unsigned decode_length(const Opcode opcode) {
+    Bytestring bytecode(6, 0x00);
+
+    const Bytestring opc = opcode_to_bytestring(opcode);
+    std::copy(std::begin(opc), std::end(opc), std::begin(bytecode));
+
+    Decoder decoder(bytecode);
+
+    // calculate number of bytes read
+    const word startingPosition = decoder.get_current_position();
+    decoder.decode();
+    const word endPosition = decoder.get_current_position();
+
+    return endPosition - startingPosition;
+}
+
+Decoder::Decoder(const Bytestring &bytecode, const word entryPoint)
+        : _bytecode(bytecode),
+          _programCounter(entryPoint) {}
+
+size_t Decoder::get_size() const {
+    return _bytecode.size();
+}
+
+word Decoder::get_current_position() const {
+    return _programCounter;
+}
+
+bool Decoder::is_out_of_range() const noexcept {
+    try {
+        return (get_current_position() >= get_size());
+    }
+    catch (const std::exception &e) {
+        return true;
+    }
+
+}
+
+std::pair<word, InstructionPtr> Decoder::decode() {
+    word opcodePosition = get_current_position();
+    const Opcode opcode = fetch_opcode();
+    return std::make_pair(opcodePosition, decode_opcode(opcode));
+}
+
+void Decoder::increment_program_counter() {
+    if (!is_out_of_range()) {
+        ++_programCounter;
+    }
+}
+
+byte Decoder::read_byte() const {
+    if (is_out_of_range()) {
+        throw std::out_of_range("Decoder error: Program counter pointing to position out of range.");
+    }
+
+    return _bytecode[get_current_position()];
+}
+
+byte Decoder::fetch_byte() {
+    const byte currentByte = read_byte();
+    increment_program_counter();
+
+    return currentByte;
+}
+
+word Decoder::fetch_word() {
+    const byte lsb = fetch_byte();
+    const byte msb = fetch_byte();
+
+    return little_endian_to_number(lsb, msb); // note that evaluation order is not fixed in C++!
+}
+
+Opcode Decoder::fetch_opcode() {
+    word opcode = fetch_byte();
+
+    // check if prefix
+    if (opcode == 0xCB) {
+        opcode = big_endian_to_number(0xCB, fetch_byte());
+    }
+
+    return opcode;
+}
+
+InstructionPtr Decoder::decode_opcode(const Opcode opcode) {
     switch (opcode)
     {
         case opcodes::NOP                                        : return std::make_unique<Nop>();
@@ -550,6 +633,5 @@ InstructionPtr Decoder::decode(Opcode opcode) {
         case opcodes::SET_BIT_7_OF_A                             : return std::make_unique<SetBitOf8BitRegister>(7, Register8Bit::A);
 
         default: return std::make_unique<Unknown>();
-
     }
 }

@@ -13,7 +13,7 @@ using InstructionVector = std::vector<InstructionPtr>;
 
 class Instruction {
 public:
-    Instruction(const std::string &string, const Opcode opcode, const bytestring &arguments = {});
+    Instruction(const std::string &string, const Opcode opcode, const Bytestring &arguments = {});
 
     virtual ~Instruction() = default;
 
@@ -21,7 +21,7 @@ public:
 
     std::string str() const;
 
-    bytestring bytestr() const;
+    Bytestring bytestr() const;
 
     bool is_valid() const;
 
@@ -31,7 +31,7 @@ public:
 private:
     const Opcode _opcode;
     const std::string _string;
-    const bytestring _arguments{};
+    const Bytestring _arguments{};
 };
 
 

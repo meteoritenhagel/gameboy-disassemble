@@ -22,24 +22,28 @@ word extend_sign(const byte number) {
     return is_negative(number) ? (0xFF00 | number) : (0x0000 | number);
 }
 
-bytestring to_bytestring_little_endian(const word number) {
-    return bytestring{get_least_significant_byte(number), get_most_significant_byte(number)};
+Bytestring to_bytestring_little_endian(const word number) {
+    return Bytestring{get_least_significant_byte(number), get_most_significant_byte(number)};
 }
 
-bytestring opcode_to_bytestring(const Opcode opcode) {
+Bytestring to_bytestring_big_endian(const word number) {
+    return Bytestring{get_least_significant_byte(number), get_most_significant_byte(number)};
+}
+
+Bytestring opcode_to_bytestring(const Opcode opcode) {
     if (0x0000 <= opcode && opcode <= 0x00FF)
     {
-        return bytestring{static_cast<byte>(opcode)};
+        return Bytestring{static_cast<byte>(opcode)};
     }
     else
     {
         // split into prefix and opcode
-        return bytestring{get_most_significant_byte(opcode), get_least_significant_byte(opcode)};
+        return to_bytestring_big_endian(opcode);
     }
 }
 
-bytestring to_bytestring(const Opcode opcode, const bytestring &arguments) {
-    bytestring bytestr = opcode_to_bytestring(opcode);
+Bytestring to_bytestring(const Opcode opcode, const Bytestring &arguments) {
+    Bytestring bytestr = opcode_to_bytestring(opcode);
     append_to_bytestring(bytestr, arguments);
     return bytestr;
 }

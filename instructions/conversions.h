@@ -33,11 +33,13 @@ std::string to_string_hex_prefixed(const T number, const byte digits = 2 * sizeo
 template<typename T>
 std::string to_string_hex_signed_prefixed(const T number, const byte digits = 2 * sizeof(T));
 
-bytestring to_bytestring_little_endian(const word number);
+Bytestring to_bytestring_little_endian(const word number);
 
-bytestring opcode_to_bytestring(const Opcode opcode);
+Bytestring to_bytestring_big_endian(const word number);
 
-bytestring to_bytestring(const Opcode opcode, const bytestring &arguments);
+Bytestring opcode_to_bytestring(const Opcode opcode);
+
+Bytestring to_bytestring(const Opcode opcode, const Bytestring &arguments);
 
 #include "conversions.hpp"
 

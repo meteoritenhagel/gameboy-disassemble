@@ -6,106 +6,50 @@
 
 #include "../instructions/instructions.h"
 
+class Decoder;
+
+unsigned decode_length(const Opcode opcode);
+
 class Decoder
 {
 public:
-    Decoder(byte const * const startOfByteCode, const word sizeOfByteCode)
-            :_startOfByteCode{startOfByteCode}, _sizeOfByteCode{sizeOfByteCode}
-    {}
+    Decoder(const Bytestring& bytecode, const word entryPoint = 0x0000);
 
-    bool is_out_of_range() const
-    {
-        return (_programCounter >= _sizeOfByteCode);
-    }
+    bool is_out_of_range() const noexcept;
 
-    std::string disassemble() // TODO: own class
-    {
-        std::string displayedText;
-        Opcode opcode = 0;
+    size_t get_size() const;
 
-        try // to get opcode
-        {
-            displayedText += "0x" + to_string_hex(_programCounter);
-
-            opcode = fetch_opcode();
-            displayedText += " : " "[0x" + to_string_hex(opcode, 2) + "] ";
-
-            displayedText += decode(opcode)->str();
-        }
-        catch(const std::out_of_range &e)
-        {
-            displayedText = " - EOF - ";
-        }
-
-        return displayedText;
-    }
+    word get_current_position() const;
 
     // throws std::out_of_range if program counter is out of range.
-    InstructionPtr decode(Opcode opcode);
+    std::pair<word, InstructionPtr> decode();
 
 private:
 
-    void increment_program_counter()
-    {
-        if (!is_out_of_range())
-        {
-            ++_programCounter;
-        }
-    }
+    void increment_program_counter();
 
     // throws std::out_of_range if program counter is out of range.
-    byte read_byte() const
-    {
-        if (is_out_of_range())
-        {
-            throw std::out_of_range("Program counter pointing to position out of range.");
-        }
-
-        return *(_startOfByteCode + _programCounter);
-    }
+    byte read_byte() const;
 
     // throws std::out_of_range if program counter is out of range.
     // only increments program counter after reading if not out of range.
-    byte fetch_byte()
-    {
-        const byte currentByte = read_byte();
-        increment_program_counter();
-
-        return currentByte;
-    }
+    byte fetch_byte();
 
     // throws std::out_of_range if program counter out of range.
     // only increments program counter after reading if not out of range.
     // returns the value according to the word (LSB, MSB)
     // i.e. (0x34, 0x12) is mapped to the value 0x1234
-    word fetch_word()
-    {
-        const byte lsb = fetch_byte();
-        const byte msb = fetch_byte();
+    word fetch_word();
 
-        return little_endian_to_number(lsb, msb); // note that evaluation order is not fixed in C++!
-    }
-
-    // throws std::out_of_range if program counter out of range.
+    // throws std::out_of_range if program counter is out of range.
     // only increments program counter after reading if not out of range.
-    Opcode fetch_opcode()
-    {
-        word opcode = fetch_byte();
+    Opcode fetch_opcode();
 
-        // check if prefix
-        if (opcode == 0xCB)
-        {
-            opcode = big_endian_to_number(0xCB, fetch_byte());
-        }
-
-        return opcode;
-    }
+    InstructionPtr decode_opcode(const Opcode opcode);
 
 private:
-    byte const * _startOfByteCode;
-    word _sizeOfByteCode{0x0000};
+    const Bytestring& _bytecode;
     word _programCounter{0x0000};
 };
-
 
 #endif //GAMEBOY_DEBUG_DISASSEMBLER_H
