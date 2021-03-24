@@ -8,6 +8,41 @@ bool is_negative(const T number) {
 }
 
 template<typename T>
+bool is_unsigned_8_bit(const T num) {
+    return (0 <= num && num <= 255);
+}
+
+template<typename T>
+bool is_signed_8_bit(const T num) {
+    return (-128 <= num && num <= 127);
+}
+
+template<typename T>
+bool is_8_bit(const T num) {
+    return is_signed_8_bit(num) || is_unsigned_8_bit(num);
+}
+
+template<typename T>
+bool is_unsigned_16_bit(const T num) {
+    return (0 <= num && num <= 65535);
+}
+
+template<typename T>
+bool is_signed_16_bit(const T num) {
+    return (-32768 <= num && num <= 32767);
+}
+
+template<typename T>
+bool is_16_bit(const T num) {
+    return is_signed_16_bit(num) || is_unsigned_16_bit(num);
+}
+
+template<typename T>
+bool is_index(const T num) {
+    return (0 <= num) && (num <= 7);
+}
+
+template<typename T>
 T twos_complement(const T number) {
     return ~number + 1;
 }

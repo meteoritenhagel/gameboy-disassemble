@@ -7,7 +7,8 @@ class AddAAndImmediate : public Instruction {
 public:
     AddAAndImmediate(const byte immediate)
             : Instruction("ADD A, " + to_string_hex_prefixed(immediate),
-                          opcodes::ADD_A_AND_IMMEDIATE),
+                          opcodes::ADD_A_AND_IMMEDIATE,
+                          Bytestring{immediate}),
               _immediate(immediate) {}
 
 private:
@@ -18,7 +19,8 @@ class AddWithCarryAAndImmediate : public Instruction {
 public:
     AddWithCarryAAndImmediate(const byte immediate)
             : Instruction("ADC A, " + to_string_hex_prefixed(immediate),
-                          opcodes::ADD_WITH_CARRY_A_AND_IMMEDIATE),
+                          opcodes::ADD_WITH_CARRY_A_AND_IMMEDIATE,
+                          Bytestring{immediate}),
               _immediate(immediate) {}
 
 private:
@@ -97,9 +99,10 @@ private:
 
 class AddSPAndImmediate : public Instruction {
 public:
-    AddSPAndImmediate(const word immediate)
-            : Instruction("ADD SP, " + to_string_hex_signed_prefixed(immediate),
-                          opcodes::ADD_SP_AND_IMMEDIATE),
+    AddSPAndImmediate(const byte immediate)
+            : Instruction("ADD SP, " + to_string_hex_signed_prefixed(immediate, 2),
+                          opcodes::ADD_SP_AND_IMMEDIATE,
+                          Bytestring{immediate}),
               _immediate(immediate) {}
 
 private:

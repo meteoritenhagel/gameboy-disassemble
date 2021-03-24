@@ -35,11 +35,11 @@ std::string to_string(const Register16Bit reg) {
 }
 
 std::string to_string(const Register &reg) {
-    if (is_8_bit_register(reg))
+    if (is_register_8_bit(reg))
     {
         return to_string(std::get<Register8Bit>(reg));
     }
-    else if (is_16_bit_register(reg))
+    else if (is_register_16_bit(reg))
     {
         return to_string(std::get<Register16Bit>(reg));
     }
@@ -79,7 +79,7 @@ Register to_register(const std::string &str) {
 
 Register8Bit to_register_8_bit(const Register& reg)
 {
-    if (!is_8_bit_register(reg))
+    if (!is_register_8_bit(reg))
     {
         throw std::logic_error(std::string("Error: Found register ") + to_string(reg) + ". Expected 8-bit register.");
     }
@@ -88,7 +88,7 @@ Register8Bit to_register_8_bit(const Register& reg)
 
 Register16Bit to_register_16_bit(const Register& reg)
 {
-    if (!is_16_bit_register(reg))
+    if (!is_register_16_bit(reg))
     {
         throw std::logic_error(std::string("Error: Found register ") + to_string(reg) + ". Expected 16-bit register.");
     }
@@ -96,13 +96,13 @@ Register16Bit to_register_16_bit(const Register& reg)
 }
 
 bool is_valid(const Register &reg) {
-    return (reg.index() == 0);
+    return (reg.index() != 0);
 }
 
-bool is_8_bit_register(const Register &reg) {
+bool is_register_8_bit(const Register &reg) {
     return (reg.index() == 1);
 }
 
-bool is_16_bit_register(const Register &reg) {
+bool is_register_16_bit(const Register &reg) {
     return (reg.index() == 2);
 }

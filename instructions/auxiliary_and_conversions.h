@@ -1,12 +1,35 @@
-#ifndef GAMEBOY_DISASSEMBLE_CONVERSIONS_H
-#define GAMEBOY_DISASSEMBLE_CONVERSIONS_H
+#ifndef GAMEBOY_DISASSEMBLE_AUXILIARY_AND_CONVERSIONS_H
+#define GAMEBOY_DISASSEMBLE_AUXILIARY_AND_CONVERSIONS_H
 
 #include "constants.h"
 
 #include <string>
 
+std::string get_position_string(const size_t lineNumber, const size_t columnNumber);
+
 template<typename T>
 bool is_negative(const T number);
+
+template<typename T>
+bool is_unsigned_8_bit(const T num);
+
+template<typename T>
+bool is_signed_8_bit(const T num);
+
+template<typename T>
+bool is_8_bit(const T num);
+
+template<typename T>
+bool is_unsigned_16_bit(const T num);
+
+template<typename T>
+bool is_signed_16_bit(const T num);
+
+template<typename T>
+bool is_16_bit(const T num);
+
+template<typename T>
+bool is_index(const T num);
 
 byte get_least_significant_byte(const word wrd);
 
@@ -41,6 +64,6 @@ Bytestring opcode_to_bytestring(const Opcode opcode);
 
 Bytestring to_bytestring(const Opcode opcode, const Bytestring &arguments);
 
-#include "conversions.hpp"
+#include "auxiliary_and_conversions.hpp"
 
-#endif //GAMEBOY_DISASSEMBLE_CONVERSIONS_H
+#endif //GAMEBOY_DISASSEMBLE_AUXILIARY_AND_CONVERSIONS_H

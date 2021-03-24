@@ -65,9 +65,9 @@ Register16Bit to_register_16_bit(const Register& reg);
 
 bool is_valid(const Register &reg);
 
-bool is_8_bit_register(const Register &reg);
+bool is_register_8_bit(const Register &reg);
 
-bool is_16_bit_register(const Register &reg);
+bool is_register_16_bit(const Register &reg);
 
 namespace opcodes {
     constexpr Opcode NOP                                        {0x00};

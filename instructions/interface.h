@@ -2,7 +2,7 @@
 #define GAMEBOY_DISASSEMBLE_INTERFACE_H
 
 #include "constants.h"
-#include "conversions.h"
+#include "auxiliary_and_conversions.h"
 
 #include <string>
 

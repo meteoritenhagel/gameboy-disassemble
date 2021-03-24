@@ -1,25 +1,22 @@
 #include "tokenizer.h"
+#include "print_code.h"
 
 bool issign(const char character) {
     return (character == '+' || character == '-') ? true : false;
 }
 
-Tokenizer::Tokenizer(const std::string code, const size_t currentPosition)
-        : _code(code), _currentPosition(currentPosition)
+Tokenizer::Tokenizer(const std::string& code, const size_t currentPosition)
+        : _code(code),
+          _currentPosition(currentPosition)
 {}
 
-bool Tokenizer::is_out_of_range() const {
-    return (_currentPosition >= _code.size());
+bool Tokenizer::is_finished() const {
+    return _isFinished;
 }
 
 Token Tokenizer::get_next_token() {
     Token currentToken;
     ignore_whitespace();
-
-    if (read_current() == CHAR_EOF)
-    {
-        throw std::out_of_range("Lexical error: End of file reached.");
-    }
 
     if (read_current() == ';') // comment
     {
@@ -39,8 +36,8 @@ Token Tokenizer::get_next_token() {
     }
     else if (read_current() == ',')
     {
-        increment_position();
         currentToken = Token(get_line(), get_column(), TokenType::COMMA, ",");
+        increment_position();
     }
     else if (isdigit(read_current()) || issign(read_current()))
     {
@@ -50,19 +47,41 @@ Token Tokenizer::get_next_token() {
     {
         currentToken = tokenize_identifier();
     }
+    else if (read_current() == '\n')
+    {
+        currentToken = tokenize_end_of_line();
+    }
+    else if (read_current() == CHAR_EOF)
+    {
+        _isFinished = true;
+        currentToken = Token(get_line(), get_column(), TokenType::END_OF_FILE, "[EOF]");
+    }
     else
     {
         char currentChar = read_current();
+        const std::string errorMessage = std::string("Lexical error: Unknown character '") + currentChar + "' at " + get_position_string();
+        const size_t oldLineNumber = get_line();
+        const size_t oldColumnNumber = get_column();
         increment_position();
-        throw std::logic_error(std::string("Lexical error: Unknown character '") + currentChar + "' at " + get_position_string());
+
+        throw_logic_error_and_highlight(oldLineNumber, oldColumnNumber, errorMessage);
     }
     return currentToken;
+}
+
+const std::string& Tokenizer::get_code() const
+{
+    return _code;
+}
+
+bool Tokenizer::is_out_of_range() const {
+    return (_currentPosition >= get_code().size());
 }
 
 Token Tokenizer::tokenize_identifier() {
     std::string str{};
     ignore_whitespace();
-    size_t columnPosition = get_column();
+    const size_t columnPosition = get_column();
 
     bool hasParentheses = false;
 
@@ -95,40 +114,34 @@ Token Tokenizer::tokenize_identifier() {
 Token Tokenizer::tokenize_number() {
     std::string str{};
     ignore_whitespace();
-    size_t columnPosition = get_column();
+    const size_t columnPosition = get_column();
 
     // possible sign
-    if (issign(read_current()))
-    {
+    if (issign(read_current())) {
         str += fetch();
     }
 
     // hexadecimal number
-    if (read_current() == '0' && (read_next() == 'x' || read_next() == 'X'))
-    {
+    if (read_current() == '0' && (read_next() == 'x' || read_next() == 'X')) {
         str += fetch();
         str += fetch();
 
-        while (isxdigit(read_current()))
-        {
+        while (isxdigit(read_current())) {
             str += fetch();
         }
-    }
-    else
-    {
-        while (isdigit(read_current()))
-        {
+    } else {
+        while (isdigit(read_current())) {
             str += fetch();
         }
     }
 
-    return Token(get_line(), columnPosition, TokenType::NUMBER, str);
+    return try_to_create_token(get_line(), columnPosition, TokenType::NUMBER, str);
 }
 
 Token Tokenizer::tokenize_address() {
     std::string str{};
     ignore_whitespace();
-    size_t columnPosition = get_column();
+    const size_t columnPosition = get_column();
 
     // address must start with '('
     str += fetch_and_expect('(');
@@ -141,8 +154,28 @@ Token Tokenizer::tokenize_address() {
     // address must end with ')'
     str += fetch_and_expect(')');
 
+    return try_to_create_token(get_line(), columnPosition, TokenType::ADDRESS, str);
+}
 
-    return Token(get_line(), columnPosition, TokenType::ADDRESS, str);
+Token Tokenizer::tokenize_end_of_line() {
+
+    const size_t initialLinePosition = get_line();
+    const size_t initialColumnPosition = get_column();
+
+    // remove all whitespace including '\n'
+    while(read_current() == '\n')
+    {
+        increment_position();
+        ignore_whitespace();
+    }
+
+    if (read_current() == CHAR_EOF) {
+        _isFinished = true;
+        return Token(initialLinePosition, initialColumnPosition, TokenType::END_OF_FILE, "[EOF]");
+    } else {
+        return Token(initialLinePosition, initialColumnPosition, TokenType::END_OF_LINE, "\\n");
+    }
+
 }
 
 void Tokenizer::increment_position() {
@@ -163,11 +196,11 @@ void Tokenizer::increment_linecount() {
 }
 
 char Tokenizer::read_current() const {
-    return (is_out_of_range()) ? CHAR_EOF : _code.at(_currentPosition);
+    return (is_out_of_range()) ? CHAR_EOF : get_code().at(_currentPosition);
 }
 
 char Tokenizer::read_next() const {
-    return (is_out_of_range()) ? CHAR_EOF : _code.at(_currentPosition+1);
+    return (is_out_of_range()) ? CHAR_EOF : get_code().at(_currentPosition+1);
 }
 
 char Tokenizer::fetch() {
@@ -180,13 +213,13 @@ char Tokenizer::fetch_and_expect(const char character) {
     const char currentCharacter = fetch();
     if (currentCharacter != character)
     {
-        throw std::logic_error(std::string("Lexical error: Found '") + currentCharacter + "'. Expected '" + character + " at " + get_position_string());
+        throw_logic_error_and_highlight(get_line(), get_column(), "Lexical error: Found '" + std::to_string(currentCharacter) + "', but expected '" + character);
     }
     return character;
 }
 
 void Tokenizer::ignore_whitespace() {
-    while(isspace(read_current()))
+    while(isspace(read_current()) && (read_current() != '\n'))
     {
         increment_position();
     }
@@ -197,7 +230,6 @@ void Tokenizer::ignore_until_end_of_line() {
     {
         fetch();
     }
-    increment_position();
 }
 
 size_t Tokenizer::get_line() const {
@@ -211,5 +243,17 @@ size_t Tokenizer::get_column() const {
 }
 
 std::string Tokenizer::get_position_string() {
-    return std::to_string(get_line()) + ":" + std::to_string(get_column());
+    return ::get_position_string(get_line(), get_column());
+}
+
+void Tokenizer::throw_logic_error_and_highlight(const size_t lineNumber, const size_t columnNumber, const std::string &errorMessage) {
+    ::throw_logic_error_and_highlight(get_code(), lineNumber, columnNumber, errorMessage);
+}
+
+Token Tokenizer::try_to_create_token(const size_t lineNumber, const size_t columnNumber, const TokenType tokenType, const std::string &tokenString) {
+    try{
+        return Token(lineNumber, columnNumber, tokenType, tokenString);
+    } catch (...) {
+        throw_logic_error_and_highlight(lineNumber, columnNumber, "Lexical error: Cannot convert expression \"" + tokenString + "\" to " + to_string(tokenType));
+    }
 }

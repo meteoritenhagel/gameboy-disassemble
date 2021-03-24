@@ -12,7 +12,7 @@ public:
 
 private:
     Opcode determine_opcode(const Register &reg) const {
-        if (is_8_bit_register(reg)) {
+        if (is_register_8_bit(reg)) {
             switch(std::get<Register8Bit>(reg)) {
                 case Register8Bit::B:          return opcodes::INCREMENT_B;
                 case Register8Bit::C:          return opcodes::INCREMENT_C;
@@ -24,7 +24,7 @@ private:
                 case Register8Bit::A:          return opcodes::INCREMENT_A;
                 default: break;
             }
-        } else if (is_16_bit_register(reg)) {
+        } else if (is_register_16_bit(reg)) {
             switch(std::get<Register16Bit>(reg)) {
                 case Register16Bit::BC: return opcodes::INCREMENT_BC;
                 case Register16Bit::DE: return opcodes::INCREMENT_DE;
@@ -49,7 +49,7 @@ public:
 
 private:
     Opcode determine_opcode(const Register &reg) const {
-        if (is_8_bit_register(reg)) {
+        if (is_register_8_bit(reg)) {
             switch(to_register_8_bit(reg)) {
                 case Register8Bit::B:          return opcodes::DECREMENT_B;
                 case Register8Bit::C:          return opcodes::DECREMENT_C;
@@ -61,7 +61,7 @@ private:
                 case Register8Bit::A:          return opcodes::DECREMENT_A;
                 default:                       break;
             }
-        } else if (is_16_bit_register(reg)) {
+        } else if (is_register_16_bit(reg)) {
             switch(to_register_16_bit(reg)) {
                 case Register16Bit::BC: return opcodes::DECREMENT_BC;
                 case Register16Bit::DE: return opcodes::DECREMENT_DE;

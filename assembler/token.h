@@ -1,8 +1,10 @@
 #ifndef GAMEBOY_DISASSEMBLE_TOKEN_H
 #define GAMEBOY_DISASSEMBLE_TOKEN_H
 
-#include <optional>
+#include "../instructions/auxiliary_and_conversions.h"
+
 #include <iostream>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -12,6 +14,8 @@ enum class TokenType {
     COMMA,
     NUMBER,
     ADDRESS,
+    END_OF_LINE,
+    END_OF_FILE
 };
 
 std::string to_string(const TokenType tokenType);
@@ -49,6 +53,5 @@ private:
     std::string _tokenString{};
     std::optional<long> _numericValue{};
 };
-
 
 #endif //GAMEBOY_DISASSEMBLE_TOKEN_H

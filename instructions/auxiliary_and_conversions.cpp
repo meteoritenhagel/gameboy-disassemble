@@ -1,6 +1,11 @@
-#include "conversions.h"
+#include "auxiliary_and_conversions.h"
 
 #include "constants.h"
+
+std::string get_position_string(const size_t lineNumber, const size_t columnNumber)
+{
+return std::to_string(lineNumber) + ":" + std::to_string(columnNumber);
+}
 
 byte get_least_significant_byte(const word wrd) {
     return static_cast<byte>(wrd & 0x00FF);
@@ -27,7 +32,7 @@ Bytestring to_bytestring_little_endian(const word number) {
 }
 
 Bytestring to_bytestring_big_endian(const word number) {
-    return Bytestring{get_least_significant_byte(number), get_most_significant_byte(number)};
+    return Bytestring{get_most_significant_byte(number), get_least_significant_byte(number)};
 }
 
 Bytestring opcode_to_bytestring(const Opcode opcode) {

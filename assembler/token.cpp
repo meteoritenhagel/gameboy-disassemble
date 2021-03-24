@@ -1,15 +1,6 @@
 #include "token.h"
 
-std::string to_string(const TokenType tokenType) {
-    switch(tokenType)
-    {
-        case TokenType::IDENTIFIER: return "IDENTIFIER";
-        case TokenType::COMMA: return "COMMA";
-        case TokenType::NUMBER: return "NUMBER";
-        case TokenType::ADDRESS: return "ADDRESS";
-        default: return "INVALID";
-    }
-}
+#include "../instructions/auxiliary_and_conversions.h"
 
 Token::Token(const size_t lineNumber, const size_t columnNumber, const TokenType tokenType,
              const std::string &tokenString)
@@ -55,6 +46,6 @@ void Token::print() const {
 }
 
 std::string Token::get_position_string() const {
-    return "line: " + std::to_string(get_line()) + " / column: " + std::to_string(get_column());
+    return ::get_position_string(get_line(), get_column());
 }
 
