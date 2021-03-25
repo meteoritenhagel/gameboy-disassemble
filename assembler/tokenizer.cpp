@@ -1,16 +1,12 @@
 #include "tokenizer.h"
-#include "print_code.h"
+#include "pretty_format.h"
 
-bool issign(const char character) {
-    return (character == '+' || character == '-') ? true : false;
-}
-
-Tokenizer::Tokenizer(const std::string& code, const size_t currentPosition)
+Tokenizer::Tokenizer(const std::string& code, const size_t startingPosition)
         : _code(code),
-          _currentPosition(currentPosition)
+          _currentPosition(startingPosition)
 {}
 
-bool Tokenizer::is_finished() const {
+bool Tokenizer::is_finished() const noexcept {
     return _isFinished;
 }
 
@@ -27,7 +23,7 @@ Token Tokenizer::get_next_token() {
     {
         if (isalpha(read_next()))
         {
-            currentToken = tokenize_identifier();
+            currentToken = tokenize_identifier_or_global_label();
         }
         else if (isdigit(read_next()))
         {
@@ -45,7 +41,11 @@ Token Tokenizer::get_next_token() {
     }
     else if (isalpha(read_current()))
     {
-        currentToken = tokenize_identifier();
+        currentToken = tokenize_identifier_or_global_label();
+    }
+    else if (read_current() == '.')
+    {
+        currentToken = tokenize_local_label();
     }
     else if (read_current() == '\n')
     {
@@ -69,18 +69,17 @@ Token Tokenizer::get_next_token() {
     return currentToken;
 }
 
-const std::string& Tokenizer::get_code() const
-{
+const std::string& Tokenizer::get_code() const noexcept{
     return _code;
 }
 
-bool Tokenizer::is_out_of_range() const {
+bool Tokenizer::is_out_of_range() const noexcept {
     return (_currentPosition >= get_code().size());
 }
 
-Token Tokenizer::tokenize_identifier() {
+Token Tokenizer::tokenize_identifier_or_global_label() {
     std::string str{};
-    ignore_whitespace();
+    Token currentToken;
     const size_t columnPosition = get_column();
 
     bool hasParentheses = false;
@@ -108,12 +107,19 @@ Token Tokenizer::tokenize_identifier() {
         str += fetch_and_expect(')');
     }
 
-    return Token(get_line(), columnPosition, TokenType::IDENTIFIER, str);
+    if (read_current() == ':'){ // is GLOBAL_LABEL
+        str += ':';
+        currentToken = Token(get_line(), columnPosition, TokenType::GLOBAL_LABEL, str);
+        increment_position();
+    } else { // is IDENTIFIER
+        currentToken = Token(get_line(), columnPosition, TokenType::IDENTIFIER, str);
+    }
+
+    return currentToken;
 }
 
 Token Tokenizer::tokenize_number() {
     std::string str{};
-    ignore_whitespace();
     const size_t columnPosition = get_column();
 
     // possible sign
@@ -140,7 +146,6 @@ Token Tokenizer::tokenize_number() {
 
 Token Tokenizer::tokenize_address() {
     std::string str{};
-    ignore_whitespace();
     const size_t columnPosition = get_column();
 
     // address must start with '('
@@ -155,6 +160,21 @@ Token Tokenizer::tokenize_address() {
     str += fetch_and_expect(')');
 
     return try_to_create_token(get_line(), columnPosition, TokenType::ADDRESS, str);
+}
+
+Token Tokenizer::tokenize_local_label() {
+    std::string str{};
+    const size_t columnPosition = get_column();
+
+    // local label must start with '.'
+    str += fetch_and_expect('.');
+
+    while (isalpha(read_current()))
+    {
+        str += fetch();
+    }
+
+    return Token(get_line(), columnPosition, TokenType::LOCAL_LABEL, str);
 }
 
 Token Tokenizer::tokenize_end_of_line() {
@@ -178,11 +198,10 @@ Token Tokenizer::tokenize_end_of_line() {
 
 }
 
-void Tokenizer::increment_position() {
+void Tokenizer::increment_position() noexcept {
     if (read_current() == '\n')
     {
         increment_linecount();
-        _linePosition = _currentPosition+1;
     }
 
     if (!is_out_of_range())
@@ -191,34 +210,34 @@ void Tokenizer::increment_position() {
     }
 }
 
-void Tokenizer::increment_linecount() {
+void Tokenizer::increment_linecount() noexcept {
     ++_lineCount;
 }
 
-char Tokenizer::read_current() const {
+char Tokenizer::read_current() const noexcept {
     return (is_out_of_range()) ? CHAR_EOF : get_code().at(_currentPosition);
 }
 
-char Tokenizer::read_next() const {
+char Tokenizer::read_next() const noexcept {
     return (is_out_of_range()) ? CHAR_EOF : get_code().at(_currentPosition+1);
 }
 
-char Tokenizer::fetch() {
+char Tokenizer::fetch() noexcept {
     char currentChar = read_current();
     increment_position();
     return currentChar;
 }
 
-char Tokenizer::fetch_and_expect(const char character) {
+char Tokenizer::fetch_and_expect(const char expectedCharacter) {
     const char currentCharacter = fetch();
-    if (currentCharacter != character)
+    if (currentCharacter != expectedCharacter)
     {
-        throw_logic_error_and_highlight(get_line(), get_column(), "Lexical error: Found '" + std::to_string(currentCharacter) + "', but expected '" + character);
+        throw_logic_error_and_highlight(get_line(), get_column(), "Lexical error: Found '" + std::to_string(currentCharacter) + "', but expected '" + expectedCharacter);
     }
-    return character;
+    return expectedCharacter;
 }
 
-void Tokenizer::ignore_whitespace() {
+void Tokenizer::ignore_whitespace() noexcept {
     while(isspace(read_current()) && (read_current() != '\n'))
     {
         increment_position();
@@ -239,7 +258,7 @@ size_t Tokenizer::get_line() const {
 
 size_t Tokenizer::get_column() const {
     // add 1 since the leftmost character has index 1
-    return _currentPosition - _linePosition+1;
+    return _currentPosition - _lineCount+1;
 }
 
 std::string Tokenizer::get_position_string() {

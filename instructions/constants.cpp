@@ -2,11 +2,6 @@
 
 #include <stdexcept>
 
-void append_to_bytestring(Bytestring &appendee, const Bytestring &other)
-{
-    appendee.insert(appendee.end(), other.cbegin(), other.cend());
-}
-
 std::string to_string(const Register8Bit reg) {
     switch (reg)
     {

@@ -47,8 +47,6 @@ enum class FlagCondition {
     NOT_CARRY
 };
 
-void append_to_bytestring(Bytestring &appendee, const Bytestring &other);
-
 std::string to_string(const Register8Bit reg);
 
 std::string to_string(const Register16Bit reg);

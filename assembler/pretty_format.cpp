@@ -1,9 +1,24 @@
-#include "print_code.h"
+#include "pretty_format.h"
 
 #include <iomanip>
 
-std::string separated_line(const std::string &left, const std::string &right)
-{
+std::string to_pretty_string(const Token& token) noexcept {
+    std::ostringstream outputStream;
+    outputStream << std::setw(13) << std::left << to_string(token.get_token_type()) << " ";
+    outputStream << std::setw(4) << std::right << token.get_line() << ":" << std::setw(4) << std::left << token.get_column() << " ";
+    outputStream << std::setw(10) << std::left << token.get_string();
+    if (token.has_numeric_value())
+    {
+        outputStream << " " << token.get_numeric();
+    }
+    return outputStream.str();
+}
+
+std::string get_position_string(const size_t lineNumber, const size_t columnNumber) noexcept {
+    return std::to_string(lineNumber) + ":" + std::to_string(columnNumber);
+}
+
+std::string separated_line(const std::string &left, const std::string &right) {
     std::ostringstream ostr;
     ostr << std::setw(6) << left << " |    " << right << '\n';
     return ostr.str();
@@ -48,9 +63,3 @@ std::string to_string_line_and_highlight(const std::string &code, const size_t l
 
     return returnString;
 }
-
-/*********************/
-
-//void Printer::print(const std::string &message) const {
-//    _ostr << message;
-//}

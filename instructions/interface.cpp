@@ -18,7 +18,7 @@ std::string Instruction::str() const {
 }
 
 Bytestring Instruction::bytestr() const {
-    return to_bytestring(opcode(), _arguments);
+    return merge_to_bytestring(opcode(), _arguments);
 }
 
 bool Instruction::is_valid() const {

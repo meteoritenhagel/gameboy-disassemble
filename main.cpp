@@ -7,7 +7,7 @@
 #include "disassembler/decoder.h"
 #include "disassembler/disassemble.h"
 
-#include "assembler/print_code.h"
+#include "assembler/pretty_format.h"
 
 void test_decoder()
 {
@@ -70,7 +70,7 @@ void test_tokenizer_1()
     {
         try
         {
-            tokenizer.get_next_token().print();
+            std::cout << to_pretty_string(tokenizer.get_next_token());
         }
         catch (std::exception &e)
         {
@@ -93,43 +93,26 @@ int main()
 //
 //    disassemble(bytecode);
 
-    std::string code("ADD A, A\n"
-                     "ADD A, B\n"
-                     "ADD A, C\n"
-                     "ADD A, (HL)\n"
-                     //"ADD A, X\n"
-                     //"ADD B, H\n"
-                     //"ADD B, A\n"
-                     //"ADC A\n"
+    std::string code(//"Label:\n"
                      "ADD A, A\n"
-                     "ADD SP, -200\n"
-                     "ADD HL, BC"
+                     "ADD A, B\n"
+                     "ADD A, A\n"
+                     "ADD A, B\n"
+                     //".localLabel\n"
+                     "ADD A, B\n"
+                     "ADD A, A\n"
+                     "ADD A, B\n"
+                     "ADD A, A\n"
+                     "ADD A, B\n"
                      );
 
-//    std::string code("ADC A, A\n"
-//                     "ADC A, 0x20\n"
-//                     "ADC A, C\n"
-//                     "ADC A, (HL)\n     \n \n"
-//                     );
-
-//    std::string code(//"ADC A, (HL)\n"
-////                     "ADC A, 0x20\n"
-////                     "ADC A, C\n"
-////                     "ADC A, (HL)\n"
-////                     "ADD A, (HL)\n"
-////                     "BIT 0, A\n"
-////                     "BIT 7, (HL)\n"
-////                     "BIT 0, B\n"
-////                     "BIT 3, C\n"
-//                     //"BIT /, L"
-//                     );
 
     Tokenizer tokenizer(code);
 
 //    while (!tokenizer.is_finished())
 //    {
 //        try {
-//            tokenizer.get_next_token().print();
+//            std::cout << to_pretty_string(tokenizer.get_next_token()) << std::endl;
 //        } catch(const std::exception &e) {
 //            std::cerr << e.what() << '\n';
 //        }
@@ -143,7 +126,7 @@ int main()
             auto InstrPtr = parser.parse_next_instruction();
             assemble_instruction(*InstrPtr);
             std::cout << '\n';
-            //std::cout << "          " << InstrPtr->str() << std::endl;
+            std::cout << "          " << InstrPtr->str() << std::endl;
         }
         catch (const std::exception &e)
         {

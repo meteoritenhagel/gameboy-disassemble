@@ -20,11 +20,11 @@ Decoder::Decoder(const Bytestring &bytecode, const word entryPoint)
         : _bytecode(bytecode),
           _programCounter(entryPoint) {}
 
-size_t Decoder::get_size() const {
+size_t Decoder::get_size() const noexcept {
     return _bytecode.size();
 }
 
-word Decoder::get_current_position() const {
+word Decoder::get_current_position() const noexcept {
     return _programCounter;
 }
 
@@ -44,7 +44,7 @@ std::pair<word, InstructionPtr> Decoder::decode() {
     return std::make_pair(opcodePosition, decode_opcode(opcode));
 }
 
-void Decoder::increment_program_counter() {
+void Decoder::increment_program_counter() noexcept {
     if (!is_out_of_range()) {
         ++_programCounter;
     }

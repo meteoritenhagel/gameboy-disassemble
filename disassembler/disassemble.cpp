@@ -1,7 +1,7 @@
 #include "disassemble.h"
 
-void disassemble(const Bytestring &code, std::ostream &ostr) {
-    Decoder decoder(code);
+void disassemble(const Bytestring &bytecode, std::ostream &ostr) {
+    Decoder decoder(bytecode);
 
     while (!decoder.is_out_of_range())
         ostr << disassemble_instruction(decoder.decode()) << std::endl;

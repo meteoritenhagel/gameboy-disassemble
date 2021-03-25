@@ -1,6 +1,21 @@
 #include "token.h"
 
-#include "../instructions/auxiliary_and_conversions.h"
+#include "pretty_format.h"
+
+std::string to_string(const TokenType tokenType) {
+    switch(tokenType)
+    {
+        case TokenType::IDENTIFIER:   return "IDENTIFIER";
+        case TokenType::COMMA:        return "COMMA";
+        case TokenType::NUMBER:       return "NUMBER";
+        case TokenType::ADDRESS:      return "ADDRESS";
+        case TokenType::END_OF_LINE:  return "END_OF_LINE";
+        case TokenType::END_OF_FILE:  return "END_OF_FILE";
+        case TokenType::GLOBAL_LABEL: return "GLOBAL_LABEL";
+        case TokenType::LOCAL_LABEL:  return "LOCAL_LABEL";
+        default: return "INVALID";
+    }
+}
 
 Token::Token(const size_t lineNumber, const size_t columnNumber, const TokenType tokenType,
              const std::string &tokenString)
@@ -15,6 +30,11 @@ Token::Token(const size_t lineNumber, const size_t columnNumber, const TokenType
         _numericValue = (stol(_tokenString, nullptr, 0));
     }
 }
+
+bool Token::has_numeric_value() const
+{
+    return _numericValue.has_value();
+};
 
 size_t Token::get_line() const {
     return _lineNumber;
@@ -34,15 +54,6 @@ std::string Token::get_string() const {
 
 long Token::get_numeric() const {
     return _numericValue.value();
-}
-
-void Token::print() const {
-    std::cout << to_string(get_token_type()) << " " << get_line() << ":" << get_column() << " " << get_string();
-    if (_numericValue.has_value())
-    {
-        std::cout << " " << get_numeric();
-    }
-    std::cout << '\n';
 }
 
 std::string Token::get_position_string() const {
