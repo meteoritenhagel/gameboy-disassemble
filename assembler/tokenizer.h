@@ -27,21 +27,16 @@ public:
      */
     Tokenizer(const std::string &code, const size_t startingPosition = 0);
 
-    /**
-     * Returns whether all characters of the source code have already been analyzed.
-     * This is true as soon as an END_OF_FILE token is found.
-     * @return true as soon as no tokens are left.
-     */
-    bool is_finished() const noexcept;
+    Tokenizer(const Tokenizer&) = default;
+    Tokenizer(Tokenizer&&) = default;
+    Tokenizer& operator=(const Tokenizer&) = default;
+    Tokenizer& operator=(Tokenizer&&) = default;
 
     /**
-     * Returns next token from source code.
-     *
-     * @throws std::logic_error containing an error message and the
-     * highlighted code passage in case of lexical error.
-     * @return next token
+     * Tokenize the source code from @p _startingPosition to the end.
+     * @return Vector of all tokens
      */
-    Token get_next_token();
+    TokenVector tokenize();
 
     /**
      * Returns a const reference to the source code.
@@ -50,6 +45,14 @@ public:
     const std::string& get_code() const noexcept;
 
 private:
+    /**
+     * Returns next token from source code.
+     *
+     * @throws std::logic_error containing an error message and the
+     * highlighted code passage in case of lexical error.
+     * @return next token
+     */
+    Token get_next_token();
 
     /**
      * Checks whether the current position in outside the source code.
@@ -172,10 +175,9 @@ private:
      */
     Token try_to_create_token(const size_t lineNumber, const size_t columnNumber, const TokenType tokenType, const std::string &tokenString);
 
-    const std::string& _code{}; ///< source code used for lexical analysis
+    std::string _code{}; ///< source code used for lexical analysis
     size_t _currentPosition{0}; ///< current position in source code
     size_t _lineCount{0}; ///< line counter, i.e. the line the tokenizer currently operates in
-    bool _isFinished{false}; ///< is false by default, but must be set true as soon as an END_OF_FILE token is found2
 };
 
 #endif //GAMEBOY_DISASSEMBLE_TOKENIZER_H

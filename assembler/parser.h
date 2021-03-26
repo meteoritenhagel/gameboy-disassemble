@@ -20,22 +20,14 @@ public:
      * Default constructor
      * @param tokenizer tokenizer which is needed for retrieving the tokens
      */
-    Parser(const Tokenizer& tokenizer)
-    : _tokenizer(tokenizer)
+    Parser(const std::string &code, const TokenVector& tokenVector)
+    : _code(code),
+      _tokenVector(tokenVector)
     {}
 
     /**
-     * Checks whether the parsing process has ended, i.e. no tokens are left.
-     * @return true if no tokens are left
-     */
-    bool is_finished() const noexcept
-    {
-        return _tokenizer.is_finished();
-    }
-
-    /**
      * Parses the next instruction.
-     * Tokens are retrieved from Tokenizer _tokenizer.
+     * Tokens are retrieved from Tokenizer _tokenVector.
      *
      * @throws std::logic_error containing an error message and the
      * highlighted code passage in case of parsing error.
@@ -59,7 +51,9 @@ public:
         return instruction;
     }
 
-private:
+
+    //TODO: PRIVATE
+public:
 
     /**
      * Parses "ADD" commands
@@ -80,13 +74,52 @@ private:
     InstructionPtr parse_bit();
 
     /**
+     * Checks whether all tokens have already been consumed
+     * @return true if there are no tokens left to parse.
+     */
+    bool is_finished() const noexcept
+    {
+        return (_currentPosition >= _tokenVector.size());
+    }
+
+    /**
+     * Returns the current position in the token vector.
+     * @return current position in the token vector
+     */
+    size_t get_current_position() const noexcept {
+        return _currentPosition;
+    }
+
+    /**
+     * Increments the current position in the token vector,
+     * but only if there are still tokens left.
+     * Otherwise, nothing happens.
+     */
+    void increment_position() {
+        if (!is_finished())
+        {
+            ++_currentPosition;
+        }
+    }
+
+    /**
+     * Resets the current token to be the first one in the token vector.
+     */
+    void reset() noexcept
+    {
+        _currentPosition = 0;
+    }
+
+    /**
      * Fetches the next token from the tokenizer.
-     * @throws std::logic_error if lexical analysis failed.
+     * @throws std::range_error if no tokens are left.
      * @return the retrieved token
      */
     Token fetch()
     {
-        return _tokenizer.get_next_token();
+        const Token currentToken = _tokenVector.at(get_current_position());
+        increment_position();
+        return currentToken;
     }
 
     /**
@@ -108,7 +141,7 @@ private:
      * @return const reference to the source code
      */
     const std::string& get_code() const noexcept {
-        return _tokenizer.get_code();
+        return _code;
     }
 
     /**
@@ -218,7 +251,9 @@ private:
      */
     void expect_end_of_context(const Token& token);
 
-    Tokenizer _tokenizer; ///< the tokenizer used to get the tokens for parsing individually
+    std::string _code; ///< the code which was used to generate the tokens
+    TokenVector _tokenVector; ///< the tokens which are parsed by the parser
+    size_t _currentPosition{}; ///< the position of the current token
 };
 
 

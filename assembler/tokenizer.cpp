@@ -6,8 +6,22 @@ Tokenizer::Tokenizer(const std::string& code, const size_t startingPosition)
           _currentPosition(startingPosition)
 {}
 
-bool Tokenizer::is_finished() const noexcept {
-    return _isFinished;
+TokenVector Tokenizer::tokenize() {
+    TokenVector tokenVector{};
+    Token currentToken{};
+
+    do
+    {
+        currentToken = get_next_token();
+        tokenVector.push_back(currentToken);
+    }
+    while (currentToken.get_token_type() != TokenType::END_OF_FILE);
+
+    return tokenVector;
+}
+
+const std::string& Tokenizer::get_code() const noexcept{
+    return _code;
 }
 
 Token Tokenizer::get_next_token() {
@@ -53,7 +67,6 @@ Token Tokenizer::get_next_token() {
     }
     else if (read_current() == CHAR_EOF)
     {
-        _isFinished = true;
         currentToken = Token(get_line(), get_column(), TokenType::END_OF_FILE, "[EOF]");
     }
     else
@@ -67,10 +80,6 @@ Token Tokenizer::get_next_token() {
         throw_logic_error_and_highlight(oldLineNumber, oldColumnNumber, errorMessage);
     }
     return currentToken;
-}
-
-const std::string& Tokenizer::get_code() const noexcept{
-    return _code;
 }
 
 bool Tokenizer::is_out_of_range() const noexcept {
@@ -190,7 +199,6 @@ Token Tokenizer::tokenize_end_of_line() {
     }
 
     if (read_current() == CHAR_EOF) {
-        _isFinished = true;
         return Token(initialLinePosition, initialColumnPosition, TokenType::END_OF_FILE, "[EOF]");
     } else {
         return Token(initialLinePosition, initialColumnPosition, TokenType::END_OF_LINE, "\\n");

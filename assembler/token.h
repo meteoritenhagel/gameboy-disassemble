@@ -33,7 +33,7 @@ enum class TokenType {
 std::string to_string(const TokenType tokenType);
 
 class Token;
-using VectorOfTokens = std::vector<Token>;
+using TokenVector = std::vector<Token>;
 
 /**
  * Class Token. Used as "smallest unit" in the parsing process.
