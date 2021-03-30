@@ -24,10 +24,13 @@ Token::Token(const size_t lineNumber, const size_t columnNumber, const TokenType
           _tokenType(tokenType),
           _tokenString(tokenString)
 {
-    if (_tokenType == TokenType::ADDRESS || _tokenType == TokenType::NUMBER)
+    if (_tokenType == TokenType::NUMBER)
     {
         // convert string (either octal, decimal or hex to the right long number)
         _numericValue = (stol(_tokenString, nullptr, 0));
+    } else if (_tokenType == TokenType::ADDRESS) {
+        // convert string without the enclosing brackets (e.g. "(0x1234)") to the right long number
+        _numericValue = (stol(_tokenString.substr(1, _tokenString.size()-2), nullptr, 0));
     }
 }
 

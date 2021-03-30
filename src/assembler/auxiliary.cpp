@@ -1,4 +1,4 @@
-#include "auxiliiary.h"
+#include "auxiliary.h"
 #include "pretty_format.h"
 
 void throw_logic_error_and_highlight(const std::string& code, const size_t lineNumber, const size_t columnNumber, const std::string &errorMessage, const size_t highlightWidth)

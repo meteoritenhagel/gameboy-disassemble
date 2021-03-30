@@ -3,4 +3,21 @@ project(gameboy_disassemble)
 
 set(CMAKE_CXX_STANDARD 17)
 
-add_executable(gameboy_debug main.cpp disassembler/decoder.cpp disassembler/decoder.h instructions/instructions.h instructions/constants.h instructions/auxiliary_and_conversions.h instructions/auxiliary_and_conversions.cpp instructions/instructions_load_8bit.h instructions/auxiliary_and_conversions.hpp instructions/instructions_load_16bit.h instructions/instructions_rotation.h instructions/instructions_increment_decrement.h instructions/interface.cpp instructions/interface.h instructions/instructions_jump.h instructions/instructions_add.h instructions/instructions_unused.h instructions/instructions_subtract.h instructions/instructions_logical.h instructions/instructions_shift_swap.h instructions/instructions_bit_complement.h instructions/instructions_set_reset.h instructions/instructions_push_pop.h instructions/instructions_machine.h assembler/tokenizer.cpp assembler/tokenizer.h assembler/token.cpp assembler/token.h assembler/parser.cpp assembler/parser.h instructions/constants.cpp disassembler/disassemble.cpp disassembler/disassemble.h assembler/parser_parsing.cpp assembler/assemble.cpp assembler/assemble.h assembler/auxiliiary.cpp assembler/auxiliiary.h assembler/pretty_format.cpp assembler/pretty_format.h)
+file(GLOB Sourcefiles src/disassembler/decoder.cpp src/disassembler/decoder.h src/instructions/instructions.h src/instructions/constants.h src/instructions/auxiliary_and_conversions.h src/instructions/auxiliary_and_conversions.cpp src/instructions/instructions_load_8bit.h src/instructions/auxiliary_and_conversions.hpp src/instructions/instructions_load_16bit.h src/instructions/instructions_rotation.h src/instructions/instructions_increment_decrement.h src/instructions/interface.cpp src/instructions/interface.h src/instructions/instructions_jump.h src/instructions/instructions_add.h src/instructions/instructions_unused.h src/instructions/instructions_subtract.h src/instructions/instructions_logical.h src/instructions/instructions_shift_swap.h src/instructions/instructions_bit_complement.h src/instructions/instructions_set_reset.h src/instructions/instructions_push_pop.h src/instructions/instructions_machine.h src/assembler/tokenizer.cpp src/assembler/tokenizer.h src/assembler/token.cpp src/assembler/token.h src/assembler/parser.cpp src/assembler/parser.h src/instructions/constants.cpp src/disassembler/disassemble.cpp src/disassembler/disassemble.h src/assembler/parser_parsing.cpp src/assembler/assemble.cpp src/assembler/assemble.h src/assembler/auxiliary.cpp src/assembler/auxiliary.h src/assembler/pretty_format.cpp src/assembler/pretty_format.h)
+
+add_executable(gameboy_disassemble src/main.cpp ${Sourcefiles})
+
+
+## for catch2 tests:
+
+Include(FetchContent)
+
+FetchContent_Declare(
+        Catch2
+        GIT_REPOSITORY https://github.com/catchorg/Catch2.git
+        GIT_TAG        v2.13.1)
+
+FetchContent_MakeAvailable(Catch2)
+
+add_executable(tests tests/tests_root.cpp ${Sourcefiles})
+target_link_libraries(tests PRIVATE Catch2::Catch2)

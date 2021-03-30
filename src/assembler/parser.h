@@ -1,7 +1,7 @@
 #ifndef GAMEBOY_DISASSEMBLE_PARSER_H
 #define GAMEBOY_DISASSEMBLE_PARSER_H
 
-#include "auxiliiary.h"
+#include "auxiliary.h"
 #include "tokenizer.h"
 #include "../instructions/instructions.h"
 

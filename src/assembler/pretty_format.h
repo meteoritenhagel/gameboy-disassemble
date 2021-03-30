@@ -1,7 +1,7 @@
 #ifndef GAMEBOY_DISASSEMBLE_PRETTY_FORMAT_H
 #define GAMEBOY_DISASSEMBLE_PRETTY_FORMAT_H
 
-#include "auxiliiary.h"
+#include "auxiliary.h"
 
 #include <iostream>
 #include <string>
