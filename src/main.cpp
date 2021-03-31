@@ -93,7 +93,7 @@ int main()
 //
 //    disassemble(bytecode);
 
-    std::string code(//"Label:\n"
+    std::string code("Label:\n"
                      "ADD A, A\n"
                      "ADD A, B\n"
                      "ADD A, A\n"

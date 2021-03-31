@@ -18,6 +18,8 @@
 #include "instructions_subtract.h"
 #include "instructions_unused.h"
 
+#include "instructions_parser.h"
+
 #include <memory>
 #include <vector>
 
