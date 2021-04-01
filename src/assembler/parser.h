@@ -39,18 +39,21 @@ public:
         Address currentAddress = 0;
 
         while (!is_finished()) {
-            if (read_next().get_string() == "EQU")
+            if (read_next().get_string() == "EQU") // if assembler-specific command EQU is found
             {
                 parse_equ();
                 expect_end_of_context(fetch());
+                continue;
             }
-            else if (read_current().get_token_type() == TokenType::GLOBAL_LABEL)
+
+            if (read_current().get_token_type() == TokenType::GLOBAL_LABEL)
             { // if global label, update symbolic table and advance to next token
                 _symbolicTable.emplace(read_current().get_string(), currentAddress);
                 increment_position();
+                continue;
             }
 
-            try {
+            try { // to parse GameBoy instruction
                 InstructionPtr currentInstruction = parse_next_instruction();
                 // if an error occurs while parsing, the instruction is not constructed
                 // and the address is not incremented
@@ -81,9 +84,9 @@ public:
 
         InstructionPtr instruction;
 
-        if      (currStr == "ADD") { instruction = parse_add(); }
-        else if (currStr == "ADC") { instruction = parse_adc(); }
-        else if (currStr == "BIT") { instruction = parse_bit(); }
+        if      (currStr == "add") { instruction = parse_add(); }
+        else if (currStr == "adc") { instruction = parse_adc(); }
+        else if (currStr == "bit") { instruction = parse_bit(); }
         // no feasible case was detected
         else { instruction = std::make_unique<Unknown>(); }
 
@@ -95,19 +98,19 @@ public:
 private:
 
     /**
-     * Parses "ADD" commands
+     * Parses "add" commands
      * @return pointer to parsed instruction
      */
     InstructionPtr parse_add();
 
     /**
-     * Parses "ADC" commands
+     * Parses "adc" commands
      * @return pointer to parsed instruction
      */
     InstructionPtr parse_adc();
 
     /**
-     * Parses "ADC" commands
+     * Parses "bit" commands
      * @return pointer to parsed instruction
      */
     InstructionPtr parse_bit();

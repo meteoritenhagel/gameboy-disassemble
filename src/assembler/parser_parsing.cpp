@@ -22,14 +22,10 @@ InstructionPtr Parser::parse_add() {
     }
     else if (is_register_16_bit(destinationToken)) // Case 2: 16-bit (destinationToken is HL or SP)
     {
-        switch(sourceToken.get_token_type()) {
-            case TokenType::IDENTIFIER: // ADD HL, Register16Bit
-                to_register_expect(destinationToken, Register16Bit::HL);
-                return std::make_unique<AddHLAnd16BitRegister>(to_register_16_bit(sourceToken));
-            case TokenType::NUMBER: // ADD SP, 8-bit-immediate
-                to_register_expect(destinationToken, Register16Bit::SP);
-                return std::make_unique<AddSPAndImmediate>(to_signed_number_8_bit(sourceToken));
-            default: break;
+        if (is_register_16_bit(sourceToken)) {
+            return std::make_unique<AddHLAnd16BitRegister>(to_register_16_bit(sourceToken));
+        } else { // is number or symbol
+            return std::make_unique<AddSPAndImmediate>(to_signed_number_8_bit(sourceToken));
         }
     }
     else
@@ -47,12 +43,10 @@ InstructionPtr Parser::parse_adc() {
     to_register_expect(destinationToken, Register8Bit::A);
     expect_type(commaToken, TokenType::COMMA);
 
-    switch (sourceToken.get_token_type()) {
-        case TokenType::IDENTIFIER:
-            return std::make_unique<AddWithCarryAAnd8BitRegister>(to_register_8_bit(sourceToken));
-        case TokenType::NUMBER:
-            return std::make_unique<AddWithCarryAAndImmediate>(to_number_8_bit(sourceToken));
-        default: break;
+    if (is_register_8_bit(sourceToken)) {
+        return std::make_unique<AddWithCarryAAnd8BitRegister>(to_register_8_bit(sourceToken));
+    } else { // number or symbol
+        return std::make_unique<AddWithCarryAAndImmediate>(to_number_8_bit(sourceToken));
     }
 }
 
@@ -81,6 +75,9 @@ void Parser::parse_equ() {
     const Token numericToken = fetch();
 
     expect_type(symbolicName, TokenType::IDENTIFIER);
+
+    //TODO: exclude registers!
+
     expect_string(equToken, "EQU");
 
     const long numeric = to_number(numericToken);

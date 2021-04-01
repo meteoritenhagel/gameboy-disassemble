@@ -65,6 +65,15 @@ long Parser::to_unsigned_number_16_bit(const Token &numToken) const {
     return num;
 }
 
+byte Parser::to_index(const Token &indexToken) const {
+    const long num = to_number(indexToken);
+    if (!is_index(num)) {
+        throw_logic_error_and_highlight(indexToken, "Parse error: Found expression \"" + indexToken.get_string() +
+                                                    "\" but expected index (0, ..., 7)");
+    }
+    return num;
+}
+
 Register Parser::to_register(const Token &token) const {
     const std::string str = token.get_string();
     if (!is_register(token)) {
@@ -100,15 +109,6 @@ Register Parser::to_register_expect(const Token &token, const Register &reg) con
                                                "\" but expected register \"" + to_string(reg) + "\"");
     }
     return tokenRegister;
-}
-
-byte Parser::to_index(const Token &indexToken) const {
-    const long num = indexToken.get_numeric();
-    if (!is_index(num)) {
-        throw_logic_error_and_highlight(indexToken, "Parse error: Found expression \"" + indexToken.get_string() +
-                                                    "\" but expected index (0, ..., 7)");
-    }
-    return num;
 }
 
 void Parser::expect_type(const Token &token, const TokenType expectedType) const {

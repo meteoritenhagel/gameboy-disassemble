@@ -33,7 +33,7 @@ Token Tokenizer::get_next_token() {
         ignore_until_end_of_line();
     }
 
-    if (read_current() == '(')
+    if (read_current() == '(' || read_current() == '[')
     {
         if (isalpha(read_next()))
         {
@@ -92,31 +92,36 @@ Token Tokenizer::tokenize_identifier_or_global_label() {
     const size_t columnPosition = get_column();
 
     bool hasParentheses = false;
+    bool hasBrackets = false;
 
-    // get token. Identifiers may start directly or with parenthesis
+    // get token. Identifiers may start directly or with parenthesis / bracket
 
-    if (read_current() == '(')
-    {
+    if (read_current() == '(') {
         str += fetch();
         hasParentheses = true;
+    } else if (read_current() == '[') {
+        hasBrackets = true;
     }
 
-    while (isalpha(read_current()))
-    {
+    while (isalpha(read_current())) {
         str += fetch();
     }
 
-    if (hasParentheses)
-    {
+    if (hasParentheses) {
         // may have + or - before closing parenthesis
-        if (issign(read_current()))
-        {
+        if (issign(read_current())) {
             str += fetch();
         }
         str += fetch_and_expect(')');
+    } else if (hasBrackets) {
+        // may have + or - before closing parenthesis
+        if (issign(read_current())) {
+            str += fetch();
+        }
+        str += fetch_and_expect(']');
     }
 
-    if (read_current() == ':'){ // is GLOBAL_LABEL
+    if (read_current() == ':') { // is GLOBAL_LABEL
         str += ':';
         currentToken = Token(get_line(), columnPosition, TokenType::GLOBAL_LABEL, str);
         increment_position();
