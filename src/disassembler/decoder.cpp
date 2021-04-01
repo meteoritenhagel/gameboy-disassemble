@@ -1,21 +1,5 @@
 #include "decoder.h"
 
-unsigned decode_length(const Opcode opcode) {
-    Bytestring bytecode(6, 0x00);
-
-    const Bytestring opc = opcode_to_bytestring(opcode);
-    std::copy(std::begin(opc), std::end(opc), std::begin(bytecode));
-
-    Decoder decoder(bytecode);
-
-    // calculate number of bytes read
-    const word startingPosition = decoder.get_current_position();
-    decoder.decode();
-    const word endPosition = decoder.get_current_position();
-
-    return endPosition - startingPosition;
-}
-
 Decoder::Decoder(const Bytestring &bytecode, const word entryPoint)
         : _bytecode(bytecode),
           _programCounter(entryPoint) {}

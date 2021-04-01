@@ -93,24 +93,28 @@ int main()
 //
 //    disassemble(bytecode);
 
-    std::string code("Label:\n"
-                     "ADD A, A\n"
-                     "ADD A, B\n"
-                     "ADD A, A\n"
-                     "ADD A, B\n"
+    std::string code(//"Label:\n"
                      //".localLabel\n"
-                     "ADD A, B\n"
-                     "ADD A, A\n"
-                     "ADD A, B\n"
-                     "ADD A, A\n"
-                     "ADD A, B\n"
+                     //"ADD X, B\n"
+                     "X EQU 0x20\n"
+                     "ADD A, 0x01\n"
+                     "ADD A, 0x01\n"
+                     "ADD A, 0x01\n"
+                     "ADD A, 0x01\n"
+                     "ADD A, X\n"
+                     //"ADD SP, 0x1234\n"
+                     //"NOP\n"
+                     //"NOP\n"
+                     //"ADD X, A\n"
                      );
 
 
     Tokenizer tokenizer(code);
     TokenVector tokenVector = tokenizer.tokenize();
 
-    Parser parser (code, tokenVector);
+    Parser parser(code, tokenVector);
+
+    InstructionVector instructionVector = parser.parse();
 
 
 //    while (!tokenizer.is_finished())
@@ -122,13 +126,26 @@ int main()
 //        }
 //    }
 
-    while (!parser.is_finished())
+//    while (!parser.is_finished())
+//    {
+//        try {
+//            auto InstrPtr = parser.parse_next_instruction();
+//            assemble_instruction(*InstrPtr);
+//            std::cout << '\n';
+//            std::cout << "          " << InstrPtr->str() << std::endl;
+//        }
+//        catch (const std::exception &e)
+//        {
+//            std::cerr <<  e.what() << '\n';
+//        }
+//    }
+
+    for (const auto &instPtr : instructionVector)
     {
         try {
-            auto InstrPtr = parser.parse_next_instruction();
-            assemble_instruction(*InstrPtr);
+            assemble_instruction(*instPtr);
             std::cout << '\n';
-            std::cout << "          " << InstrPtr->str() << std::endl;
+            std::cout << "          " << instPtr->str() << std::endl;
         }
         catch (const std::exception &e)
         {

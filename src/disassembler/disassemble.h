@@ -4,6 +4,14 @@
 #include "../instructions/instructions.h"
 #include "decoder.h"
 
+
+/**
+ * Given an opcode @p opcode, decode the number of bytes (including the opcode) the whole instruction has.
+ * @param opcode opcode
+ * @return length in bytes of instruction corresponding to opcode
+ */
+unsigned decode_length(const Opcode opcode);
+
 /**
  * Disassembles bytecode and prints it to @p ostr
  * @param bytecode bytecode

@@ -210,6 +210,7 @@ void Tokenizer::increment_position() noexcept {
     if (read_current() == '\n')
     {
         increment_linecount();
+        _currentLineStart = _currentPosition+1;
     }
 
     if (!is_out_of_range())
@@ -266,7 +267,7 @@ size_t Tokenizer::get_line() const {
 
 size_t Tokenizer::get_column() const {
     // add 1 since the leftmost character has index 1
-    return _currentPosition - _lineCount+1;
+    return _currentPosition - _currentLineStart+1;
 }
 
 std::string Tokenizer::get_position_string() {

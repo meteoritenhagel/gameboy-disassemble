@@ -7,6 +7,8 @@
 
 #include "pretty_format.h"
 
+#include <map>
+
 /**
  * Class Parser. Used for parsing tokens which are provided by a tokenizer.
  * This tokenizer is passed via dependency injection.
@@ -16,6 +18,12 @@
  */
 class Parser {
 public:
+
+    using SymbolToNumeric = std::map<std::string, long>;
+
+    using Address = word;
+    using TokenVectorPosition = size_t;
+
     /**
      * Default constructor
      * @param tokenizer tokenizer which is needed for retrieving the tokens
@@ -24,6 +32,37 @@ public:
     : _code(code),
       _tokenVector(tokenVector)
     {}
+
+    InstructionVector parse() {
+        InstructionVector instructionVector;
+
+        Address currentAddress = 0;
+
+        while (!is_finished()) {
+            if (read_next().get_string() == "EQU")
+            {
+                parse_equ();
+                expect_end_of_context(fetch());
+            }
+            else if (read_current().get_token_type() == TokenType::GLOBAL_LABEL)
+            { // if global label, update symbolic table and advance to next token
+                _symbolicTable.emplace(read_current().get_string(), currentAddress);
+                increment_position();
+            }
+
+            try {
+                InstructionPtr currentInstruction = parse_next_instruction();
+                // if an error occurs while parsing, the instruction is not constructed
+                // and the address is not incremented
+                currentAddress += get_length(currentInstruction);
+                instructionVector.push_back(std::move(currentInstruction));
+            } catch (const std::exception &e) {
+                std::cerr << e.what() << '\n';
+            }
+        }
+
+        return instructionVector;
+    }
 
     /**
      * Parses the next instruction.
@@ -45,15 +84,15 @@ public:
         if      (currStr == "ADD") { instruction = parse_add(); }
         else if (currStr == "ADC") { instruction = parse_adc(); }
         else if (currStr == "BIT") { instruction = parse_bit(); }
+        // no feasible case was detected
+        else { instruction = std::make_unique<Unknown>(); }
 
         expect_end_of_context(fetch()); // each valid instruction must end with newline or end of file
 
         return instruction;
     }
 
-
-    //TODO: PRIVATE
-public:
+private:
 
     /**
      * Parses "ADD" commands
@@ -72,6 +111,12 @@ public:
      * @return pointer to parsed instruction
      */
     InstructionPtr parse_bit();
+
+    /**
+     * Parses "EQU" commands specific to the assembler.
+     * @return pointer to parsed instruction
+     */
+    void parse_equ();
 
     /**
      * Checks whether all tokens have already been consumed
@@ -111,13 +156,41 @@ public:
     }
 
     /**
-     * Fetches the next token from the tokenizer.
+     * Reads the current from the tokenizer.
+     * If no tokens are left, the very last token of the vector is returned.
+     * @return the retrieved token
+     */
+    Token read_current() const
+    {
+        if (get_current_position() < _tokenVector.size()) {
+            return _tokenVector.at(get_current_position());
+        } else {
+            return _tokenVector.at(_tokenVector.size() - 1);
+        }
+    }
+
+    /**
+     * Reads the next current from the tokenizer.
+     * If the next token would be outside the feasible range, returns the very last token of the vector.
+     * @return the retrieved token
+     */
+    Token read_next() const
+    {
+        if (get_current_position() < _tokenVector.size() - 1) {
+            return _tokenVector.at(get_current_position() + 1);
+        } else {
+            return _tokenVector.at(_tokenVector.size() - 1);
+        }
+    }
+
+    /**
+     * Fetches the next token from the tokenizer, i.e. reads the token and advances the position to the next token.
      * @throws std::range_error if no tokens are left.
      * @return the retrieved token
      */
     Token fetch()
     {
-        const Token currentToken = _tokenVector.at(get_current_position());
+        const Token currentToken = read_current();
         increment_position();
         return currentToken;
     }
@@ -125,14 +198,30 @@ public:
     /**
      * Fetches the next token from the tokenizer.
      * This token is expected to be of type @p expectedType.
-     *
      * @throws std::logic_error if token is not of @p expectedType.
+     * @tparam T either TokenType or std::vector<TokenType>
+     * @param expectedTypes expected token type(s)
      * @return the retrieved token
      */
-    Token fetch_and_expect(const TokenType expectedType)
+    template<typename T>
+    Token fetch_and_expect(const T expectedTypes)
     {
         const Token tkn = fetch();
-        expect_type(tkn, expectedType);
+        expect_type(tkn, expectedTypes);
+        return tkn;
+    }
+
+    /**
+     * Fetches the next token from the tokenizer.
+     * This token is expected to be one of the types @p expectedTypes.
+     * @throws std::logic_error if token is not of @p expectedTypes.
+     * @param expectedTypes expected types
+     * @return the retrieved token
+     */
+    Token fetch_and_expect(const std::vector<TokenType> expectedTypes)
+    {
+        const Token tkn = fetch();
+        expect_type(tkn, expectedTypes);
         return tkn;
     }
 
@@ -144,13 +233,29 @@ public:
         return _code;
     }
 
+//    /**
+//     * Returns the bytecode address of the current instruction.
+//     * @return address of current instruction
+//     */
+//    Address get_current_address() const {
+//        return _currentAddress;
+//    }
+
     /**
      * Throws a logic error containing a string, in which the token is highlighted.
      *
      * @param token the token to highlight
      * @param errorMessage an error message printed before the highlighted line
      */
-    void throw_logic_error_and_highlight(const Token &token, const std::string &errorMessage);
+    void throw_logic_error_and_highlight(const Token &token, const std::string &errorMessage) const;
+
+    /**
+     * Tries to convert a Token @p numToken into a long number.
+     * @throws std::logic_error containing an error message and highlighted code
+     * @param numToken token
+     * @return the long number retrieved from @p numToken
+     */
+    long to_number(const Token &numToken) const;
 
     /**
      * Tries to convert a Token @p numToken into an 8-bit number.
@@ -158,7 +263,7 @@ public:
      * @param numToken token
      * @return the 8-bit number retrieved from @p numToken
      */
-    byte to_number_8_bit(const Token &numToken);
+    byte to_number_8_bit(const Token &numToken) const;
 
     /**
      * Tries to convert a Token @p numToken into an unsigned 8-bit number.
@@ -166,7 +271,7 @@ public:
      * @param numToken token
      * @return the unsigned 8-bit number retrieved from @p numToken
      */
-    byte to_unsigned_number_8_bit(const Token &numToken);
+    byte to_unsigned_number_8_bit(const Token &numToken) const;
 
     /**
      * Tries to convert a Token @p numToken into a signed 8-bit number.
@@ -174,7 +279,7 @@ public:
      * @param numToken token
      * @return the signed 8-bit number retrieved from @p numToken
      */
-    byte to_signed_number_8_bit(const Token &numToken);
+    byte to_signed_number_8_bit(const Token &numToken) const;
 
     /**
      * Tries to convert a Token @p numToken into a 16-bit number.
@@ -182,7 +287,7 @@ public:
      * @param numToken token
      * @return the 16-bit number retrieved from @p numToken
      */
-    long to_number_16_bit(const Token &numToken);
+    long to_number_16_bit(const Token &numToken) const;
 
     /**
      * Tries to convert a Token @p numToken into an unsigned 16-bit number.
@@ -190,7 +295,7 @@ public:
      * @param numToken token
      * @return the unsigned 16-bit number retrieved from @p numToken
      */
-    long to_unsigned_number_16_bit(const Token &numToken);
+    long to_unsigned_number_16_bit(const Token &numToken) const;
 
     /**
      * Tries to convert a Token @p indexToken into a bit index (i.e. a number between 0 and 7).
@@ -198,7 +303,7 @@ public:
      * @param indexToken token
      * @return the bit index retrieved from @p numToken
      */
-    byte to_index(const Token &indexToken);
+    byte to_index(const Token &indexToken) const;
 
     /**
      * Tries to convert a Token @p token into a GameBoy register.
@@ -206,7 +311,7 @@ public:
      * @param numToken token
      * @return the register retrieved from @p numToken
      */
-    Register to_register(const Token &token);
+    Register to_register(const Token &token) const;
 
     /**
      * Tries to convert a Token @p numToken into an 8-bit register.
@@ -214,7 +319,7 @@ public:
      * @param token token
      * @return the 8-bit register retrieved from @p token
      */
-    Register8Bit to_register_8_bit(const Token& token);
+    Register8Bit to_register_8_bit(const Token& token) const;
 
     /**
      * Tries to convert a Token @p numToken into a 16-bit register.
@@ -222,7 +327,7 @@ public:
      * @param token token
      * @return the 16-bit register retrieved from @p token
      */
-    Register16Bit to_register_16_bit(const Token& token);
+    Register16Bit to_register_16_bit(const Token& token) const;
 
     /**
      * Tries to convert a Token @p numToken into the register @p reg.
@@ -230,17 +335,47 @@ public:
      * @param numToken token
      * @return @p reg in case of success
      */
-    Register to_register_expect(const Token &token, const Register &reg);
+    Register to_register_expect(const Token &token, const Register &reg) const;
 
     /**
-     * Checks if the token @p token is of type @p expected type and throws an error otherwise.
+     * Checks if the token @p token is of type @p expectedType and throws an error otherwise.
      *
      * @throws std::logic_error containing an error message and the line of code with the token highlighted
      *
-     * @param token the token to highlight
+     * @param token the token to investigate
      * @param expectedType the expected token type
      */
-    void expect_type(const Token& token, const TokenType expectedType);
+    void expect_type(const Token& token, const TokenType expectedType) const;
+
+    /**
+     * Checks if the token @p token is of one of the types in @p expectedTypes and throws an error otherwise.
+     *
+     * @throws std::logic_error containing an error message and the line of code with the token highlighted
+     *
+     * @param token the token to investigate
+     * @param expectedTypes the vector of expected token types
+     */
+    void expect_type(const Token& token, const std::vector<TokenType> expectedTypes) const;
+
+    /**
+     * Checks if the token @p token contains the string @p expectedString and throws an error otherwise.
+     *
+     * @throws std::logic_error containing an error message and the line of code with the token highlighted
+     *
+     * @param token the token to investigate
+     * @param expectedType the expected token type
+     */
+    void expect_string(const Token& token, const std::string &expectedString) const;
+
+    /**
+     * Checks if the token @p token contains one of the strings in @p expectedStrings and throws an error otherwise.
+     *
+     * @throws std::logic_error containing an error message and the line of code with the token highlighted
+     *
+     * @param token the token to investigate
+     * @param expectedTypes the vector of expected token types
+     */
+    void expect_string(const Token& token, const std::vector<std::string> &expectedStrings) const;
 
     /**
      * Checks if the token @p token is either of type TokenType::END_OF_LINE or TokenType::END_OF_LINE.
@@ -249,11 +384,13 @@ public:
      *
      * @param token the token which is expected to be of end-of-context type.
      */
-    void expect_end_of_context(const Token& token);
+    void expect_end_of_context(const Token& token) const;
 
     std::string _code; ///< the code which was used to generate the tokens
     TokenVector _tokenVector; ///< the tokens which are parsed by the parser
     size_t _currentPosition{}; ///< the position of the current token
+
+    SymbolToNumeric _symbolicTable{};
 };
 
 

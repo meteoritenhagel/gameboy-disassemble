@@ -178,6 +178,7 @@ private:
     std::string _code{}; ///< source code used for lexical analysis
     size_t _currentPosition{0}; ///< current position in source code
     size_t _lineCount{0}; ///< line counter, i.e. the line the tokenizer currently operates in
+    size_t _currentLineStart{0}; ///< the position of the character starting the current line
 };
 
 #endif //GAMEBOY_DISASSEMBLE_TOKENIZER_H

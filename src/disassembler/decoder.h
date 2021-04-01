@@ -6,15 +6,6 @@
 
 #include "../instructions/instructions.h"
 
-class Decoder;
-
-/**
- * Given an opcode @p opcode, decode the number of bytes (including the opcode) the whole instruction has.
- * @param opcode opcode
- * @return length in bytes of instruction corresponding to opcode
- */
-unsigned decode_length(const Opcode opcode);
-
 /**
  * Class Decoder. Given a bytestring, it decodes it and returns the instructions one by one.
  */

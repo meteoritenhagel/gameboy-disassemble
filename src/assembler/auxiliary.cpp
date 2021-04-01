@@ -1,5 +1,15 @@
 #include "auxiliary.h"
+#include "../disassembler/disassemble.h"
 #include "pretty_format.h"
+
+std::string to_string(const std::string &str) {
+    return str;
+}
+
+unsigned get_length(const InstructionPtr &instruction)
+{
+    return decode_length(instruction->opcode());
+}
 
 void throw_logic_error_and_highlight(const std::string& code, const size_t lineNumber, const size_t columnNumber, const std::string &errorMessage, const size_t highlightWidth)
 {

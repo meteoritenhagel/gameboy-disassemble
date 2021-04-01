@@ -14,12 +14,10 @@ InstructionPtr Parser::parse_add() {
     {
         to_register_expect(destinationToken, Register8Bit::A);
 
-        switch (sourceToken.get_token_type()) {
-            case TokenType::IDENTIFIER:
-                return std::make_unique<AddAAnd8BitRegister>(to_register_8_bit(sourceToken));
-            case TokenType::NUMBER:
-                return std::make_unique<AddAAndImmediate>(to_number_8_bit(sourceToken));
-            default: break;
+        if (is_register_8_bit(sourceToken)) {
+            return std::make_unique<AddAAnd8BitRegister>(to_register_8_bit(sourceToken));
+        } else { // is number or symbol
+            return std::make_unique<AddAAndImmediate>(to_number_8_bit(sourceToken));
         }
     }
     else if (is_register_16_bit(destinationToken)) // Case 2: 16-bit (destinationToken is HL or SP)
@@ -28,7 +26,7 @@ InstructionPtr Parser::parse_add() {
             case TokenType::IDENTIFIER: // ADD HL, Register16Bit
                 to_register_expect(destinationToken, Register16Bit::HL);
                 return std::make_unique<AddHLAnd16BitRegister>(to_register_16_bit(sourceToken));
-            case TokenType::NUMBER: // ADD SP, +16-bit-immediate
+            case TokenType::NUMBER: // ADD SP, 8-bit-immediate
                 to_register_expect(destinationToken, Register16Bit::SP);
                 return std::make_unique<AddSPAndImmediate>(to_signed_number_8_bit(sourceToken));
             default: break;
@@ -74,4 +72,20 @@ InstructionPtr Parser::parse_bit() {
 
     return std::make_unique<BitOf8BitRegisterComplementIntoZero>(index, reg);
 }
+
+////
+
+void Parser::parse_equ() {
+    const Token symbolicName = fetch();
+    const Token equToken = fetch();
+    const Token numericToken = fetch();
+
+    expect_type(symbolicName, TokenType::IDENTIFIER);
+    expect_string(equToken, "EQU");
+
+    const long numeric = to_number(numericToken);
+
+    _symbolicTable.emplace(symbolicName.get_string(), numeric);
+}
+
 
