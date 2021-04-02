@@ -40,7 +40,7 @@ std::string to_string(const Register &reg) {
     }
     else
     {
-        return "";
+        return "??";
     }
 }
 
@@ -55,20 +55,39 @@ std::string to_string(const FlagCondition flagCondition) {
     }
 }
 
-Register to_register(const std::string &str) {
-    if (str == "B") return Register8Bit::B;
-    if (str == "C") return Register8Bit::C;
-    if (str == "D") return Register8Bit::D;
-    if (str == "E") return Register8Bit::E;
-    if (str == "H") return Register8Bit::H;
-    if (str == "L") return Register8Bit::L;
-    if (str == "(HL)") return Register8Bit::ADDRESS_HL;
-    if (str == "A") return Register8Bit::A;
-    if (str == "AF") return Register16Bit::AF;
-    if (str == "BC") return Register16Bit::BC;
-    if (str == "DE") return Register16Bit::DE;
-    if (str == "HL") return Register16Bit::HL;
-    if (str == "SP") return Register16Bit::SP;
+FlagCondition to_flag_condition(const std::string &str) {
+    if (str == "Z") return FlagCondition::ZERO;
+    if (str == "NZ") return FlagCondition::NOT_ZERO;
+    if (str == "C") return FlagCondition::CARRY;
+    if (str == "NC") return FlagCondition::NOT_CARRY;
+
+    throw std::logic_error("Error: String " + str + " cannot be converted to flag condition (i.e. Z, NZ, C or NC).");
+}
+
+bool is_flag_condition(const std::string &str) noexcept {
+    try {
+        to_flag_condition(str);
+        return true;
+    } catch(...) {
+        return false;
+    }
+}
+
+Register to_register(const std::string &str) noexcept {
+    if (str == "B" || str == "b") return Register8Bit::B;
+    if (str == "C" || str == "c") return Register8Bit::C;
+    if (str == "D" || str == "d") return Register8Bit::D;
+    if (str == "E" || str == "e") return Register8Bit::E;
+    if (str == "H" || str == "h") return Register8Bit::H;
+    if (str == "L" || str == "l") return Register8Bit::L;
+    if (str == "(HL)" || str == "(hl)"
+     || str == "[HL]" || str == "[hl]") return Register8Bit::ADDRESS_HL;
+    if (str == "A" || str == "a") return Register8Bit::A;
+    if (str == "AF" || str == "af") return Register16Bit::AF;
+    if (str == "BC" || str == "bc") return Register16Bit::BC;
+    if (str == "DE" || str == "de") return Register16Bit::DE;
+    if (str == "HL" || str == "hl") return Register16Bit::HL;
+    if (str == "SP" || str == "sp") return Register16Bit::SP;
     return{};
 }
 
@@ -90,14 +109,14 @@ Register16Bit to_register_16_bit(const Register& reg)
     return std::get<Register16Bit>(reg);
 }
 
-bool is_valid(const Register &reg) {
+bool is_valid(const Register &reg) noexcept {
     return (reg.index() != 0);
 }
 
-bool is_register_8_bit(const Register &reg) {
+bool is_register_8_bit(const Register &reg) noexcept {
     return (reg.index() == 1);
 }
 
-bool is_register_16_bit(const Register &reg) {
+bool is_register_16_bit(const Register &reg) noexcept {
     return (reg.index() == 2);
 }

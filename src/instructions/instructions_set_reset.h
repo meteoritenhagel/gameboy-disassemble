@@ -1,13 +1,13 @@
 #ifndef GAMEBOY_DISASSEMBLE_INSTRUCTIONS_SET_RESET_H
 #define GAMEBOY_DISASSEMBLE_INSTRUCTIONS_SET_RESET_H
 
-#include "interface.h"
+#include "baseinstruction.h"
 
-class SetBitOf8BitRegister : public Instruction {
+class SetBitOf8BitRegister : public BaseInstruction {
 public:
     SetBitOf8BitRegister(const uint8_t bitIndex, const Register8Bit reg)
-            : Instruction("SET " + to_string_dec(bitIndex) + ", " + to_string(reg),
-                          determine_opcode(bitIndex, reg)),
+            : BaseInstruction("SET " + to_string_dec(bitIndex) + ", " + to_string(reg),
+                              determine_opcode(bitIndex, reg)),
               _bitIndex(bitIndex),
               _register(reg) {}
 
@@ -112,11 +112,11 @@ private:
 };
 
 
-class ResetBitOf8BitRegister : public Instruction {
+class ResetBitOf8BitRegister : public BaseInstruction {
 public:
     ResetBitOf8BitRegister(const uint8_t bitIndex, const Register8Bit reg)
-            : Instruction("RES " + to_string_dec(bitIndex) + ", " + to_string(reg),
-                          determine_opcode(bitIndex, reg)),
+            : BaseInstruction("RES " + to_string_dec(bitIndex) + ", " + to_string(reg),
+                              determine_opcode(bitIndex, reg)),
               _bitIndex(bitIndex),
               _register(reg) {}
 

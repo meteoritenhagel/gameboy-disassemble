@@ -1,13 +1,13 @@
 #ifndef GAMEBOY_DISASSEMBLE_INSTRUCTIONS_INCREMENT_DECREMENT_H
 #define GAMEBOY_DISASSEMBLE_INSTRUCTIONS_INCREMENT_DECREMENT_H
 
-#include "interface.h"
+#include "baseinstruction.h"
 
-class IncrementRegister : public Instruction {
+class IncrementRegister : public BaseInstruction {
 public:
     IncrementRegister(const Register &reg)
-            : Instruction("INC " + to_string(reg),
-                          determine_opcode(reg)),
+            : BaseInstruction("INC " + to_string(reg),
+                              determine_opcode(reg)),
               _register(reg) {}
 
 private:
@@ -40,11 +40,11 @@ private:
     const Register _register;
 };
 
-class DecrementRegister : public Instruction {
+class DecrementRegister : public BaseInstruction {
 public:
     DecrementRegister(const Register &reg)
-            : Instruction("DEC " + to_string(reg),
-                          determine_opcode(reg)),
+            : BaseInstruction("DEC " + to_string(reg),
+                              determine_opcode(reg)),
               _register(reg) {}
 
 private:

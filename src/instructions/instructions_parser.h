@@ -1,15 +1,15 @@
 #ifndef GAMEBOY_DEBUG_INSTRUCTIONS_PARSER_H
 #define GAMEBOY_DEBUG_INSTRUCTIONS_PARSER_H
 
-#include "interface.h"
+#include "baseinstruction.h"
 
-class SymbolResolutionFailed : public Instruction {
+class SymbolResolutionFailed : public BaseInstruction {
 public:
     using TokenVectorPosition = size_t;
 
     SymbolResolutionFailed(const TokenVectorPosition tokenVectorPosition)
-            : Instruction("[SYMBOL RESOLUTION FAILED]",
-                          opcodes::INVALID_OPCODE),
+            : BaseInstruction("[SYMBOL RESOLUTION FAILED]",
+                              opcodes::INVALID_OPCODE),
               _tokenVectorPosition(tokenVectorPosition) {}
 
     TokenVectorPosition get_tokenvector_position() const {

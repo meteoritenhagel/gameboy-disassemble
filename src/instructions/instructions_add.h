@@ -1,37 +1,37 @@
 #ifndef GAMEBOY_DISASSEMBLE_INSTRUCTIONS_ADD_H
 #define GAMEBOY_DISASSEMBLE_INSTRUCTIONS_ADD_H
 
-#include "interface.h"
+#include "baseinstruction.h"
 
-class AddAAndImmediate : public Instruction {
+class AddAAndImmediate : public BaseInstruction {
 public:
     AddAAndImmediate(const byte immediate)
-            : Instruction("ADD A, " + to_string_hex_prefixed(immediate),
-                          opcodes::ADD_A_AND_IMMEDIATE,
-                          Bytestring{immediate}),
+            : BaseInstruction("ADD A, " + to_string_hex_prefixed(immediate),
+                              opcodes::ADD_A_AND_IMMEDIATE,
+                              Bytestring{immediate}),
               _immediate(immediate) {}
 
 private:
     const byte _immediate;
 };
 
-class AddWithCarryAAndImmediate : public Instruction {
+class AddWithCarryAAndImmediate : public BaseInstruction {
 public:
     AddWithCarryAAndImmediate(const byte immediate)
-            : Instruction("ADC A, " + to_string_hex_prefixed(immediate),
-                          opcodes::ADD_WITH_CARRY_A_AND_IMMEDIATE,
-                          Bytestring{immediate}),
+            : BaseInstruction("ADC A, " + to_string_hex_prefixed(immediate),
+                              opcodes::ADD_WITH_CARRY_A_AND_IMMEDIATE,
+                              Bytestring{immediate}),
               _immediate(immediate) {}
 
 private:
     const byte _immediate;
 };
 
-class AddAAnd8BitRegister : public Instruction {
+class AddAAnd8BitRegister : public BaseInstruction {
 public:
     AddAAnd8BitRegister(const Register8Bit source)
-            : Instruction("ADD A, " + to_string(source),
-                          determine_opcode(source)),
+            : BaseInstruction("ADD A, " + to_string(source),
+                              determine_opcode(source)),
               _source(source) {}
 
 private:
@@ -52,11 +52,11 @@ private:
     const Register8Bit _source;
 };
 
-class AddWithCarryAAnd8BitRegister : public Instruction {
+class AddWithCarryAAnd8BitRegister : public BaseInstruction {
 public:
     AddWithCarryAAnd8BitRegister(const Register8Bit source)
-            : Instruction("ADC A, " + to_string(source),
-                          determine_opcode(source)),
+            : BaseInstruction("ADC A, " + to_string(source),
+                              determine_opcode(source)),
               _source(source) {}
 
 private:
@@ -77,11 +77,11 @@ private:
     const Register8Bit _source;
 };
 
-class AddHLAnd16BitRegister : public Instruction {
+class AddHLAnd16BitRegister : public BaseInstruction {
 public:
     AddHLAnd16BitRegister(const Register16Bit source)
-            : Instruction("ADD HL, " + to_string(source),
-                          determine_opcode(source)),
+            : BaseInstruction("ADD HL, " + to_string(source),
+                              determine_opcode(source)),
               _source(source) {}
 
 private:
@@ -97,12 +97,12 @@ private:
     const Register16Bit _source;
 };
 
-class AddSPAndImmediate : public Instruction {
+class AddSPAndImmediate : public BaseInstruction {
 public:
     AddSPAndImmediate(const byte immediate)
-            : Instruction("ADD SP, " + to_string_hex_signed_prefixed(immediate, 2),
-                          opcodes::ADD_SP_AND_IMMEDIATE,
-                          Bytestring{immediate}),
+            : BaseInstruction("ADD SP, " + to_string_hex_signed_prefixed(immediate, 2),
+                              opcodes::ADD_SP_AND_IMMEDIATE,
+                              Bytestring{immediate}),
               _immediate(immediate) {}
 
 private:

@@ -1,13 +1,13 @@
 #ifndef GAMEBOY_DISASSEMBLE_INSTRUCTIONS_LOGICAL_H
 #define GAMEBOY_DISASSEMBLE_INSTRUCTIONS_LOGICAL_H
 
-#include "interface.h"
+#include "baseinstruction.h"
 
-class AndAAnd8BitRegister : public Instruction {
+class AndAAnd8BitRegister : public BaseInstruction {
 public:
     AndAAnd8BitRegister(const Register8Bit source)
-            : Instruction("AND A, " + to_string(source),
-                          determine_opcode(source)),
+            : BaseInstruction("AND A, " + to_string(source),
+                              determine_opcode(source)),
               _source(source) {}
 
 private:
@@ -28,10 +28,10 @@ private:
     const Register8Bit _source;
 };
 
-class OrAAnd8BitRegister : public Instruction {
+class OrAAnd8BitRegister : public BaseInstruction {
 public:
     OrAAnd8BitRegister(const Register8Bit source)
-            : Instruction("OR A, " + to_string(source), determine_opcode(source)),
+            : BaseInstruction("OR A, " + to_string(source), determine_opcode(source)),
               _source(source) {}
 
 private:
@@ -52,11 +52,11 @@ private:
     const Register8Bit _source;
 };
 
-class XorAAnd8BitRegister : public Instruction {
+class XorAAnd8BitRegister : public BaseInstruction {
 public:
     XorAAnd8BitRegister(const Register8Bit source)
-            : Instruction("XOR A, " + to_string(source),
-                          determine_opcode(source)),
+            : BaseInstruction("XOR A, " + to_string(source),
+                              determine_opcode(source)),
               _source(source) {}
 
 private:
@@ -77,11 +77,11 @@ private:
     const Register8Bit _source;
 };
 
-class CompareAAnd8BitRegister : public Instruction {
+class CompareAAnd8BitRegister : public BaseInstruction {
 public:
     CompareAAnd8BitRegister(const Register8Bit source)
-            : Instruction("CP A, " + to_string(source),
-                          determine_opcode(source)),
+            : BaseInstruction("CP A, " + to_string(source),
+                              determine_opcode(source)),
               _source(source) {}
 
 private:
@@ -102,58 +102,58 @@ private:
     const Register8Bit _source;
 };
 
-class ComplementA : public Instruction {
+class ComplementA : public BaseInstruction {
 public:
     ComplementA()
-            : Instruction("CPL",
-                          opcodes::COMPLEMENT_A) {}
+            : BaseInstruction("CPL",
+                              opcodes::COMPLEMENT_A) {}
 };
 
-class DecimalAdjustA : public Instruction {
+class DecimalAdjustA : public BaseInstruction {
 public:
     DecimalAdjustA()
-            : Instruction("DAA",
-                          opcodes::DECIMAL_ADJUST_A) {}
+            : BaseInstruction("DAA",
+                              opcodes::DECIMAL_ADJUST_A) {}
 };
 
-class AndAAndImmediate : public Instruction {
+class AndAAndImmediate : public BaseInstruction {
 public:
     AndAAndImmediate(const byte immediate)
-            : Instruction("AND A, " + to_string_hex(immediate),
-                          opcodes::AND_A_AND_IMMEDIATE),
+            : BaseInstruction("AND A, " + to_string_hex(immediate),
+                              opcodes::AND_A_AND_IMMEDIATE),
               _immediate(immediate) {}
 
 private:
     const byte _immediate;
 };
 
-class OrAAndImmediate : public Instruction {
+class OrAAndImmediate : public BaseInstruction {
 public:
     OrAAndImmediate(const byte immediate)
-            : Instruction("OR A, " + to_string_hex(immediate),
-                          opcodes::OR_A_AND_IMMEDIATE),
+            : BaseInstruction("OR A, " + to_string_hex(immediate),
+                              opcodes::OR_A_AND_IMMEDIATE),
               _immediate(immediate) {}
 
 private:
     const byte _immediate;
 };
 
-class XorAAndImmediate : public Instruction {
+class XorAAndImmediate : public BaseInstruction {
 public:
     XorAAndImmediate(const byte immediate)
-            : Instruction("XOR A, " + to_string_hex(immediate),
-                          opcodes::XOR_A_AND_IMMEDIATE),
+            : BaseInstruction("XOR A, " + to_string_hex(immediate),
+                              opcodes::XOR_A_AND_IMMEDIATE),
               _immediate(immediate) {}
 
 private:
     const byte _immediate;
 };
 
-class CompareAAndImmediate : public Instruction {
+class CompareAAndImmediate : public BaseInstruction {
 public:
     CompareAAndImmediate(const byte immediate)
-            : Instruction("CP A, " + to_string_hex(immediate),
-                          opcodes::COMPARE_A_AND_IMMEDIATE),
+            : BaseInstruction("CP A, " + to_string_hex(immediate),
+                              opcodes::COMPARE_A_AND_IMMEDIATE),
               _immediate(immediate) {}
 
 private:

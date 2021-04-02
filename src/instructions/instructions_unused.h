@@ -1,13 +1,13 @@
 #ifndef GAMEBOY_DISASSEMBLE_INSTRUCTIONS_UNUSED_H
 #define GAMEBOY_DISASSEMBLE_INSTRUCTIONS_UNUSED_H
 
-#include "interface.h"
+#include "baseinstruction.h"
 
-class Unused : public Instruction {
+class Unused : public BaseInstruction {
 public:
     Unused(const uint8_t index)
-            : Instruction( "??" + to_string_dec(_index),
-                          determine_opcode(index)) {}
+            : BaseInstruction("??" + to_string_dec(_index),
+                              determine_opcode(index)) {}
 
 //    void emulate(VirtualGameboy& gb)
 //    {
@@ -36,11 +36,11 @@ private:
 };
 
 // If not implemented yet
-class Unknown : public Instruction {
+class Unknown : public BaseInstruction {
 public:
     Unknown()
-            : Instruction("???",
-                          opcodes::INVALID_OPCODE) {}
+            : BaseInstruction("???",
+                              opcodes::INVALID_OPCODE) {}
 };
 
 

@@ -1,13 +1,13 @@
 #ifndef GAMEBOY_DISASSEMBLE_INSTRUCTIONS_SHIFT_SWAP_H
 #define GAMEBOY_DISASSEMBLE_INSTRUCTIONS_SHIFT_SWAP_H
 
-#include "interface.h"
+#include "baseinstruction.h"
 
-class ShiftLeftArithmetical8BitRegister : public Instruction {
+class ShiftLeftArithmetical8BitRegister : public BaseInstruction {
 public:
     ShiftLeftArithmetical8BitRegister(const Register8Bit reg)
-            : Instruction("SLA " + to_string(reg),
-                          determine_opcode(reg)),
+            : BaseInstruction("SLA " + to_string(reg),
+                              determine_opcode(reg)),
               _register(reg) {}
 
 private:
@@ -28,11 +28,11 @@ private:
     const Register8Bit _register;
 };
 
-class ShiftRightArithmetical8BitRegister : public Instruction {
+class ShiftRightArithmetical8BitRegister : public BaseInstruction {
 public:
     ShiftRightArithmetical8BitRegister(const Register8Bit reg)
-            : Instruction("SRA " + to_string(reg),
-                          determine_opcode(reg)),
+            : BaseInstruction("SRA " + to_string(reg),
+                              determine_opcode(reg)),
               _register(reg) {}
 
 private:
@@ -53,11 +53,11 @@ private:
     const Register8Bit _register;
 };
 
-class ShiftRightLogical8BitRegister : public Instruction {
+class ShiftRightLogical8BitRegister : public BaseInstruction {
 public:
     ShiftRightLogical8BitRegister(const Register8Bit reg)
-            : Instruction("SRL " + to_string(reg),
-                          determine_opcode(reg)),
+            : BaseInstruction("SRL " + to_string(reg),
+                              determine_opcode(reg)),
               _register(reg) {}
 
 private:
@@ -78,11 +78,11 @@ private:
     const Register8Bit _register;
 };
 
-class Swap8BitRegister : public Instruction {
+class Swap8BitRegister : public BaseInstruction {
 public:
     Swap8BitRegister(const Register8Bit reg)
-            : Instruction("SWAP " + to_string(reg),
-                          determine_opcode(reg)),
+            : BaseInstruction("SWAP " + to_string(reg),
+                              determine_opcode(reg)),
               _register(reg) {}
 
 private:

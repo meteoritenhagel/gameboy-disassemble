@@ -25,7 +25,7 @@ void disassemble(const Bytestring &bytecode, std::ostream &ostr) {
 
 std::string disassemble_instruction(const std::pair<word, InstructionPtr> &decoderOutput) {
     const word opcodePosition = decoderOutput.first;
-    const Instruction instruction = *decoderOutput.second;
+    const BaseInstruction instruction = *decoderOutput.second;
     const Opcode opcode = instruction.opcode();
 
     std::string displayedText;

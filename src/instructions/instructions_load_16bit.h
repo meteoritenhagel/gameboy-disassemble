@@ -1,15 +1,15 @@
 #ifndef GAMEBOY_DISASSEMBLE_INSTRUCTIONS_LOAD_16BIT_H
 #define GAMEBOY_DISASSEMBLE_INSTRUCTIONS_LOAD_16BIT_H
 
-#include "interface.h"
+#include "baseinstruction.h"
 
-class LoadImmediateInto16BitRegister : public Instruction {
+class LoadImmediateInto16BitRegister : public BaseInstruction {
 public:
     LoadImmediateInto16BitRegister(const Register16Bit destination,
                                    const word immediate)
-            : Instruction("LD " + to_string(destination) + ", " + to_string_hex_prefixed(immediate),
-                          determine_opcode(destination),
-                          to_bytestring_little_endian(immediate)),
+            : BaseInstruction("LD " + to_string(destination) + ", " + to_string_hex_prefixed(immediate),
+                              determine_opcode(destination),
+                              to_bytestring_little_endian(immediate)),
               _destination(destination),
               _immediate(immediate) {}
 
@@ -36,12 +36,12 @@ private:
     const word _immediate;
 };
 
-class LoadSPIntoAddressImmediate : public Instruction {
+class LoadSPIntoAddressImmediate : public BaseInstruction {
 public:
     LoadSPIntoAddressImmediate(const word immediate)
-            : Instruction("LD (" + to_string_hex_prefixed(immediate) + "), SP",
-                          opcodes::LOAD_SP_INTO_ADDRESS_IMMEDIATE,
-                          to_bytestring_little_endian(immediate)),
+            : BaseInstruction("LD (" + to_string_hex_prefixed(immediate) + "), SP",
+                              opcodes::LOAD_SP_INTO_ADDRESS_IMMEDIATE,
+                              to_bytestring_little_endian(immediate)),
               _immediate(immediate) {}
 
 //    emulate(VirtualGameboy& gb)
@@ -55,11 +55,11 @@ private:
     word _immediate;
 };
 
-class LoadHLIntoSP : public Instruction {
+class LoadHLIntoSP : public BaseInstruction {
 public:
     LoadHLIntoSP()
-            : Instruction("LD SP, HL",
-                          opcodes::LOAD_HL_INTO_SP) {}
+            : BaseInstruction("LD SP, HL",
+                              opcodes::LOAD_HL_INTO_SP) {}
 
 //    emulate(VirtualGameboy& gb)
 //    {
@@ -69,12 +69,12 @@ public:
 //    }
 };
 
-class LoadSPShiftedByImmediateIntoHL : public Instruction {
+class LoadSPShiftedByImmediateIntoHL : public BaseInstruction {
 public:
     LoadSPShiftedByImmediateIntoHL(const byte immediate)
-            : Instruction("LDHL SP," + to_string_hex_signed_prefixed(immediate),
-                          opcodes::LOAD_SP_SHIFTED_BY_IMMEDIATE_INTO_HL,
-                          to_bytestring_little_endian(immediate)),
+            : BaseInstruction("LDHL SP," + to_string_hex_signed_prefixed(immediate),
+                              opcodes::LOAD_SP_SHIFTED_BY_IMMEDIATE_INTO_HL,
+                              to_bytestring_little_endian(immediate)),
               _immediate(immediate) {}
 
 //    emulate(VirtualGameboy& gb)

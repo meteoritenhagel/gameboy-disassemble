@@ -1,7 +1,7 @@
 #ifndef GAMEBOY_DEBUG_INSTRUCTIONS_H
 #define GAMEBOY_DEBUG_INSTRUCTIONS_H
 
-#include "interface.h"
+#include "baseinstruction.h"
 
 #include "instructions_add.h"
 #include "instructions_bit_complement.h"

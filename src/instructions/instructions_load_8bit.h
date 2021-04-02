@@ -1,15 +1,15 @@
 #ifndef GAMEBOY_DISASSEMBLE_INSTRUCTIONS_LOAD_8BIT_H
 #define GAMEBOY_DISASSEMBLE_INSTRUCTIONS_LOAD_8BIT_H
 
-#include "interface.h"
+#include "baseinstruction.h"
 
-class LoadImmediateInto8BitRegister : public Instruction {
+class LoadImmediateInto8BitRegister : public BaseInstruction {
 public:
     LoadImmediateInto8BitRegister(const Register8Bit destination,
                                   const byte immediate)
-            : Instruction("LD " + to_string(destination) + ", " + to_string_hex_prefixed(immediate),
-                          determine_opcode(destination),
-                          Bytestring{immediate}),
+            : BaseInstruction("LD " + to_string(destination) + ", " + to_string_hex_prefixed(immediate),
+                              determine_opcode(destination),
+                              Bytestring{immediate}),
               _destination(destination),
               _immediate(immediate) {}
 
@@ -44,12 +44,12 @@ private:
     const byte _immediate;
 };
 
-class Load8BitRegisterInto8BitRegister : public Instruction {
+class Load8BitRegisterInto8BitRegister : public BaseInstruction {
 public:
     Load8BitRegisterInto8BitRegister(const Register8Bit source,
                                      const Register8Bit destination)
-            : Instruction("LD " + to_string(destination) + ", " + to_string(source),
-                          determine_opcode(source, destination)),
+            : BaseInstruction("LD " + to_string(destination) + ", " + to_string(source),
+                              determine_opcode(source, destination)),
               _source(source),
               _destination(destination) {}
 
@@ -165,11 +165,11 @@ private:
     const Register8Bit _destination;
 };
 
-class LoadAIntoAddressImmediate : public Instruction {
+class LoadAIntoAddressImmediate : public BaseInstruction {
 public:
     LoadAIntoAddressImmediate(const word immediate)
-            : Instruction("LD (" + to_string_hex_prefixed(immediate) + "), A",
-                          opcodes::LOAD_A_INTO_ADDRESS_IMMEDIATE),
+            : BaseInstruction("LD (" + to_string_hex_prefixed(immediate) + "), A",
+                              opcodes::LOAD_A_INTO_ADDRESS_IMMEDIATE),
               _immediate(immediate) {}
 
 //    void emulate(const VirtualGameboy& gb)
@@ -184,11 +184,11 @@ private:
     word _immediate;
 };
 
-class LoadAddressImmediateIntoA : public Instruction {
+class LoadAddressImmediateIntoA : public BaseInstruction {
 public:
     LoadAddressImmediateIntoA(const word immediate)
-            : Instruction("LD A, (" + to_string_hex_prefixed(immediate) + ")",
-                          opcodes::LOAD_ADDRESS_IMMEDIATE_INTO_A),
+            : BaseInstruction("LD A, (" + to_string_hex_prefixed(immediate) + ")",
+                              opcodes::LOAD_ADDRESS_IMMEDIATE_INTO_A),
               _immediate(immediate) {}
 
 //    void emulate(const VirtualGameboy& gb)
@@ -205,10 +205,10 @@ private:
 
 // LOAD with 16 bit addresses
 
-class LoadAIntoAddress16BitRegister : public Instruction {
+class LoadAIntoAddress16BitRegister : public BaseInstruction {
 public:
     LoadAIntoAddress16BitRegister(const Register16Bit destination)
-            : Instruction("LD (" + to_string(destination) + "), A", determine_opcode(destination)),
+            : BaseInstruction("LD (" + to_string(destination) + "), A", determine_opcode(destination)),
               _destination(destination) {}
 
 private:
@@ -223,10 +223,10 @@ private:
     Register16Bit  _destination;
 };
 
-class LoadAddress16BitRegisterIntoA : public Instruction {
+class LoadAddress16BitRegisterIntoA : public BaseInstruction {
 public:
     LoadAddress16BitRegisterIntoA(const Register16Bit source)
-            : Instruction("LD A, (" + to_string(source) + ")", determine_opcode(source)),
+            : BaseInstruction("LD A, (" + to_string(source) + ")", determine_opcode(source)),
               _source(source) {}
 
 private:
@@ -242,70 +242,70 @@ private:
 };
 
 
-class LoadAIntoAddressHLIncrement : public Instruction {
+class LoadAIntoAddressHLIncrement : public BaseInstruction {
 public:
     LoadAIntoAddressHLIncrement()
-            : Instruction(
+            : BaseInstruction(
             "LD (HL+), A", opcodes::LOAD_A_INTO_ADDRESS_HL_INCREMENT) {}
 };
 
-class LoadAddressHLIncrementIntoA : public Instruction {
+class LoadAddressHLIncrementIntoA : public BaseInstruction {
 public:
     LoadAddressHLIncrementIntoA()
-            : Instruction(
+            : BaseInstruction(
             "LD A, (HL+)", opcodes::LOAD_ADDRESS_HL_INCREMENT_INTO_A) {}
 };
 
-class LoadAIntoAddressHLDecrement : public Instruction {
+class LoadAIntoAddressHLDecrement : public BaseInstruction {
 public:
     LoadAIntoAddressHLDecrement()
-            : Instruction(
+            : BaseInstruction(
             "LD (HL-), A", opcodes::LOAD_A_INTO_ADDRESS_HL_DECREMENT) {}
 };
 
-class LoadAddressHLDecrementIntoA : public Instruction {
+class LoadAddressHLDecrementIntoA : public BaseInstruction {
 public:
     LoadAddressHLDecrementIntoA()
-            : Instruction(
+            : BaseInstruction(
             "LD A, (HL-)", opcodes::LOAD_ADDRESS_HL_DECREMENT_INTO_A) {}
 };
 
 // Load with port addresses (i.e. 0xFF + 8 bit address)
 
-class LoadAIntoPortAddressImmediate : public Instruction {
+class LoadAIntoPortAddressImmediate : public BaseInstruction {
 public:
     LoadAIntoPortAddressImmediate(const byte portAddress)
-            : Instruction("LDH (" + to_string_hex_prefixed(portAddress) + "), A",
-                          opcodes::LOAD_A_INTO_PORT_ADDRESS_IMMEDIATE),
+            : BaseInstruction("LDH (" + to_string_hex_prefixed(portAddress) + "), A",
+                              opcodes::LOAD_A_INTO_PORT_ADDRESS_IMMEDIATE),
               _portAddress(portAddress) {}
 
 private:
     byte _portAddress;
 };
 
-class LoadAIntoPortAddressC : public Instruction {
+class LoadAIntoPortAddressC : public BaseInstruction {
 public:
     LoadAIntoPortAddressC()
-            : Instruction("LD (C), A",
-                          opcodes::LOAD_A_INTO_PORT_ADDRESS_C) {}
+            : BaseInstruction("LD (C), A",
+                              opcodes::LOAD_A_INTO_PORT_ADDRESS_C) {}
 };
 
-class LoadPortAddressImmediateIntoA : public Instruction {
+class LoadPortAddressImmediateIntoA : public BaseInstruction {
 public:
     LoadPortAddressImmediateIntoA(const byte portAddress)
-            : Instruction("LDH A, (" + to_string_hex_prefixed(portAddress) + ")",
-                          opcodes::LOAD_PORT_ADDRESS_IMMEDIATE_INTO_A),
+            : BaseInstruction("LDH A, (" + to_string_hex_prefixed(portAddress) + ")",
+                              opcodes::LOAD_PORT_ADDRESS_IMMEDIATE_INTO_A),
               _portAddress(portAddress) {}
 
 private:
     byte _portAddress;
 };
 
-class LoadPortAddressCIntoA : public Instruction {
+class LoadPortAddressCIntoA : public BaseInstruction {
 public:
     LoadPortAddressCIntoA()
-            : Instruction("LD A, (C)",
-                          opcodes::LOAD_PORT_ADDRESS_C_INTO_A) {}
+            : BaseInstruction("LD A, (C)",
+                              opcodes::LOAD_PORT_ADDRESS_C_INTO_A) {}
 };
 
 #endif //GAMEBOY_DISASSEMBLE_INSTRUCTIONS_LOAD_8BIT_H

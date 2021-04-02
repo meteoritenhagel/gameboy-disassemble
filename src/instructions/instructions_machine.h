@@ -1,48 +1,48 @@
 #ifndef GAMEBOY_DISASSEMBLE_INSTRUCTIONS_MACHINE_H
 #define GAMEBOY_DISASSEMBLE_INSTRUCTIONS_MACHINE_H
 
-#include "interface.h"
+#include "baseinstruction.h"
 
-class Nop : public Instruction {
+class Nop : public BaseInstruction {
 public:
     Nop()
-            : Instruction("NOP", opcodes::NOP) {}
+            : BaseInstruction("NOP", opcodes::NOP) {}
 };
 
-class Stop : public Instruction {
+class Stop : public BaseInstruction {
 public:
     Stop()
-            : Instruction("STOP", opcodes::STOP) {}
+            : BaseInstruction("STOP", opcodes::STOP) {}
 };
 
-class Halt : public Instruction {
+class Halt : public BaseInstruction {
 public:
     Halt()
-            : Instruction("HALT", opcodes::HALT) {}
+            : BaseInstruction("HALT", opcodes::HALT) {}
 };
 
-class SetCarry : public Instruction {
+class SetCarry : public BaseInstruction {
 public:
     SetCarry()
-            : Instruction("SCF", opcodes::SET_CARRY) {}
+            : BaseInstruction("SCF", opcodes::SET_CARRY) {}
 };
 
-class FlipCarry : public Instruction {
+class FlipCarry : public BaseInstruction {
 public:
     FlipCarry()
-            : Instruction("CCF", opcodes::FLIP_CARRY) {}
+            : BaseInstruction("CCF", opcodes::FLIP_CARRY) {}
 };
 
-class EnableInterrupts : public Instruction {
+class EnableInterrupts : public BaseInstruction {
 public:
     EnableInterrupts()
-            : Instruction("EI", opcodes::ENABLE_INTERRUPTS) {}
+            : BaseInstruction("EI", opcodes::ENABLE_INTERRUPTS) {}
 };
 
-class DisableInterrupts : public Instruction {
+class DisableInterrupts : public BaseInstruction {
 public:
     DisableInterrupts()
-            : Instruction("DI", opcodes::DISABLE_INTERRUPTS) {}
+            : BaseInstruction("DI", opcodes::DISABLE_INTERRUPTS) {}
 };
 
 #endif //GAMEBOY_DISASSEMBLE_INSTRUCTIONS_MACHINE_H

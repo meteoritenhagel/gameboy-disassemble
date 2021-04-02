@@ -10,7 +10,7 @@ std::string to_string(const std::vector<T> &vector) {
             str += to_string(vector[i]) + ", ";
         }
 
-        str += " or " + to_string(vector[vector.size() - 1]);
+        str += "or " + to_string(vector[vector.size() - 1]);
     }
 
     return str;

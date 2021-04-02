@@ -93,21 +93,18 @@ int main()
 //
 //    disassemble(bytecode);
 
-    std::string code(//"Label:\n"
-                     //".localLabel\n"
-                     //"ADD X, B\n"
+    std::string code(
+                     "LABEL1:\n"
                      "X EQU 0x20\n"
                      "I EQU 2\n"
+                     "LABEL2:\n"
                      "add A, 0x01\n"
                      "add A, 0x01\n"
-                     "add A, 0x01\n"
-                     "add A, 0x01\n"
+                     "LABEL3:\n"
+                     "add A, I\n"
                      "add A, X\n"
                      "bit I, A\n"
-                     //"ADD SP, 0x1234\n"
-                     //"NOP\n"
-                     //"NOP\n"
-                     //"ADD X, A\n"
+                     "JP LABEL3\n"
                      );
 
 

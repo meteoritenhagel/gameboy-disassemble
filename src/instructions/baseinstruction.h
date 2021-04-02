@@ -1,21 +1,22 @@
-#ifndef GAMEBOY_DISASSEMBLE_INTERFACE_H
-#define GAMEBOY_DISASSEMBLE_INTERFACE_H
+#ifndef GAMEBOY_DISASSEMBLE_BASEINSTRUCTION_H
+#define GAMEBOY_DISASSEMBLE_BASEINSTRUCTION_H
 
 #include "constants.h"
 #include "auxiliary_and_conversions.h"
 
 #include <string>
 
-class Instruction;
+class BaseInstruction;
 
-using InstructionPtr = std::unique_ptr<const Instruction>;
+using InstructionPtr = std::unique_ptr<const BaseInstruction>;
 using InstructionVector = std::vector<InstructionPtr>;
 
-class Instruction {
+class BaseInstruction {
 public:
-    Instruction(const std::string &string, const Opcode opcode, const Bytestring &arguments = {});
+    BaseInstruction(const std::string &string, const Opcode opcode, const Bytestring &arguments = {});
+    virtual ~BaseInstruction() = default;
 
-    virtual ~Instruction() = default;
+    bool operator==(const BaseInstruction &other) const;
 
     Opcode opcode() const;
 
@@ -35,4 +36,4 @@ private:
 };
 
 
-#endif //GAMEBOY_DISASSEMBLE_INTERFACE_H
+#endif //GAMEBOY_DISASSEMBLE_BASEINSTRUCTION_H

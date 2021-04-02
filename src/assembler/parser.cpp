@@ -2,9 +2,92 @@
 
 #include <algorithm>
 
+bool Parser::is_finished() const noexcept {
+    return (_currentPosition >= _tokenVector.size());
+}
+
+size_t Parser::get_current_position() const noexcept {
+    return _currentPosition;
+}
+
+void Parser::increment_position() {
+    if (!is_finished())
+    {
+        ++_currentPosition;
+    }
+}
+
+void Parser::reset() noexcept {
+    _currentPosition = 0;
+}
+
+Token Parser::read_current() const {
+    if (get_current_position() < _tokenVector.size()) {
+        return _tokenVector.at(get_current_position());
+    } else {
+        return _tokenVector.at(_tokenVector.size() - 1);
+    }
+}
+
+Token Parser::read_next() const {
+    if (get_current_position() < _tokenVector.size() - 1) {
+        return _tokenVector.at(get_current_position() + 1);
+    } else {
+        return _tokenVector.at(_tokenVector.size() - 1);
+    }
+}
+
+Token Parser::fetch() {
+    const Token currentToken = read_current();
+    increment_position();
+    return currentToken;
+}
+
+template<typename T>
+Token Parser::fetch_and_expect(const T expectedTypes) {
+    const Token tkn = fetch();
+    expect_type(tkn, expectedTypes);
+    return tkn;
+}
+
+Token Parser::fetch_and_expect(const std::vector<TokenType> expectedTypes) {
+    const Token tkn = fetch();
+    expect_type(tkn, expectedTypes);
+    return tkn;
+}
+
+const std::string &Parser::get_code() const noexcept {
+    return _code;
+}
+
 void Parser::throw_logic_error_and_highlight(const Token &token, const std::string &errorMessage) const {
     ::throw_logic_error_and_highlight(get_code(), token.get_line(), token.get_column(), errorMessage,
                                       token.get_string().size());
+}
+
+void Parser::parse_next_instruction() {
+    // All valid commands must start with an identifier
+    const Token currentToken = fetch_and_expect(TokenType::IDENTIFIER);
+
+    const std::string currStr = currentToken.get_string();
+
+    InstructionPtr instruction;
+
+    if      (to_upper(currStr) == "ADD") { instruction = parse_add(); }
+    else if (to_upper(currStr) == "ADC") { instruction = parse_adc(); }
+    else if (to_upper(currStr) == "BIT") { instruction = parse_bit(); }
+    else if (to_upper(currStr) == "INC") { instruction = parse_inc(); }
+    else if (to_upper(currStr) == "DEC") { instruction = parse_dec(); }
+    else if (to_upper(currStr) == "JP")  { instruction = parse_jp();  }
+        // no feasible case was detected
+    else { instruction = std::make_unique<Unknown>(); }
+
+    expect_end_of_context(fetch()); // each valid instruction must end with newline or end of file
+
+    // if an error occurs while parsing, the instruction is not constructed
+    // and the address is not incremented
+    _currentAddress += get_length(instruction);
+    _instructionVector.push_back(std::move(instruction));
 }
 
 long Parser::to_number(const Token &numToken) const {
@@ -72,6 +155,19 @@ byte Parser::to_index(const Token &indexToken) const {
                                                     "\" but expected index (0, ..., 7)");
     }
     return num;
+}
+
+FlagCondition Parser::to_flag_condition(const Token &conditionToken) const {
+    FlagCondition flagCondition;
+    const std::string str = conditionToken.get_string();
+
+    try {
+        flagCondition = ::to_flag_condition(str);
+    } catch (...) {
+        throw_logic_error_and_highlight(conditionToken, "Parse error: Found expression \"" + str +
+                                        "\" but expected condition flag, i.e. Z, NZ, C, or NC");
+    }
+    return flagCondition;
 }
 
 Register Parser::to_register(const Token &token) const {

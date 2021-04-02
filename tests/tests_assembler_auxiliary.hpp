@@ -1,16 +1,74 @@
 #include "../src/assembler/auxiliary.h"
 
-TEST_CASE("test whether a character is + or -", "[issign]") {
-    REQUIRE( issign('+') == true );
-    REQUIRE( issign('-') == true );
-    REQUIRE( issign('2') == false );
-    REQUIRE( issign('x') == false );
-    REQUIRE( issign('Z') == false );
-    REQUIRE( issign('9') == false );
-    REQUIRE( issign('?') == false );
+TEST_CASE("to_string(std::string) is the identity function", "[to_string(std::string)]") {
+    REQUIRE( to_string("abc") == "abc" );
+    REQUIRE( to_string("Xajsdf02!") == "Xajsdf02!" );
 }
 
-TEST_CASE("test whether a token can be converted to an arbitrary register", "[is_register]") {
+TEST_CASE("to_string function template works correctly", "[to_string(std::vector)]") {
+    SECTION("An empty vector is converted to an empty string") {
+        REQUIRE( to_string(std::vector<std::string>{}) == "" );
+    }
+    SECTION("1-element vectors yield the element itself") {
+        REQUIRE( to_string(std::vector<std::string>{"abc"}) == "abc" );
+    }
+    SECTION("2-element vectors are converted correctly") {
+        REQUIRE( to_string(std::vector<std::string>{"abc", "def"}) == "abc, or def" );
+    }
+    SECTION("3-element vectors get converted correctly") {
+        REQUIRE( to_string(std::vector<std::string>{"abc", "def", "ghi"}) == "abc, def, or ghi" );
+    }
+}
+
+TEST_CASE("get_length function returns correct length for some instructions", "[get_length]") {
+    SECTION("'nop' and 'ld b, l' are 1 byte instructions") {
+        const InstructionPtr nop = std::make_unique<Nop>();
+        REQUIRE( get_length(nop) == 1 );
+        const InstructionPtr ld_b_l = std::make_unique<Load8BitRegisterInto8BitRegister>(Register8Bit::L, Register8Bit::B);
+        REQUIRE( get_length(ld_b_l) == 1 );
+    }
+    SECTION("'rl h' and 'ld b, 0x01' are 2 byte instructions") {
+        const InstructionPtr rl_h = std::make_unique<RotateLeft8BitRegister>(Register8Bit::H);
+        REQUIRE( get_length(rl_h) == 2 );
+        const InstructionPtr ld_b_1 = std::make_unique<LoadImmediateInto8BitRegister>(Register8Bit::B, 0x01);
+        REQUIRE( get_length(ld_b_1) == 2 );
+    }
+    SECTION("'ld de, 0x1234' and 'ld (0x1234), sp' are 3 byte instructions") {
+        const InstructionPtr ld_de_1234 = std::make_unique<LoadImmediateInto16BitRegister>(Register16Bit::DE, 0x1234);
+        REQUIRE( get_length(ld_de_1234) == 3 );
+        const InstructionPtr ld_address_1234_sp = std::make_unique<LoadSPIntoAddressImmediate>(0x1234);
+        REQUIRE( get_length(ld_address_1234_sp) == 3 );
+    }
+}
+
+TEST_CASE("throw_logic_error_and_highlight throws a logic_error", "[throw_logic_error_and_highlight]") {
+    REQUIRE_THROWS_AS(throw_logic_error_and_highlight("abc", 1, 1, "abc"), std::logic_error);
+}
+
+TEST_CASE("Test whether a character is + or -", "[is_sign]") {
+    REQUIRE(is_sign('+') == true );
+    REQUIRE(is_sign('-') == true );
+    REQUIRE(is_sign('2') == false );
+    REQUIRE(is_sign('x') == false );
+    REQUIRE(is_sign('Z') == false );
+    REQUIRE(is_sign('9') == false );
+    REQUIRE(is_sign('?') == false );
+}
+
+TEST_CASE("Convert a string to uppercase", "[to_upper]") {
+    REQUIRE(to_upper("...?") == "...?");
+    REQUIRE(to_upper("abc") == "ABC");
+    REQUIRE(to_upper("ABC") == "ABC");
+}
+
+TEST_CASE("Remove last character of std::string", "[remove_last_character]") {
+    REQUIRE(remove_last_character("...?") == "...");
+    REQUIRE(remove_last_character("abc") == "ab");
+    REQUIRE(remove_last_character("ABC") == "AB");
+    REQUIRE_THROWS(remove_last_character(""));
+}
+
+TEST_CASE("Test whether a token can be converted to an arbitrary register", "[is_register]") {
 
     SECTION("8-bit registers are recognized correctly") {
         const Token TokenB(1, 1, TokenType::IDENTIFIER, "B");
@@ -58,7 +116,7 @@ TEST_CASE("test whether a token can be converted to an arbitrary register", "[is
     }
 }
 
-TEST_CASE("test whether a token can be converted to an 8-bit register", "[is_register_8_bit]") {
+TEST_CASE("Test whether a token can be converted to an 8-bit register", "[is_register_8_bit]") {
 
     SECTION("8-bit registers are recognized correctly") {
         const Token TokenB(1, 1, TokenType::IDENTIFIER, "B");
@@ -106,7 +164,7 @@ TEST_CASE("test whether a token can be converted to an 8-bit register", "[is_reg
     }
 }
 
-TEST_CASE("test whether a token can be converted to a 16-bit register", "[is_register_16_bit]") {
+TEST_CASE("Test whether a token can be converted to a 16-bit register", "[is_register_16_bit]") {
 
     SECTION("8-bit registers are recognized as non-16-bit") {
         const Token TokenB(1, 1, TokenType::IDENTIFIER, "B");

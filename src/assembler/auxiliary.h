@@ -42,28 +42,51 @@ unsigned get_length(const InstructionPtr &instruction);
 void throw_logic_error_and_highlight(const std::string &code, const size_t lineNumber, const size_t columnNumber, const std::string &errorMessage, const size_t highlightWidth = 1);
 
 /**
- * Checks whether a @p character is either '+' or '-'
- * @param character
- * @return
+ * Checks whether a @p character is either '+' or '-'.
+ * @param character character
+ * @return true if @p character is '+' or '-'
  */
-bool issign(const char character) noexcept;
+bool is_sign(const char character) noexcept;
 
 /**
- * Checks whether a token can be converted to an 8-bit or 16-bit GameBoy register
+ * Converts the string @p str to uppercase.
+ * @param str string
+ * @return uppercase of @p str
+ */
+std::string to_upper(const std::string &str);
+
+/**
+ * Removes the string @p str without the last character.
+ * @throw std::out_of_range if string is empty
+ * @param str string
+ * @return @p str without last character
+ */
+std::string remove_last_character(const std::string &str);
+
+
+/**
+ * Checks whether a token can be converted to a flag condition, i.e. Z, NZ, C or NC.
+ * @param token a token
+ * @return true if @p token can be converted to a flag condition
+ */
+bool is_flag_condition(const Token &token) noexcept;
+
+/**
+ * Checks whether a token can be converted to an 8-bit or 16-bit GameBoy register.
  * @param token a token
  * @return true if @p token can be converted to a register
  */
 bool is_register(const Token &token) noexcept;
 
 /**
- * Checks whether a token can be converted to an 8-bit GameBoy register
+ * Checks whether a token can be converted to an 8-bit GameBoy register.
  * @param token a token
  * @return true if @p token can be converted to an 8-bit register
  */
 bool is_register_8_bit(const Token &token) noexcept;
 
 /**
- * Checks whether a token can be converted to a 16-bit GameBoy register
+ * Checks whether a token can be converted to a 16-bit GameBoy register.
  * @param token a token
  * @return true if @p token can be converted to a 16-bit register
  */

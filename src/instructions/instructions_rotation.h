@@ -1,13 +1,13 @@
 #ifndef GAMEBOY_DISASSEMBLE_INSTRUCTIONS_ROTATION_H
 #define GAMEBOY_DISASSEMBLE_INSTRUCTIONS_ROTATION_H
 
-#include "interface.h"
+#include "baseinstruction.h"
 
-class RotateRight8BitRegister : public Instruction {
+class RotateRight8BitRegister : public BaseInstruction {
 public:
     RotateRight8BitRegister(const Register8Bit reg)
-            : Instruction("RR " + to_string(reg),
-                          determine_opcode(reg)),
+            : BaseInstruction("RR " + to_string(reg),
+                              determine_opcode(reg)),
               _register(reg) {}
 
 private:
@@ -28,11 +28,11 @@ private:
     const Register8Bit _register;
 };
 
-class RotateLeft8BitRegister : public Instruction {
+class RotateLeft8BitRegister : public BaseInstruction {
 public:
     RotateLeft8BitRegister(const Register8Bit reg)
-            : Instruction("RL " + to_string(reg),
-                          determine_opcode(reg)),
+            : BaseInstruction("RL " + to_string(reg),
+                              determine_opcode(reg)),
               _register(reg) {}
 
 private:
@@ -53,11 +53,11 @@ private:
     const Register8Bit _register;
 };
 
-class RotateRightContentsOf8BitRegister : public Instruction {
+class RotateRightContentsOf8BitRegister : public BaseInstruction {
 public:
     RotateRightContentsOf8BitRegister(const Register8Bit reg)
-            : Instruction("RRC " + to_string(reg),
-                          determine_opcode(reg)),
+            : BaseInstruction("RRC " + to_string(reg),
+                              determine_opcode(reg)),
               _register(reg) {}
 
 private:
@@ -78,11 +78,11 @@ private:
     const Register8Bit _register;
 };
 
-class RotateLeftContentsOf8BitRegister : public Instruction {
+class RotateLeftContentsOf8BitRegister : public BaseInstruction {
 public:
     RotateLeftContentsOf8BitRegister(const Register8Bit reg)
-            : Instruction("RLC " + to_string(reg),
-                          determine_opcode(reg)),
+            : BaseInstruction("RLC " + to_string(reg),
+                              determine_opcode(reg)),
               _register(reg) {}
 
 private:
@@ -104,32 +104,32 @@ private:
 };
 
 // Rotate A and clear Zero Flag
-class RotateLeftAAndClearZero : public Instruction {
+class RotateLeftAAndClearZero : public BaseInstruction {
 public:
     RotateLeftAAndClearZero()
-            : Instruction("RLA",
-                          opcodes::ROTATE_LEFT_A_AND_CLEAR_ZERO) {}
+            : BaseInstruction("RLA",
+                              opcodes::ROTATE_LEFT_A_AND_CLEAR_ZERO) {}
 };
 
-class RotateRightAAndClearZero : public Instruction {
+class RotateRightAAndClearZero : public BaseInstruction {
 public:
     RotateRightAAndClearZero()
-            : Instruction("RRA",
-                          opcodes::ROTATE_RIGHT_A_AND_CLEAR_ZERO) {}
+            : BaseInstruction("RRA",
+                              opcodes::ROTATE_RIGHT_A_AND_CLEAR_ZERO) {}
 };
 
-class RotateLeftContentsOfAAndClearZero : public Instruction {
+class RotateLeftContentsOfAAndClearZero : public BaseInstruction {
 public:
     RotateLeftContentsOfAAndClearZero()
-            : Instruction("RLCA",
-                          opcodes::ROTATE_LEFT_CONTENTS_OF_A_AND_CLEAR_ZERO) {}
+            : BaseInstruction("RLCA",
+                              opcodes::ROTATE_LEFT_CONTENTS_OF_A_AND_CLEAR_ZERO) {}
 };
 
-class RotateRightContentsOfAAndClearZero : public Instruction {
+class RotateRightContentsOfAAndClearZero : public BaseInstruction {
 public:
     RotateRightContentsOfAAndClearZero()
-            : Instruction("RRCA",
-                          opcodes::ROTATE_RIGHT_CONTENTS_OF_A_AND_CLEAR_ZERO) {}
+            : BaseInstruction("RRCA",
+                              opcodes::ROTATE_RIGHT_CONTENTS_OF_A_AND_CLEAR_ZERO) {}
 };
 
 

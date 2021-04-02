@@ -49,7 +49,7 @@ Token Tokenizer::get_next_token() {
         currentToken = Token(get_line(), get_column(), TokenType::COMMA, ",");
         increment_position();
     }
-    else if (isdigit(read_current()) || issign(read_current()))
+    else if (isdigit(read_current()) || is_sign(read_current()))
     {
         currentToken = tokenize_number();
     }
@@ -103,19 +103,20 @@ Token Tokenizer::tokenize_identifier_or_global_label() {
         hasBrackets = true;
     }
 
-    while (isalpha(read_current())) {
+    while (isalnum(read_current())) {
         str += fetch();
     }
 
+    // assert that the correct closing brace is present
     if (hasParentheses) {
         // may have + or - before closing parenthesis
-        if (issign(read_current())) {
+        if (is_sign(read_current())) {
             str += fetch();
         }
         str += fetch_and_expect(')');
     } else if (hasBrackets) {
         // may have + or - before closing parenthesis
-        if (issign(read_current())) {
+        if (is_sign(read_current())) {
             str += fetch();
         }
         str += fetch_and_expect(']');
@@ -137,7 +138,7 @@ Token Tokenizer::tokenize_number() {
     const size_t columnPosition = get_column();
 
     // possible sign
-    if (issign(read_current())) {
+    if (is_sign(read_current())) {
         str += fetch();
     }
 
@@ -165,7 +166,7 @@ Token Tokenizer::tokenize_address() {
     // address must start with '('
     str += fetch_and_expect('(');
 
-    while (isalpha(read_current()))
+    while (isalnum(read_current()))
     {
         str += fetch();
     }
@@ -183,7 +184,7 @@ Token Tokenizer::tokenize_local_label() {
     // local label must start with '.'
     str += fetch_and_expect('.');
 
-    while (isalpha(read_current()))
+    while (isalnum(read_current()))
     {
         str += fetch();
     }

@@ -1,12 +1,12 @@
 #ifndef GAMEBOY_DISASSEMBLE_INSTRUCTIONS_BIT_COMPLEMENT_H
 #define GAMEBOY_DISASSEMBLE_INSTRUCTIONS_BIT_COMPLEMENT_H
 
-#include "interface.h"
+#include "baseinstruction.h"
 
-class BitOf8BitRegisterComplementIntoZero : public Instruction {
+class BitOf8BitRegisterComplementIntoZero : public BaseInstruction {
 public:
     BitOf8BitRegisterComplementIntoZero(const uint8_t bitIndex, const Register8Bit reg)
-            : Instruction("BIT " + to_string_dec(bitIndex) + ", " + to_string(reg), determine_opcode(bitIndex, reg)),
+            : BaseInstruction("BIT " + to_string_dec(bitIndex) + ", " + to_string(reg), determine_opcode(bitIndex, reg)),
               _bitIndex(bitIndex),
               _register(reg) {}
 

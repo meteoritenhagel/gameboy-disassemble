@@ -1,18 +1,30 @@
 #include "parser.h"
 
 InstructionPtr Parser::parse_add() {
-    const Token destinationToken = fetch();
-    const Token commaToken = fetch();
-    const Token sourceToken = fetch();
+    if (read_next().get_token_type() == TokenType::COMMA) { // if comma on second position, then long version, e.g. "ADD A, B" or "ADD SP, -0x01"
+        const Token destinationToken = fetch();
+        const Token commaToken = fetch();
+        const Token sourceToken = fetch();
 
-    // destinationToken must always be a register
-    to_register(destinationToken);
+        to_register(destinationToken); // destinationToken must always be a register
 
-    expect_type(commaToken, TokenType::COMMA);
+        if (is_register_8_bit(destinationToken)) { // Case 1: 8-bit (destinationToken is A)
+            to_register_expect(destinationToken, Register8Bit::A);
 
-    if (is_register_8_bit(destinationToken)) // Case 1: 8-bit (destinationToken is A)
-    {
-        to_register_expect(destinationToken, Register8Bit::A);
+            if (is_register_8_bit(sourceToken)) {
+                return std::make_unique<AddAAnd8BitRegister>(to_register_8_bit(sourceToken));
+            } else { // is number or symbol
+                return std::make_unique<AddAAndImmediate>(to_number_8_bit(sourceToken));
+            }
+        } else if (is_register_16_bit(destinationToken)) { // Case 2: 16-bit (destinationToken is HL or SP)
+            if (is_register_16_bit(sourceToken)) {
+                return std::make_unique<AddHLAnd16BitRegister>(to_register_16_bit(sourceToken));
+            } else { // is number or symbol
+                return std::make_unique<AddSPAndImmediate>(to_signed_number_8_bit(sourceToken));
+            }
+        }
+    } else { // short version, e.g. "ADD B", ONLY for 8-bit contexts
+        const Token sourceToken = fetch();
 
         if (is_register_8_bit(sourceToken)) {
             return std::make_unique<AddAAnd8BitRegister>(to_register_8_bit(sourceToken));
@@ -20,28 +32,15 @@ InstructionPtr Parser::parse_add() {
             return std::make_unique<AddAAndImmediate>(to_number_8_bit(sourceToken));
         }
     }
-    else if (is_register_16_bit(destinationToken)) // Case 2: 16-bit (destinationToken is HL or SP)
-    {
-        if (is_register_16_bit(sourceToken)) {
-            return std::make_unique<AddHLAnd16BitRegister>(to_register_16_bit(sourceToken));
-        } else { // is number or symbol
-            return std::make_unique<AddSPAndImmediate>(to_signed_number_8_bit(sourceToken));
-        }
-    }
-    else
-    {
-        throw_logic_error_and_highlight(destinationToken, "Parse error: Invalid expression");
-    }
 }
 
 InstructionPtr Parser::parse_adc() {
-    const Token destinationToken = fetch();
-    const Token commaToken = fetch();
-    const Token sourceToken = fetch();
+    if (read_next().get_token_type() == TokenType::COMMA) { // long version, e.g. ADC A, B
+        to_register_expect(fetch(), Register8Bit::A);
+        const Token commaToken = fetch();
+    } // else short version
 
-    // destinationToken must always be A
-    to_register_expect(destinationToken, Register8Bit::A);
-    expect_type(commaToken, TokenType::COMMA);
+    const Token sourceToken = fetch();
 
     if (is_register_8_bit(sourceToken)) {
         return std::make_unique<AddWithCarryAAnd8BitRegister>(to_register_8_bit(sourceToken));
@@ -67,6 +66,36 @@ InstructionPtr Parser::parse_bit() {
     return std::make_unique<BitOf8BitRegisterComplementIntoZero>(index, reg);
 }
 
+InstructionPtr Parser::parse_inc() {
+    const Token registerToken = fetch();
+    return std::make_unique<IncrementRegister>(to_register(registerToken));
+}
+
+InstructionPtr Parser::parse_dec() {
+    const Token registerToken = fetch();
+    return std::make_unique<DecrementRegister>(to_register(registerToken));
+}
+
+InstructionPtr Parser::parse_jp() {
+    if (read_next().get_token_type() == TokenType::COMMA) { // conditioned version, e.g. JP NZ, 0x1234
+        const Token conditionToken = fetch();
+        const Token commaToken = fetch();
+        const Token addressToken = fetch();
+
+        return std::make_unique<JumpConditional>(to_flag_condition(conditionToken), to_number_16_bit(addressToken));
+    } else { // short version
+        const Token addressToken = fetch();
+
+        if (is_register(addressToken)) { // JP HL
+            to_register_expect(addressToken, Register16Bit::HL);
+            return std::make_unique<JumpToHL>();
+        }
+        else { // has to be numeric value
+            return std::make_unique<Jump>(to_number_16_bit(addressToken));
+        }
+    }
+}
+
 ////
 
 void Parser::parse_equ() {
@@ -76,7 +105,9 @@ void Parser::parse_equ() {
 
     expect_type(symbolicName, TokenType::IDENTIFIER);
 
-    //TODO: exclude registers!
+    if (is_register(symbolicName)) { // registers may not be assigned
+        throw_logic_error_and_highlight(symbolicName, "Parse error: Expression " + symbolicName.get_string() + " cannot appear at left side of EQU command ");
+    }
 
     expect_string(equToken, "EQU");
 

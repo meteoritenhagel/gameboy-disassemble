@@ -3,6 +3,6 @@
 
 #include "parser.h"
 
-void assemble_instruction(const Instruction instruction);
+void assemble_instruction(const BaseInstruction instruction);
 
 #endif //GAMEBOY_DISASSEMBLE_ASSEMBLE_H

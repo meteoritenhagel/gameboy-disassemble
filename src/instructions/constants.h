@@ -51,21 +51,25 @@ std::string to_string(const Register8Bit reg);
 
 std::string to_string(const Register16Bit reg);
 
-std::string to_string(const Register& reg);
+std::string to_string(const Register &reg);
 
 std::string to_string(const FlagCondition flagCondition);
 
-Register to_register(const std::string &str);
+FlagCondition to_flag_condition(const std::string &str);
 
-Register8Bit to_register_8_bit(const Register& reg);
+bool is_flag_condition(const std::string &str) noexcept;
 
-Register16Bit to_register_16_bit(const Register& reg);
+Register to_register(const std::string &str) noexcept;
 
-bool is_valid(const Register &reg);
+Register8Bit to_register_8_bit(const Register &reg);
 
-bool is_register_8_bit(const Register &reg);
+Register16Bit to_register_16_bit(const Register &reg);
 
-bool is_register_16_bit(const Register &reg);
+bool is_valid(const Register &reg) noexcept;
+
+bool is_register_8_bit(const Register &reg) noexcept;
+
+bool is_register_16_bit(const Register &reg) noexcept;
 
 namespace opcodes {
     constexpr Opcode NOP                                        {0x00};

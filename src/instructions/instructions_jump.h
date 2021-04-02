@@ -1,12 +1,12 @@
 #ifndef GAMEBOY_DISASSEMBLE_INSTRUCTIONS_JUMP_H
 #define GAMEBOY_DISASSEMBLE_INSTRUCTIONS_JUMP_H
 
-#include "interface.h"
+#include "baseinstruction.h"
 
-class Jump : public Instruction {
+class Jump : public BaseInstruction {
 public:
     Jump(const word address)
-            : Instruction(
+            : BaseInstruction(
             "JP " + to_string_hex_prefixed(address), opcodes::JUMP,
             to_bytestring_little_endian(address)),
               _address(address) {}
@@ -15,12 +15,12 @@ private:
     const word _address;
 };
 
-class JumpConditional : public Instruction {
+class JumpConditional : public BaseInstruction {
 public:
     JumpConditional(const FlagCondition flagCondition, const word address)
-            : Instruction("JP " + to_string(flagCondition) + ", " + to_string_hex_prefixed(address),
-                          determine_opcode(flagCondition),
-                          to_bytestring_little_endian(address)),
+            : BaseInstruction("JP " + to_string(flagCondition) + ", " + to_string_hex_prefixed(address),
+                              determine_opcode(flagCondition),
+                              to_bytestring_little_endian(address)),
               _flagCondition(flagCondition),
               _address(address) {}
 
@@ -38,16 +38,16 @@ private:
     const word _address;
 };
 
-class JumpToHL : public Instruction {
+class JumpToHL : public BaseInstruction {
 public:
     JumpToHL()
-            : Instruction("JP HL", opcodes::JUMP_TO_HL) {}
+            : BaseInstruction("JP HL", opcodes::JUMP_TO_HL) {}
 };
 
-class JumpRelative : public Instruction {
+class JumpRelative : public BaseInstruction {
 public:
     JumpRelative(const byte relativePosition)
-            : Instruction(
+            : BaseInstruction(
             "JR " + to_string_hex_signed_prefixed(relativePosition), opcodes::JUMP_RELATIVE,
             Bytestring{relativePosition}),
               _relativePosition(relativePosition) {}
@@ -56,12 +56,12 @@ private:
     const byte _relativePosition;
 };
 
-class JumpRelativeConditional : public Instruction {
+class JumpRelativeConditional : public BaseInstruction {
 public:
     JumpRelativeConditional(const FlagCondition flagCondition, const byte relativePosition)
-            : Instruction("JR " + to_string(flagCondition) + ", " + to_string_hex_signed_prefixed(relativePosition),
-                          determine_opcode(flagCondition),
-                          Bytestring{relativePosition}),
+            : BaseInstruction("JR " + to_string(flagCondition) + ", " + to_string_hex_signed_prefixed(relativePosition),
+                              determine_opcode(flagCondition),
+                              Bytestring{relativePosition}),
               _flagCondition(flagCondition),
               _relativePosition(relativePosition) {}
 
@@ -80,10 +80,10 @@ private:
     const byte _relativePosition;
 };
 
-class Call : public Instruction {
+class Call : public BaseInstruction {
 public:
     Call(const word address)
-            : Instruction(
+            : BaseInstruction(
             "CALL " + to_string_hex_prefixed(address), opcodes::CALL,
             to_bytestring_little_endian(address)),
               _address(address) {}
@@ -93,12 +93,12 @@ private:
 };
 
 
-class CallConditional : public Instruction {
+class CallConditional : public BaseInstruction {
 public:
     CallConditional(const FlagCondition flagCondition, const word address)
-            : Instruction("CALL " + to_string(flagCondition) + ", " + to_string_hex_prefixed(address),
-                          determine_opcode(flagCondition),
-                          to_bytestring_little_endian(address)),
+            : BaseInstruction("CALL " + to_string(flagCondition) + ", " + to_string_hex_prefixed(address),
+                              determine_opcode(flagCondition),
+                              to_bytestring_little_endian(address)),
               _flagCondition(flagCondition),
               _address(address) {}
 
@@ -117,16 +117,16 @@ private:
     const word _address;
 };
 
-class Return : public Instruction {
+class Return : public BaseInstruction {
 public:
     Return()
-            : Instruction("RET", opcodes::RETURN) {}
+            : BaseInstruction("RET", opcodes::RETURN) {}
 };
 
-class ReturnConditional : public Instruction {
+class ReturnConditional : public BaseInstruction {
 public:
     ReturnConditional(const FlagCondition flagCondition)
-            : Instruction("RET " + to_string(flagCondition), determine_opcode(flagCondition)),
+            : BaseInstruction("RET " + to_string(flagCondition), determine_opcode(flagCondition)),
               _flagCondition(flagCondition) {}
 
 private:
@@ -143,17 +143,17 @@ private:
     const FlagCondition _flagCondition;
 };
 
-class ReturnFromInterrupt : public Instruction {
+class ReturnFromInterrupt : public BaseInstruction {
 public:
     ReturnFromInterrupt()
-            : Instruction("RETI", opcodes::RETURN_FROM_INTERRUPT) {}
+            : BaseInstruction("RETI", opcodes::RETURN_FROM_INTERRUPT) {}
 };
 
-class Restart : public Instruction {
+class Restart : public BaseInstruction {
 public:
     Restart(const uint8_t jumpIndex)
-            : Instruction("RST " + to_string_dec(jumpIndex),
-                          determine_opcode(jumpIndex)),
+            : BaseInstruction("RST " + to_string_dec(jumpIndex),
+                              determine_opcode(jumpIndex)),
               _jumpIndex(jumpIndex) {}
 
 private:

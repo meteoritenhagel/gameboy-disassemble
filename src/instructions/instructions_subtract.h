@@ -1,13 +1,13 @@
 #ifndef GAMEBOY_DISASSEMBLE_INSTRUCTIONS_SUBTRACT_H
 #define GAMEBOY_DISASSEMBLE_INSTRUCTIONS_SUBTRACT_H
 
-#include "interface.h"
+#include "baseinstruction.h"
 
-class SubtractAAnd8BitRegister : public Instruction {
+class SubtractAAnd8BitRegister : public BaseInstruction {
 public:
     SubtractAAnd8BitRegister(const Register8Bit source)
-            : Instruction("SUB A, " + to_string(source),
-                          determine_opcode(source)),
+            : BaseInstruction("SUB A, " + to_string(source),
+                              determine_opcode(source)),
               _source(source) {}
 
 private:
@@ -28,11 +28,11 @@ private:
     const Register8Bit _source;
 };
 
-class SubtractWithCarryAAnd8BitRegister : public Instruction {
+class SubtractWithCarryAAnd8BitRegister : public BaseInstruction {
 public:
     SubtractWithCarryAAnd8BitRegister(const Register8Bit source)
-            : Instruction("SBC A, " + to_string(source),
-                          determine_opcode(source)),
+            : BaseInstruction("SBC A, " + to_string(source),
+                              determine_opcode(source)),
               _source(source) {}
 
 private:
@@ -53,22 +53,22 @@ private:
     const Register8Bit _source;
 };
 
-class SubtractAAndImmediate : public Instruction {
+class SubtractAAndImmediate : public BaseInstruction {
 public:
     SubtractAAndImmediate(const byte immediate)
-            : Instruction("SUB A, " + to_string_hex(immediate),
-                          opcodes::SUBTRACT_A_AND_IMMEDIATE),
+            : BaseInstruction("SUB A, " + to_string_hex(immediate),
+                              opcodes::SUBTRACT_A_AND_IMMEDIATE),
               _immediate(immediate) {}
 
 private:
     const byte _immediate;
 };
 
-class SubtractWithCarryAAndImmediate : public Instruction {
+class SubtractWithCarryAAndImmediate : public BaseInstruction {
 public:
     SubtractWithCarryAAndImmediate(const byte immediate)
-            : Instruction("SBC A, " + to_string_hex(immediate),
-                          opcodes::SUBTRACT_WITH_CARRY_A_AND_IMMEDIATE),
+            : BaseInstruction("SBC A, " + to_string_hex(immediate),
+                              opcodes::SUBTRACT_WITH_CARRY_A_AND_IMMEDIATE),
               _immediate(immediate) {}
 
 private:

@@ -1,12 +1,12 @@
 #ifndef GAMEBOY_DISASSEMBLE_INSTRUCTIONS_PUSH_POP_H
 #define GAMEBOY_DISASSEMBLE_INSTRUCTIONS_PUSH_POP_H
 
-#include "interface.h"
+#include "baseinstruction.h"
 
-class Push16BitRegister : public Instruction {
+class Push16BitRegister : public BaseInstruction {
 public:
     Push16BitRegister(const Register16Bit reg)
-            : Instruction("PUSH " + to_string(reg), determine_opcode(reg)),
+            : BaseInstruction("PUSH " + to_string(reg), determine_opcode(reg)),
               _register(reg) {}
 
 private:
@@ -23,10 +23,10 @@ private:
     const Register16Bit _register;
 };
 
-class Pop16BitRegister : public Instruction {
+class Pop16BitRegister : public BaseInstruction {
 public:
     Pop16BitRegister(const Register16Bit reg)
-            : Instruction("POP " + to_string(reg), determine_opcode(reg)),
+            : BaseInstruction("POP " + to_string(reg), determine_opcode(reg)),
               _register(reg) {}
 
 private:
