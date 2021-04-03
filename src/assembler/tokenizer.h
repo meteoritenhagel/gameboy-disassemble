@@ -1,6 +1,7 @@
 #ifndef GAMEBOY_DISASSEMBLE_TOKENIZER_H
 #define GAMEBOY_DISASSEMBLE_TOKENIZER_H
 
+#include "auxiliary.h"
 #include "pretty_format.h"
 #include "token.h"
 

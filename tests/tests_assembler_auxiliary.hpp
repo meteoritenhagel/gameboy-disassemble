@@ -41,8 +41,8 @@ TEST_CASE("get_length function returns correct length for some instructions", "[
     }
 }
 
-TEST_CASE("throw_logic_error_and_highlight throws a logic_error", "[throw_logic_error_and_highlight]") {
-    REQUIRE_THROWS_AS(throw_logic_error_and_highlight("abc", 1, 1, "abc"), std::logic_error);
+TEST_CASE("throw_exception_and_highlight throws a logic_error", "[throw_exception_and_highlight]") {
+    REQUIRE_THROWS_AS(throw_exception_and_highlight("abc", 1, 1, "abc"), std::logic_error);
 }
 
 TEST_CASE("Test whether a character is + or -", "[is_sign]") {

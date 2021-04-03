@@ -2,6 +2,7 @@
 #define GAMEBOY_DISASSEMBLE_AUXILIIARY_H
 
 #include "../instructions/instructions.h"
+#include "pretty_format.h"
 #include "token.h"
 
 /**
@@ -29,17 +30,20 @@ std::string to_string(const std::vector<T> &vector);
 unsigned get_length(const InstructionPtr &instruction);
 
 /**
- * Throws a logic error containing a string, in which an @p errorMessage is displayed and
+ * Throws an error containing a string, in which an @p errorMessage is displayed and
  * a certain section of the code's line is highlighted.
- * @throws std::logic_error
+ * @throws @p ExceptionType
  *
+ * @tparam ExceptionType type of exception which is thrown
  * @param code Source code which is highlighted
  * @param lineNumber number of line in which the marking takes place
  * @param columnNumber column position in which the highlighting starts
  * @param errorMessage an error message printed before the highlighted line
  * @param highlightWidth the width of the highlighting starting from the position @p columnNumber
  */
-void throw_logic_error_and_highlight(const std::string &code, const size_t lineNumber, const size_t columnNumber, const std::string &errorMessage, const size_t highlightWidth = 1);
+template<typename ExceptionType = std::logic_error>
+void throw_exception_and_highlight(const std::string &code, const size_t lineNumber, const size_t columnNumber, const std::string &errorMessage, const size_t highlightWidth = 1);
+
 
 /**
  * Checks whether a @p character is either '+' or '-'.

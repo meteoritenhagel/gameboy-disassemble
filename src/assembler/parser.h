@@ -52,6 +52,9 @@ private:
             if (parse_gameboy_instruction()) { continue; } // GameBoy instruction
             if (parse_assembler_specific_commands()) { continue; } // assembler-specific instruction
             if (update_label()) { continue; } // label
+
+            throw_logic_error_and_highlight(read_current(), "Parse error: Found unknown expression '" +
+                                            read_current().get_string() + "'.");
         }
     }
 
@@ -231,12 +234,21 @@ private:
     const std::string& get_code() const noexcept;
 
     /**
-     * Throws a logic error containing a string, in which the token is highlighted.
+     * Throws a logic error exception containing a string, in which the token is highlighted.
      * @throws std::logic_error
      * @param token the token to highlight
      * @param errorMessage an error message printed before the highlighted line
      */
     void throw_logic_error_and_highlight(const Token &token, const std::string &errorMessage) const;
+
+    /**
+     * Throws an invalid argument exception containing a string, in which the token is highlighted.
+     * This should be used for failed symbol resolution only.
+     * @throws std::invalid_argument
+     * @param token the token to highlight
+     * @param errorMessage an error message printed before the highlighted line
+     */
+    void throw_invalid_argument_and_highlight(const Token &token, const std::string &errorMessage) const;
 
     /**
      * Tries to convert a token @p numToken into a long number.
@@ -385,11 +397,13 @@ private:
 
     std::string _code{}; ///< the code which was used to generate the tokens
     TokenVector _tokenVector{}; ///< the tokens which are parsed by the parser
-    size_t _currentPosition{}; ///< the position of the current token
+
+    size_t _currentPosition{}; ///< the position of the current token in _tokenVector
     Address _currentAddress{0}; ///< the bytecode address of the current instruction
+    Token _currentGlobalLabel{}; ///< the currently active global label. Is used for resolving the local labels.
+
     SymbolToNumeric _symbolicTable{}; ///< symbolic table, which contains all symbols, labels etc.
     InstructionVector _instructionVector{}; ///< InstructionVector, which is built and returned by parse()
-    Token _currentGlobalLabel{}; ///< the currently active global label. Is used for resolving the local labels.
 };
 
 

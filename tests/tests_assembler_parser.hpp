@@ -295,3 +295,67 @@ TEST_CASE("'DEC' commands are parsed correctly", "[Parser::parse") {
         REQUIRE(currentInstruction == correctInstruction);
     }
 }
+
+TEST_CASE("'JP' commands are parsed correctly", "[Parser::parse") {
+    SECTION("JP to 16-bit immediate") {
+        TokenVector tokenVector {
+                {1, 1, TokenType::IDENTIFIER, "JP"},
+                {1, 1, TokenType::NUMBER, "0x1234"},
+                {1, 1, TokenType::END_OF_FILE, "[EOF]"}
+        };
+        Parser parser("", tokenVector);
+        InstructionVector instructionVector = parser.parse();
+
+        REQUIRE(instructionVector.size() == 1);
+
+        const BaseInstruction currentInstruction = *instructionVector[0];
+        const BaseInstruction correctInstruction = Jump(0x1234);
+        REQUIRE(currentInstruction == correctInstruction);
+    }
+
+    SECTION("JP to previously declared label") {
+        TokenVector tokenVector {
+                {1, 1, TokenType::GLOBAL_LABEL, "LABEL1:"},
+                {1, 1, TokenType::END_OF_LINE, "\\n"},
+
+                {1, 1, TokenType::IDENTIFIER, "DEC"},
+                {1, 1, TokenType::IDENTIFIER, "HL"},
+                {1, 1, TokenType::END_OF_LINE, "\\n"},
+
+                {1, 1, TokenType::IDENTIFIER, "JP"},
+                {1, 1, TokenType::IDENTIFIER, "LABEL1"},
+                {1, 1, TokenType::END_OF_FILE, "[EOF]"}
+        };
+        Parser parser("", tokenVector);
+        InstructionVector instructionVector = parser.parse();
+
+        REQUIRE(instructionVector.size() == 2);
+
+        const BaseInstruction currentInstruction = *instructionVector[1];
+        const BaseInstruction correctInstruction = Jump(0x0000);
+        REQUIRE(currentInstruction == correctInstruction);
+    }
+
+    SECTION("JP to label declared later") {
+        TokenVector tokenVector {
+                {1, 1, TokenType::IDENTIFIER, "JP"},
+                {1, 1, TokenType::IDENTIFIER, "LABEL1"},
+                {1, 1, TokenType::END_OF_LINE, "\\n"},
+
+                {1, 1, TokenType::GLOBAL_LABEL, "LABEL1:"},
+                {1, 1, TokenType::END_OF_LINE, "\\n"},
+
+                {1, 1, TokenType::IDENTIFIER, "DEC"},
+                {1, 1, TokenType::IDENTIFIER, "HL"},
+                {1, 1, TokenType::END_OF_FILE, "[EOF]"}
+        };
+        Parser parser("", tokenVector);
+        InstructionVector instructionVector = parser.parse();
+
+        REQUIRE(instructionVector.size() == 2);
+
+        const BaseInstruction currentInstruction = *instructionVector[0];
+        const BaseInstruction correctInstruction = Jump(0x0003);
+        REQUIRE(currentInstruction == correctInstruction);
+    }
+}

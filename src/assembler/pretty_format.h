@@ -1,7 +1,7 @@
 #ifndef GAMEBOY_DISASSEMBLE_PRETTY_FORMAT_H
 #define GAMEBOY_DISASSEMBLE_PRETTY_FORMAT_H
 
-#include "auxiliary.h"
+#include "token.h"
 
 #include <iostream>
 #include <string>

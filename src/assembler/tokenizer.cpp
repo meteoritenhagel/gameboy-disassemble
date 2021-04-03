@@ -281,7 +281,7 @@ std::string Tokenizer::get_position_string() {
 }
 
 void Tokenizer::throw_logic_error_and_highlight(const size_t lineNumber, const size_t columnNumber, const std::string &errorMessage) {
-    ::throw_logic_error_and_highlight(get_code(), lineNumber, columnNumber, errorMessage);
+    ::throw_exception_and_highlight(get_code(), lineNumber, columnNumber, errorMessage);
 }
 
 Token Tokenizer::try_to_create_token(const size_t lineNumber, const size_t columnNumber, const TokenType tokenType, const std::string &tokenString) {

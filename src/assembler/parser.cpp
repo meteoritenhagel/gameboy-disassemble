@@ -61,8 +61,13 @@ const std::string &Parser::get_code() const noexcept {
 }
 
 void Parser::throw_logic_error_and_highlight(const Token &token, const std::string &errorMessage) const {
-    ::throw_logic_error_and_highlight(get_code(), token.get_line(), token.get_column(), errorMessage,
-                                      token.get_string().size());
+    ::throw_exception_and_highlight(get_code(), token.get_line(), token.get_column(), errorMessage,
+                                    token.get_string().size());
+}
+
+void Parser::throw_invalid_argument_and_highlight(const Token &token, const std::string &errorMessage) const {
+    ::throw_exception_and_highlight<std::invalid_argument>(get_code(), token.get_line(), token.get_column(), errorMessage,
+                                                           token.get_string().size());
 }
 
 long Parser::to_number(const Token &numToken) const {
@@ -73,8 +78,9 @@ long Parser::to_number(const Token &numToken) const {
             return _symbolicTable.at(numToken.get_string());
         }
     } catch (...) {
-        throw_logic_error_and_highlight(numToken,
-                                        "Parse error: Symbol " + numToken.get_string() + " could not be resolved");
+        throw_invalid_argument_and_highlight(numToken,
+                                             "Parse error: Symbol " + numToken.get_string() +
+                                             " could not be resolved");
     }
 }
 
