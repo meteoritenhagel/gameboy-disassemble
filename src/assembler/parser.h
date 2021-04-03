@@ -33,6 +33,13 @@ public:
       _tokenVector(tokenVector)
     {}
 
+    /**
+     * Parses the _tokenVector and returns the _instructionVector by moving.
+     * This invalidates the current _instructionVector, as ownership is passed
+     * to the outside of the class.
+     * @throws std::logic_error containing an error message and highlighted code
+     * @return vector of parsed instructions
+     */
     InstructionVector parse() {
         build_symbol_table();
         return std::move(_instructionVector);
@@ -42,38 +49,73 @@ private:
 
     void build_symbol_table() {
         while (!is_finished()) {
-            if (read_next().get_string() == "EQU") // if assembler-specific command EQU is found
-            {
-                parse_equ();
-                expect_end_of_context(fetch());
-                continue;
-            }
-
-            if (read_current().get_token_type() == TokenType::GLOBAL_LABEL)
-            { // if global label, update symbolic table and advance to next token
-                _symbolicTable.emplace(remove_last_character(read_current().get_string()), _currentAddress);
-                increment_position();
-                expect_end_of_context(fetch());
-                continue;
-            }
-
-//            try { // to parse GameBoy instruction
-            parse_next_instruction();
-
-//            } catch (const std::exception &e) {
-//                std::cerr << e.what() << '\n';
-//            }
+            if (parse_gameboy_instruction()) { continue; } // GameBoy instruction
+            if (parse_assembler_specific_commands()) { continue; } // assembler-specific instruction
+            if (update_label()) { continue; } // label
         }
     }
 
     /**
-     * Parses the next instruction and appends it onto the @p _instructionVector.
-     * Tokens are retrieved from Tokenizer @p _tokenVector.
-     *
-     * @throws std::logic_error containing an error message and the
-     * highlighted code passage in case of parsing error.
+     * Checks whether the current group of tokens are assembler specific commands,
+     * (i.e. only changing the state of the parser without being actual GameBoy CPU commands,
+     * e.g. EQU) and executes them.
+     * @throws std::logic_error containing an error message and highlighted code passage in case of parsing error.
      */
-    void parse_next_instruction();
+    bool parse_assembler_specific_commands() {
+        if (read_next().get_string() == "EQU") { parse_equ(); }
+        else { return false; }
+
+        expect_end_of_context(fetch()); // each valid instruction must end with newline or end of file
+        return true;
+    }
+
+    /**
+     * Checks whether the current token is a global or local label
+     * and adds the corresponding symbol to the _symbolTable.
+     * @throws std::logic_error containing an error message and highlighted code passage in case of parsing error.
+     */
+    bool update_label() {
+        if (read_current().get_token_type() == TokenType::GLOBAL_LABEL)
+        { // if global label, update symbolic table and advance to next token
+            _currentGlobalLabel = read_current();
+            _symbolicTable.emplace(remove_last_character(_currentGlobalLabel.get_string()), _currentAddress);
+            increment_position();
+
+        }
+        else { return false; }
+
+        expect_end_of_context(fetch());
+        return true;
+    }
+
+    /**
+     * Checks if the next instruction is a GameBoy specific instruction and parses it.
+     * @return true if a GameBoy CPU instruction has been parsed.
+     */
+    bool parse_gameboy_instruction() {
+        const Token currentToken = read_current();
+        const std::string currStr = currentToken.get_string();
+
+        InstructionPtr instruction;
+
+        if      (to_upper(currStr) == "ADD") { instruction = parse_add(); }
+        else if (to_upper(currStr) == "ADC") { instruction = parse_adc(); }
+        else if (to_upper(currStr) == "BIT") { instruction = parse_bit(); }
+        else if (to_upper(currStr) == "INC") { instruction = parse_inc(); }
+        else if (to_upper(currStr) == "DEC") { instruction = parse_dec(); }
+        else if (to_upper(currStr) == "JP")  { instruction = parse_jp();  }
+        else { return false; }
+
+        // if an error occurs while parsing, the instruction is not constructed
+        // and the address is not incremented
+        _currentAddress += get_length(instruction);
+
+
+        _instructionVector.push_back(std::move(instruction));
+
+        expect_end_of_context(fetch());
+        return true;
+    }
 
     /**
      * Parses "ADD" commands
@@ -190,7 +232,7 @@ private:
 
     /**
      * Throws a logic error containing a string, in which the token is highlighted.
-     *
+     * @throws std::logic_error
      * @param token the token to highlight
      * @param errorMessage an error message printed before the highlighted line
      */
@@ -341,12 +383,13 @@ private:
      */
     void expect_end_of_context(const Token& token) const;
 
-    std::string _code; ///< the code which was used to generate the tokens
-    TokenVector _tokenVector; ///< the tokens which are parsed by the parser
+    std::string _code{}; ///< the code which was used to generate the tokens
+    TokenVector _tokenVector{}; ///< the tokens which are parsed by the parser
     size_t _currentPosition{}; ///< the position of the current token
     Address _currentAddress{0}; ///< the bytecode address of the current instruction
     SymbolToNumeric _symbolicTable{}; ///< symbolic table, which contains all symbols, labels etc.
     InstructionVector _instructionVector{}; ///< InstructionVector, which is built and returned by parse()
+    Token _currentGlobalLabel{}; ///< the currently active global label. Is used for resolving the local labels.
 };
 
 

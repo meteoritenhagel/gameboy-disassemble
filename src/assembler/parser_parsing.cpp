@@ -1,6 +1,9 @@
 #include "parser.h"
 
 InstructionPtr Parser::parse_add() {
+    increment_position(); // because instruction-specific token was already checked before calling the function
+    InstructionPtr returnedInstruction;
+
     if (read_next().get_token_type() == TokenType::COMMA) { // if comma on second position, then long version, e.g. "ADD A, B" or "ADD SP, -0x01"
         const Token destinationToken = fetch();
         const Token commaToken = fetch();
@@ -12,29 +15,32 @@ InstructionPtr Parser::parse_add() {
             to_register_expect(destinationToken, Register8Bit::A);
 
             if (is_register_8_bit(sourceToken)) {
-                return std::make_unique<AddAAnd8BitRegister>(to_register_8_bit(sourceToken));
+                returnedInstruction = std::make_unique<AddAAnd8BitRegister>(to_register_8_bit(sourceToken));
             } else { // is number or symbol
-                return std::make_unique<AddAAndImmediate>(to_number_8_bit(sourceToken));
+                returnedInstruction = std::make_unique<AddAAndImmediate>(to_number_8_bit(sourceToken));
             }
         } else if (is_register_16_bit(destinationToken)) { // Case 2: 16-bit (destinationToken is HL or SP)
             if (is_register_16_bit(sourceToken)) {
-                return std::make_unique<AddHLAnd16BitRegister>(to_register_16_bit(sourceToken));
+                returnedInstruction = std::make_unique<AddHLAnd16BitRegister>(to_register_16_bit(sourceToken));
             } else { // is number or symbol
-                return std::make_unique<AddSPAndImmediate>(to_signed_number_8_bit(sourceToken));
+                returnedInstruction = std::make_unique<AddSPAndImmediate>(to_signed_number_8_bit(sourceToken));
             }
         }
     } else { // short version, e.g. "ADD B", ONLY for 8-bit contexts
         const Token sourceToken = fetch();
 
         if (is_register_8_bit(sourceToken)) {
-            return std::make_unique<AddAAnd8BitRegister>(to_register_8_bit(sourceToken));
+            returnedInstruction = std::make_unique<AddAAnd8BitRegister>(to_register_8_bit(sourceToken));
         } else { // is number or symbol
-            return std::make_unique<AddAAndImmediate>(to_number_8_bit(sourceToken));
+            returnedInstruction = std::make_unique<AddAAndImmediate>(to_number_8_bit(sourceToken));
         }
     }
+
+    return returnedInstruction;
 }
 
 InstructionPtr Parser::parse_adc() {
+    increment_position(); // because instruction-specific token was already checked before calling the function
     if (read_next().get_token_type() == TokenType::COMMA) { // long version, e.g. ADC A, B
         to_register_expect(fetch(), Register8Bit::A);
         const Token commaToken = fetch();
@@ -50,6 +56,8 @@ InstructionPtr Parser::parse_adc() {
 }
 
 InstructionPtr Parser::parse_bit() {
+    increment_position(); // because instruction-specific token was already checked before calling the function
+
     const Token indexToken = fetch();
     const Token commaToken = fetch();
     const Token registerToken = fetch();
@@ -67,16 +75,20 @@ InstructionPtr Parser::parse_bit() {
 }
 
 InstructionPtr Parser::parse_inc() {
+    increment_position(); // because instruction-specific token was already checked before calling the function
     const Token registerToken = fetch();
     return std::make_unique<IncrementRegister>(to_register(registerToken));
 }
 
 InstructionPtr Parser::parse_dec() {
+    increment_position(); // because instruction-specific token was already checked before calling the function
     const Token registerToken = fetch();
     return std::make_unique<DecrementRegister>(to_register(registerToken));
 }
 
 InstructionPtr Parser::parse_jp() {
+    increment_position(); // because instruction-specific token was already checked before calling the function
+
     if (read_next().get_token_type() == TokenType::COMMA) { // conditioned version, e.g. JP NZ, 0x1234
         const Token conditionToken = fetch();
         const Token commaToken = fetch();

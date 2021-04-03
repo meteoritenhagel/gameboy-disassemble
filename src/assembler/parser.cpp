@@ -65,31 +65,6 @@ void Parser::throw_logic_error_and_highlight(const Token &token, const std::stri
                                       token.get_string().size());
 }
 
-void Parser::parse_next_instruction() {
-    // All valid commands must start with an identifier
-    const Token currentToken = fetch_and_expect(TokenType::IDENTIFIER);
-
-    const std::string currStr = currentToken.get_string();
-
-    InstructionPtr instruction;
-
-    if      (to_upper(currStr) == "ADD") { instruction = parse_add(); }
-    else if (to_upper(currStr) == "ADC") { instruction = parse_adc(); }
-    else if (to_upper(currStr) == "BIT") { instruction = parse_bit(); }
-    else if (to_upper(currStr) == "INC") { instruction = parse_inc(); }
-    else if (to_upper(currStr) == "DEC") { instruction = parse_dec(); }
-    else if (to_upper(currStr) == "JP")  { instruction = parse_jp();  }
-        // no feasible case was detected
-    else { instruction = std::make_unique<Unknown>(); }
-
-    expect_end_of_context(fetch()); // each valid instruction must end with newline or end of file
-
-    // if an error occurs while parsing, the instruction is not constructed
-    // and the address is not incremented
-    _currentAddress += get_length(instruction);
-    _instructionVector.push_back(std::move(instruction));
-}
-
 long Parser::to_number(const Token &numToken) const {
     try {
         if (numToken.has_numeric_value()) {
