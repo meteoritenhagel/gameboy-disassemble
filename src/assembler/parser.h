@@ -42,6 +42,8 @@ public:
      */
     InstructionVector parse() {
         build_symbol_table();
+        //reparse_missing_symbols();
+
         return std::move(_instructionVector);
     }
 
@@ -49,7 +51,15 @@ private:
 
     void build_symbol_table() {
         while (!is_finished()) {
-            if (parse_gameboy_instruction()) { continue; } // GameBoy instruction
+
+            if (std::optional<InstructionPtr> instruction = parse_gameboy_instruction()) { // GameBoy instruction
+                // if an error occurs while parsing, the instruction is not constructed
+                // and the address is not incremented
+                _currentAddress += get_length(instruction.value());
+                _instructionVector.push_back(std::move(*instruction)); // accesses value of std::optional
+                continue;
+            }
+
             if (parse_assembler_specific_commands()) { continue; } // assembler-specific instruction
             if (update_label()) { continue; } // label
 
@@ -92,14 +102,14 @@ private:
     }
 
     /**
-     * Checks if the next instruction is a GameBoy specific instruction and parses it.
-     * @return true if a GameBoy CPU instruction has been parsed.
+     * Checks if the next instruction is a GameBoy specific instruction, parses and returns it.
+     * @return an optional containing the currently parsed GameBoy CPU instruction if found, or an empty optional.
      */
-    bool parse_gameboy_instruction() {
+    std::optional<InstructionPtr> parse_gameboy_instruction() {
         const Token currentToken = read_current();
         const std::string currStr = currentToken.get_string();
 
-        InstructionPtr instruction;
+        std::optional<InstructionPtr> instruction{};
 
         if      (to_upper(currStr) == "ADD") { instruction = parse_add(); }
         else if (to_upper(currStr) == "ADC") { instruction = parse_adc(); }
@@ -107,17 +117,10 @@ private:
         else if (to_upper(currStr) == "INC") { instruction = parse_inc(); }
         else if (to_upper(currStr) == "DEC") { instruction = parse_dec(); }
         else if (to_upper(currStr) == "JP")  { instruction = parse_jp();  }
-        else { return false; }
-
-        // if an error occurs while parsing, the instruction is not constructed
-        // and the address is not incremented
-        _currentAddress += get_length(instruction);
-
-
-        _instructionVector.push_back(std::move(instruction));
+        else                                 { return instruction; } // in case of no match we want to go on without checking for end_of_context
 
         expect_end_of_context(fetch());
-        return true;
+        return instruction;
     }
 
     /**
@@ -398,7 +401,7 @@ private:
     std::string _code{}; ///< the code which was used to generate the tokens
     TokenVector _tokenVector{}; ///< the tokens which are parsed by the parser
 
-    size_t _currentPosition{}; ///< the position of the current token in _tokenVector
+    size_t _currentTokenPosition{}; ///< the position of the current token in _tokenVector
     Address _currentAddress{0}; ///< the bytecode address of the current instruction
     Token _currentGlobalLabel{}; ///< the currently active global label. Is used for resolving the local labels.
 

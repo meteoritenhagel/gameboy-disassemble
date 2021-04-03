@@ -3,22 +3,22 @@
 #include <algorithm>
 
 bool Parser::is_finished() const noexcept {
-    return (_currentPosition >= _tokenVector.size());
+    return (_currentTokenPosition >= _tokenVector.size());
 }
 
 size_t Parser::get_current_position() const noexcept {
-    return _currentPosition;
+    return _currentTokenPosition;
 }
 
 void Parser::increment_position() {
     if (!is_finished())
     {
-        ++_currentPosition;
+        ++_currentTokenPosition;
     }
 }
 
 void Parser::reset() noexcept {
-    _currentPosition = 0;
+    _currentTokenPosition = 0;
 }
 
 Token Parser::read_current() const {
