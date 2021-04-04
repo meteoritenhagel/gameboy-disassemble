@@ -11,6 +11,11 @@ class BaseInstruction;
 using InstructionPtr = std::unique_ptr<const BaseInstruction>;
 using InstructionVector = std::vector<InstructionPtr>;
 
+template<typename InstructionType, typename... Args>
+InstructionPtr create_instruction(Args... args) {
+    return std::make_unique<InstructionType>(args...);
+}
+
 /**
  * Class BaseInstruction. All GameBoy instructions are supposed to be derived from this class.
  * Note that all possible realizations of the same child class must have the same bytecode length.

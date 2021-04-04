@@ -1,8 +1,8 @@
 #include "parser.h"
 
-InstructionPtr Parser::parse_add() {
+typename Parser::UnresolvedInstruction Parser::parse_add() {
     increment_position(); // because instruction-specific token was already checked before calling the function
-    InstructionPtr returnedInstruction;
+    UnresolvedInstruction returnedInstruction;
 
     if (read_next().get_token_type() == TokenType::COMMA) { // if comma on second position, then long version, e.g. "ADD A, B" or "ADD SP, -0x01"
         const Token destinationToken = fetch();
@@ -15,31 +15,31 @@ InstructionPtr Parser::parse_add() {
             to_register_expect(destinationToken, Register8Bit::A);
 
             if (is_register_8_bit(sourceToken)) {
-                returnedInstruction = std::make_unique<AddAAnd8BitRegister>(to_register_8_bit(sourceToken));
+                returnedInstruction = [this, sourceToken](){ return create_instruction<AddAAnd8BitRegister>(to_register_8_bit(sourceToken)); };
             } else { // is number or symbol
-                returnedInstruction = std::make_unique<AddAAndImmediate>(to_number_8_bit(sourceToken));
+                returnedInstruction = [this, sourceToken](){ return create_instruction<AddAAndImmediate>(to_number_8_bit(sourceToken)); };
             }
         } else if (is_register_16_bit(destinationToken)) { // Case 2: 16-bit (destinationToken is HL or SP)
             if (is_register_16_bit(sourceToken)) {
-                returnedInstruction = std::make_unique<AddHLAnd16BitRegister>(to_register_16_bit(sourceToken));
+                returnedInstruction = [this, sourceToken](){ return create_instruction<AddHLAnd16BitRegister>(to_register_16_bit(sourceToken)); };
             } else { // is number or symbol
-                returnedInstruction = std::make_unique<AddSPAndImmediate>(to_signed_number_8_bit(sourceToken));
+                returnedInstruction = [this, sourceToken](){ return create_instruction<AddSPAndImmediate>(to_signed_number_8_bit(sourceToken)); };
             }
         }
     } else { // short version, e.g. "ADD B", ONLY for 8-bit contexts
         const Token sourceToken = fetch();
 
         if (is_register_8_bit(sourceToken)) {
-            returnedInstruction = std::make_unique<AddAAnd8BitRegister>(to_register_8_bit(sourceToken));
+            returnedInstruction = [this, sourceToken](){ return create_instruction<AddAAnd8BitRegister>(to_register_8_bit(sourceToken)); };
         } else { // is number or symbol
-            returnedInstruction = std::make_unique<AddAAndImmediate>(to_number_8_bit(sourceToken));
+            returnedInstruction = [this, sourceToken](){ return create_instruction<AddAAndImmediate>(to_number_8_bit(sourceToken)); };
         }
     }
 
     return returnedInstruction;
 }
 
-InstructionPtr Parser::parse_adc() {
+typename Parser::UnresolvedInstruction Parser::parse_adc() {
     increment_position(); // because instruction-specific token was already checked before calling the function
     if (read_next().get_token_type() == TokenType::COMMA) { // long version, e.g. ADC A, B
         to_register_expect(fetch(), Register8Bit::A);
@@ -49,13 +49,13 @@ InstructionPtr Parser::parse_adc() {
     const Token sourceToken = fetch();
 
     if (is_register_8_bit(sourceToken)) {
-        return create_instruction<AddWithCarryAAnd8BitRegister>(to_register_8_bit(sourceToken));
+        return [this, sourceToken](){ return create_instruction<AddWithCarryAAnd8BitRegister>(to_register_8_bit(sourceToken)); };
     } else { // number or symbol
-        return create_instruction<AddWithCarryAAndImmediate>(to_number_8_bit(sourceToken));
+        return [this, sourceToken](){ return create_instruction<AddWithCarryAAndImmediate>(to_number_8_bit(sourceToken)); };
     }
 }
 
-InstructionPtr Parser::parse_bit() {
+typename Parser::UnresolvedInstruction Parser::parse_bit() {
     increment_position(); // because instruction-specific token was already checked before calling the function
 
     const Token indexToken = fetch();
@@ -64,29 +64,24 @@ InstructionPtr Parser::parse_bit() {
 
     // BIT INDEX, 8BitRegister
 
-    // index must be between 0 and 7
-    const uint8_t index = to_index(indexToken);
-
     expect_type(commaToken, TokenType::COMMA);
 
-    const Register8Bit reg = to_register_8_bit(registerToken);
-
-    return create_instruction<BitOf8BitRegisterComplementIntoZero>(index, reg);
+    return [this, indexToken, registerToken]() { return create_instruction<BitOf8BitRegisterComplementIntoZero>(to_index(indexToken), to_register_8_bit(registerToken)); };
 }
 
-InstructionPtr Parser::parse_inc() {
+typename Parser::UnresolvedInstruction Parser::parse_inc() {
     increment_position(); // because instruction-specific token was already checked before calling the function
     const Token registerToken = fetch();
-    return create_instruction<IncrementRegister>(to_register(registerToken));
+    return [this, registerToken](){ return create_instruction<IncrementRegister>(to_register(registerToken)); };
 }
 
-InstructionPtr Parser::parse_dec() {
+typename Parser::UnresolvedInstruction Parser::parse_dec() {
     increment_position(); // because instruction-specific token was already checked before calling the function
     const Token registerToken = fetch();
-    return create_instruction<DecrementRegister>(to_register(registerToken));
+    return [this, registerToken](){ return create_instruction<DecrementRegister>(to_register(registerToken)); };
 }
 
-InstructionPtr Parser::parse_jp() {
+typename Parser::UnresolvedInstruction Parser::parse_jp() {
     increment_position(); // because instruction-specific token was already checked before calling the function
 
     if (read_next().get_token_type() == TokenType::COMMA) { // conditioned version, e.g. JP NZ, 0x1234
@@ -94,16 +89,16 @@ InstructionPtr Parser::parse_jp() {
         const Token commaToken = fetch();
         const Token addressToken = fetch();
 
-        return create_instruction<JumpConditional>(to_flag_condition(conditionToken), to_number_16_bit(addressToken));
+        return [this, conditionToken, addressToken](){ return create_instruction<JumpConditional>(to_flag_condition(conditionToken), to_number_16_bit(addressToken)); };
     } else { // short version
         const Token addressToken = fetch();
 
         if (is_register(addressToken)) { // JP HL
             to_register_expect(addressToken, Register16Bit::HL);
-            return create_instruction<JumpToHL>();
+            return [](){ return create_instruction<JumpToHL>(); };
         }
         else { // has to be numeric value
-            return create_instruction<Jump>(to_number_16_bit(addressToken));
+            return [this, addressToken](){ return create_instruction<Jump>(to_number_16_bit(addressToken)); };
         }
     }
 }

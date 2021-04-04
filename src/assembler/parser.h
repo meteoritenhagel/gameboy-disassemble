@@ -20,7 +20,7 @@
  */
 class Parser {
 public:
-
+    using UnresolvedInstruction = std::function<InstructionPtr(void)>;
     using SymbolToNumeric = std::map<std::string, long>;
 
     using Address = word;
@@ -54,11 +54,12 @@ private:
     void build_symbol_table() {
         while (!is_finished()) {
 
-            if (std::optional<InstructionPtr> instruction = parse_gameboy_instruction()) { // GameBoy instruction
+            if (std::optional<UnresolvedInstruction> unresolvedInstruction = parse_gameboy_instruction()) { // GameBoy instruction
                 // if an error occurs while parsing, the instruction is not constructed
                 // and the address is not incremented
-                _currentAddress += get_length(instruction.value());
-                _instructionVector.push_back(std::move(*instruction)); // accesses value of std::optional
+                InstructionPtr resolvedInstruction = (*unresolvedInstruction)(); // access std::optional via *
+                _currentAddress += get_length(resolvedInstruction);
+                _instructionVector.push_back(std::move(resolvedInstruction));
                 continue;
             }
 
@@ -105,14 +106,14 @@ private:
 
     /**
      * Checks if the next instruction is a GameBoy specific instruction, parses and returns it.
-     * @return an optional containing the currently parsed GameBoy CPU instruction if found, or an empty optional.
+     * @return TODO
      */
-    std::optional<InstructionPtr> parse_gameboy_instruction() {
+    std::optional<UnresolvedInstruction> parse_gameboy_instruction() {
         const Token firstTokenOfInstruction = read_current();
         const std::string currStr = firstTokenOfInstruction.get_string();
         const size_t firstTokenPosition = get_current_token_position();
 
-        std::optional<InstructionPtr> instruction{};
+        std::optional<UnresolvedInstruction> instruction{};
 
 //        try {
             if      (to_upper(currStr) == "ADD") { instruction = parse_add(); }
@@ -138,37 +139,37 @@ private:
      * Parses "ADD" commands
      * @return pointer to parsed instruction
      */
-    InstructionPtr parse_add();
+    UnresolvedInstruction parse_add();
 
     /**
      * Parses "ADC" commands
      * @return pointer to parsed instruction
      */
-    InstructionPtr parse_adc();
+    UnresolvedInstruction parse_adc();
 
     /**
      * Parses "BIT" commands
      * @return pointer to parsed instruction
      */
-    InstructionPtr parse_bit();
+    UnresolvedInstruction parse_bit();
 
     /**
      * Parses "INC" commands
      * @return pointer to parsed instruction
      */
-    InstructionPtr parse_inc();
+    UnresolvedInstruction parse_inc();
 
     /**
      * Parses "DEC" commands
      * @return pointer to parsed instruction
      */
-    InstructionPtr parse_dec();
+    UnresolvedInstruction parse_dec();
 
     /**
      * Parses "JP" commands
      * @return pointer to parsed instruction
      */
-    InstructionPtr parse_jp();
+    UnresolvedInstruction parse_jp();
 
     /**
      * Parses "EQU" commands specific to the assembler.
@@ -246,21 +247,6 @@ private:
      * @return const reference to the source code
      */
     const std::string& get_code() const noexcept;
-
-    template<typename ReturnedInstructionType, typename... Args>
-    InstructionPtr create_instruction(Args... args) {
-        try { // to resolve the symbols
-            return std::make_unique<ReturnedInstructionType>(args...);
-        } catch (const std::invalid_argument &e) {
-            // if resolution fails, get the instruction bytecode length and append it to the exception
-
-//            std::tuple<Ts...> defaultParameters{};
-//            InstructionPtr instruction = std::apply([](Ts... iargs){ return std::make_unique<InstructionType>(iargs...); }, defaultParameters);
-//
-//            throw std::logic_error("XYZ " + to_string_dec(get_length(instruction)));
-        }
-
-    }
 
     /**
      * Throws a logic error exception containing a string, in which the token is highlighted.
