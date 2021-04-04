@@ -5,6 +5,8 @@
 #include "tokenizer.h"
 #include "../instructions/instructions.h"
 
+#include <functional>
+
 #include "pretty_format.h"
 
 #include <map>
@@ -106,20 +108,29 @@ private:
      * @return an optional containing the currently parsed GameBoy CPU instruction if found, or an empty optional.
      */
     std::optional<InstructionPtr> parse_gameboy_instruction() {
-        const Token currentToken = read_current();
-        const std::string currStr = currentToken.get_string();
+        const Token firstTokenOfInstruction = read_current();
+        const std::string currStr = firstTokenOfInstruction.get_string();
+        const size_t firstTokenPosition = get_current_token_position();
 
         std::optional<InstructionPtr> instruction{};
 
-        if      (to_upper(currStr) == "ADD") { instruction = parse_add(); }
-        else if (to_upper(currStr) == "ADC") { instruction = parse_adc(); }
-        else if (to_upper(currStr) == "BIT") { instruction = parse_bit(); }
-        else if (to_upper(currStr) == "INC") { instruction = parse_inc(); }
-        else if (to_upper(currStr) == "DEC") { instruction = parse_dec(); }
-        else if (to_upper(currStr) == "JP")  { instruction = parse_jp();  }
-        else                                 { return instruction; } // in case of no match we want to go on without checking for end_of_context
+//        try {
+            if      (to_upper(currStr) == "ADD") { instruction = parse_add(); }
+            else if (to_upper(currStr) == "ADC") { instruction = parse_adc(); }
+            else if (to_upper(currStr) == "BIT") { instruction = parse_bit(); }
+            else if (to_upper(currStr) == "INC") { instruction = parse_inc(); }
+            else if (to_upper(currStr) == "DEC") { instruction = parse_dec(); }
+            else if (to_upper(currStr) == "JP")  { instruction = parse_jp();  }
+//        } catch (const std::invalid_argument& e) {
+//            // if symbol resolution has failed, return instance of SymbolResolutionFailed constructed
+//            // with the starting token's position, so it can later be re-parsed.
+//            instruction = std::make_unique<SymbolResolutionFailed>(firstTokenPosition);
+//        }
 
-        expect_end_of_context(fetch());
+        if (instruction.has_value()) { // only check for end of context in case that an actual GameBoy instruction has been found
+            expect_end_of_context(fetch());
+        }
+
         return instruction;
     }
 
@@ -175,7 +186,7 @@ private:
      * Returns the current position in the token vector.
      * @return current position in the token vector
      */
-    size_t get_current_position() const noexcept;
+    size_t get_current_token_position() const noexcept;
 
     /**
      * Increments the current position in the token vector,
@@ -235,6 +246,21 @@ private:
      * @return const reference to the source code
      */
     const std::string& get_code() const noexcept;
+
+    template<typename ReturnedInstructionType, typename... Args>
+    InstructionPtr create_instruction(Args... args) {
+        try { // to resolve the symbols
+            return std::make_unique<ReturnedInstructionType>(args...);
+        } catch (const std::invalid_argument &e) {
+            // if resolution fails, get the instruction bytecode length and append it to the exception
+
+//            std::tuple<Ts...> defaultParameters{};
+//            InstructionPtr instruction = std::apply([](Ts... iargs){ return std::make_unique<InstructionType>(iargs...); }, defaultParameters);
+//
+//            throw std::logic_error("XYZ " + to_string_dec(get_length(instruction)));
+        }
+
+    }
 
     /**
      * Throws a logic error exception containing a string, in which the token is highlighted.

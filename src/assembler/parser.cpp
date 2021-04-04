@@ -6,7 +6,7 @@ bool Parser::is_finished() const noexcept {
     return (_currentTokenPosition >= _tokenVector.size());
 }
 
-size_t Parser::get_current_position() const noexcept {
+size_t Parser::get_current_token_position() const noexcept {
     return _currentTokenPosition;
 }
 
@@ -22,16 +22,16 @@ void Parser::reset() noexcept {
 }
 
 Token Parser::read_current() const {
-    if (get_current_position() < _tokenVector.size()) {
-        return _tokenVector.at(get_current_position());
+    if (get_current_token_position() < _tokenVector.size()) {
+        return _tokenVector.at(get_current_token_position());
     } else {
         return _tokenVector.at(_tokenVector.size() - 1);
     }
 }
 
 Token Parser::read_next() const {
-    if (get_current_position() < _tokenVector.size() - 1) {
-        return _tokenVector.at(get_current_position() + 1);
+    if (get_current_token_position() < _tokenVector.size() - 1) {
+        return _tokenVector.at(get_current_token_position() + 1);
     } else {
         return _tokenVector.at(_tokenVector.size() - 1);
     }

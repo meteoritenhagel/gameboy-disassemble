@@ -1,7 +1,8 @@
 #include "disassemble.h"
 
 unsigned decode_length(const Opcode opcode) {
-    Bytestring bytecode(6, 0x00);
+    constexpr size_t maxInstructionLength = 4;
+    Bytestring bytecode(maxInstructionLength, 0x00);
 
     const Bytestring opc = opcode_to_bytestring(opcode);
     std::copy(std::begin(opc), std::end(opc), std::begin(bytecode));
@@ -9,11 +10,9 @@ unsigned decode_length(const Opcode opcode) {
     Decoder decoder(bytecode);
 
     // calculate number of bytes read_current
-    const word startingPosition = decoder.get_current_position();
-    decoder.decode();
-    const word endPosition = decoder.get_current_position();
+    const auto [address, decodedInstruction] = decoder.decode();
 
-    return endPosition - startingPosition;
+    return decodedInstruction->length();
 }
 
 void disassemble(const Bytestring &bytecode, std::ostream &ostr) {

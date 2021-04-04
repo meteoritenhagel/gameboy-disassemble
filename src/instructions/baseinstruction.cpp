@@ -26,6 +26,10 @@ Bytestring BaseInstruction::bytestr() const {
     return merge_to_bytestring(opcode(), _arguments);
 }
 
+size_t BaseInstruction::length() const {
+    return bytestr().size();
+}
+
 bool BaseInstruction::is_valid() const {
     return (opcode() != opcodes::INVALID_OPCODE);
 }

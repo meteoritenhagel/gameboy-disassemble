@@ -49,9 +49,9 @@ InstructionPtr Parser::parse_adc() {
     const Token sourceToken = fetch();
 
     if (is_register_8_bit(sourceToken)) {
-        return std::make_unique<AddWithCarryAAnd8BitRegister>(to_register_8_bit(sourceToken));
+        return create_instruction<AddWithCarryAAnd8BitRegister>(to_register_8_bit(sourceToken));
     } else { // number or symbol
-        return std::make_unique<AddWithCarryAAndImmediate>(to_number_8_bit(sourceToken));
+        return create_instruction<AddWithCarryAAndImmediate>(to_number_8_bit(sourceToken));
     }
 }
 
@@ -71,19 +71,19 @@ InstructionPtr Parser::parse_bit() {
 
     const Register8Bit reg = to_register_8_bit(registerToken);
 
-    return std::make_unique<BitOf8BitRegisterComplementIntoZero>(index, reg);
+    return create_instruction<BitOf8BitRegisterComplementIntoZero>(index, reg);
 }
 
 InstructionPtr Parser::parse_inc() {
     increment_position(); // because instruction-specific token was already checked before calling the function
     const Token registerToken = fetch();
-    return std::make_unique<IncrementRegister>(to_register(registerToken));
+    return create_instruction<IncrementRegister>(to_register(registerToken));
 }
 
 InstructionPtr Parser::parse_dec() {
     increment_position(); // because instruction-specific token was already checked before calling the function
     const Token registerToken = fetch();
-    return std::make_unique<DecrementRegister>(to_register(registerToken));
+    return create_instruction<DecrementRegister>(to_register(registerToken));
 }
 
 InstructionPtr Parser::parse_jp() {
@@ -94,16 +94,16 @@ InstructionPtr Parser::parse_jp() {
         const Token commaToken = fetch();
         const Token addressToken = fetch();
 
-        return std::make_unique<JumpConditional>(to_flag_condition(conditionToken), to_number_16_bit(addressToken));
+        return create_instruction<JumpConditional>(to_flag_condition(conditionToken), to_number_16_bit(addressToken));
     } else { // short version
         const Token addressToken = fetch();
 
         if (is_register(addressToken)) { // JP HL
             to_register_expect(addressToken, Register16Bit::HL);
-            return std::make_unique<JumpToHL>();
+            return create_instruction<JumpToHL>();
         }
         else { // has to be numeric value
-            return std::make_unique<Jump>(to_number_16_bit(addressToken));
+            return create_instruction<Jump>(to_number_16_bit(addressToken));
         }
     }
 }

@@ -11,6 +11,11 @@ class BaseInstruction;
 using InstructionPtr = std::unique_ptr<const BaseInstruction>;
 using InstructionVector = std::vector<InstructionPtr>;
 
+/**
+ * Class BaseInstruction. All GameBoy instructions are supposed to be derived from this class.
+ * Note that all possible realizations of the same child class must have the same bytecode length.
+ * Otherwise, when assembling, label resolution cannot work properly.
+ */
 class BaseInstruction {
 public:
     BaseInstruction(const std::string &string, const Opcode opcode, const Bytestring &arguments = {});
@@ -23,6 +28,8 @@ public:
     std::string str() const;
 
     Bytestring bytestr() const;
+
+    size_t length() const;
 
     bool is_valid() const;
 

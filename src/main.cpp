@@ -110,7 +110,7 @@ int main()
     std::string code(
                      "LABEL1:\n"
                      "DEC HL\n"
-                     "JP LABEL2\n"
+                     "JP LABEL1\n"
                      "LABEL2:\n"
                      "DEC HL\n"
                      );
