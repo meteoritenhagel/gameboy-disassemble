@@ -44,7 +44,6 @@ unsigned get_length(const InstructionPtr &instruction);
 template<typename ExceptionType = std::logic_error>
 void throw_exception_and_highlight(const std::string &code, const size_t lineNumber, const size_t columnNumber, const std::string &errorMessage, const size_t highlightWidth = 1);
 
-
 /**
  * Checks whether a @p character is either '+' or '-'.
  * @param character character

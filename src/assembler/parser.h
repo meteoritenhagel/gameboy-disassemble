@@ -43,23 +43,28 @@ public:
      * @return vector of parsed instructions
      */
     InstructionVector parse() {
-        build_symbol_table();
-        //reparse_missing_symbols();
-
-        return std::move(_instructionVector);
+        const std::vector<UnresolvedInstruction> unresolvedInstructions = pre_parse();
+        return resolve_symbols(unresolvedInstructions);
     }
 
 private:
 
-    void build_symbol_table() {
+    InstructionVector resolve_symbols(const std::vector<UnresolvedInstruction> unresolvedInstructions) {
+        InstructionVector resolvedInstructions(unresolvedInstructions.size());
+        std::transform(unresolvedInstructions.cbegin(), unresolvedInstructions.cend(), resolvedInstructions.begin(), [](const UnresolvedInstruction &f){ return std::move(f()); });
+        return resolvedInstructions;
+    }
+
+    std::vector<UnresolvedInstruction> pre_parse() {
+        std::vector<UnresolvedInstruction> returnVector{};
+
         while (!is_finished()) {
 
             if (std::optional<UnresolvedInstruction> unresolvedInstruction = parse_gameboy_instruction()) { // GameBoy instruction
                 // if an error occurs while parsing, the instruction is not constructed
                 // and the address is not incremented
-                InstructionPtr resolvedInstruction = (*unresolvedInstruction)(); // access std::optional via *
-                _currentAddress += get_length(resolvedInstruction);
-                _instructionVector.push_back(std::move(resolvedInstruction));
+                _currentAddress += get_length(unresolvedInstruction); //TODO
+                returnVector.push_back(std::move(*unresolvedInstruction)); // access std::optional via operator*
                 continue;
             }
 
@@ -69,6 +74,8 @@ private:
             throw_logic_error_and_highlight(read_current(), "Parse error: Found unknown expression '" +
                                             read_current().get_string() + "'.");
         }
+
+        return returnVector;
     }
 
     /**
@@ -418,7 +425,6 @@ private:
     Token _currentGlobalLabel{}; ///< the currently active global label. Is used for resolving the local labels.
 
     SymbolToNumeric _symbolicTable{}; ///< symbolic table, which contains all symbols, labels etc.
-    InstructionVector _instructionVector{}; ///< InstructionVector, which is built and returned by parse()
 };
 
 
