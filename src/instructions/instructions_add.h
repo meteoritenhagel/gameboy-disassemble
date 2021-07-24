@@ -5,7 +5,7 @@
 
 class AddAAndImmediate : public BaseInstruction {
 public:
-    AddAAndImmediate(const byte immediate)
+    AddAAndImmediate(const byte immediate = {})
             : BaseInstruction("ADD A, " + to_string_hex_prefixed(immediate),
                               opcodes::ADD_A_AND_IMMEDIATE,
                               Bytestring{immediate}),
@@ -17,7 +17,7 @@ private:
 
 class AddWithCarryAAndImmediate : public BaseInstruction {
 public:
-    AddWithCarryAAndImmediate(const byte immediate)
+    AddWithCarryAAndImmediate(const byte immediate = {})
             : BaseInstruction("ADC A, " + to_string_hex_prefixed(immediate),
                               opcodes::ADD_WITH_CARRY_A_AND_IMMEDIATE,
                               Bytestring{immediate}),
@@ -29,7 +29,7 @@ private:
 
 class AddAAnd8BitRegister : public BaseInstruction {
 public:
-    AddAAnd8BitRegister(const Register8Bit source)
+    AddAAnd8BitRegister(const Register8Bit source = {})
             : BaseInstruction("ADD A, " + to_string(source),
                               determine_opcode(source)),
               _source(source) {}
@@ -54,7 +54,7 @@ private:
 
 class AddWithCarryAAnd8BitRegister : public BaseInstruction {
 public:
-    AddWithCarryAAnd8BitRegister(const Register8Bit source)
+    AddWithCarryAAnd8BitRegister(const Register8Bit source = {})
             : BaseInstruction("ADC A, " + to_string(source),
                               determine_opcode(source)),
               _source(source) {}
@@ -79,7 +79,7 @@ private:
 
 class AddHLAnd16BitRegister : public BaseInstruction {
 public:
-    AddHLAnd16BitRegister(const Register16Bit source)
+    AddHLAnd16BitRegister(const Register16Bit source = {})
             : BaseInstruction("ADD HL, " + to_string(source),
                               determine_opcode(source)),
               _source(source) {}
@@ -99,7 +99,7 @@ private:
 
 class AddSPAndImmediate : public BaseInstruction {
 public:
-    AddSPAndImmediate(const byte immediate)
+    AddSPAndImmediate(const byte immediate = {})
             : BaseInstruction("ADD SP, " + to_string_hex_signed_prefixed(immediate, 2),
                               opcodes::ADD_SP_AND_IMMEDIATE,
                               Bytestring{immediate}),

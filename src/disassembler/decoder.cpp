@@ -80,7 +80,7 @@ InstructionPtr Decoder::decode_opcode(const Opcode opcode) {
         case opcodes::ROTATE_LEFT_CONTENTS_OF_A_AND_CLEAR_ZERO   : return std::make_unique<RotateLeftContentsOfAAndClearZero>();
         case opcodes::LOAD_SP_INTO_ADDRESS_IMMEDIATE             : return std::make_unique<LoadSPIntoAddressImmediate>(fetch_word());
         case opcodes::ADD_HL_AND_BC                              : return std::make_unique<AddHLAnd16BitRegister>(Register16Bit::BC);
-        case opcodes::LOAD_ADDRESS_BC_INTO_A                     : return std::make_unique<LoadAIntoAddress16BitRegister>(Register16Bit::BC);
+        case opcodes::LOAD_ADDRESS_BC_INTO_A                     : return std::make_unique<LoadAddress16BitRegisterIntoA>(Register16Bit::BC);
         case opcodes::DECREMENT_BC                               : return std::make_unique<DecrementRegister>(Register16Bit::BC);
         case opcodes::INCREMENT_C                                : return std::make_unique<IncrementRegister>(Register8Bit::C);
         case opcodes::DECREMENT_C                                : return std::make_unique<DecrementRegister>(Register8Bit::C);
@@ -97,7 +97,7 @@ InstructionPtr Decoder::decode_opcode(const Opcode opcode) {
         case opcodes::ROTATE_LEFT_A_AND_CLEAR_ZERO               : return std::make_unique<RotateLeftAAndClearZero>();
         case opcodes::JUMP_RELATIVE                              : return std::make_unique<JumpRelative>(fetch_byte());
         case opcodes::ADD_HL_AND_DE                              : return std::make_unique<AddHLAnd16BitRegister>(Register16Bit::DE);
-        case opcodes::LOAD_ADDRESS_DE_INTO_A                     : return std::make_unique<LoadAIntoAddress16BitRegister>(Register16Bit::DE);
+        case opcodes::LOAD_ADDRESS_DE_INTO_A                     : return std::make_unique<LoadAddress16BitRegisterIntoA>(Register16Bit::DE);
         case opcodes::DECREMENT_DE                               : return std::make_unique<DecrementRegister>(Register16Bit::DE);
         case opcodes::INCREMENT_E                                : return std::make_unique<IncrementRegister>(Register8Bit::E);
         case opcodes::DECREMENT_E                                : return std::make_unique<DecrementRegister>(Register8Bit::E);

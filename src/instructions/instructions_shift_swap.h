@@ -5,7 +5,7 @@
 
 class ShiftLeftArithmetical8BitRegister : public BaseInstruction {
 public:
-    ShiftLeftArithmetical8BitRegister(const Register8Bit reg)
+    ShiftLeftArithmetical8BitRegister(const Register8Bit reg = {})
             : BaseInstruction("SLA " + to_string(reg),
                               determine_opcode(reg)),
               _register(reg) {}
@@ -30,7 +30,7 @@ private:
 
 class ShiftRightArithmetical8BitRegister : public BaseInstruction {
 public:
-    ShiftRightArithmetical8BitRegister(const Register8Bit reg)
+    ShiftRightArithmetical8BitRegister(const Register8Bit reg = {})
             : BaseInstruction("SRA " + to_string(reg),
                               determine_opcode(reg)),
               _register(reg) {}
@@ -55,7 +55,7 @@ private:
 
 class ShiftRightLogical8BitRegister : public BaseInstruction {
 public:
-    ShiftRightLogical8BitRegister(const Register8Bit reg)
+    ShiftRightLogical8BitRegister(const Register8Bit reg = {})
             : BaseInstruction("SRL " + to_string(reg),
                               determine_opcode(reg)),
               _register(reg) {}
@@ -80,7 +80,7 @@ private:
 
 class Swap8BitRegister : public BaseInstruction {
 public:
-    Swap8BitRegister(const Register8Bit reg)
+    Swap8BitRegister(const Register8Bit reg = {})
             : BaseInstruction("SWAP " + to_string(reg),
                               determine_opcode(reg)),
               _register(reg) {}

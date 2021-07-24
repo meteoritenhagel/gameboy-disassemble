@@ -5,7 +5,7 @@
 
 class AndAAnd8BitRegister : public BaseInstruction {
 public:
-    AndAAnd8BitRegister(const Register8Bit source)
+    AndAAnd8BitRegister(const Register8Bit source = {})
             : BaseInstruction("AND A, " + to_string(source),
                               determine_opcode(source)),
               _source(source) {}
@@ -30,7 +30,7 @@ private:
 
 class OrAAnd8BitRegister : public BaseInstruction {
 public:
-    OrAAnd8BitRegister(const Register8Bit source)
+    OrAAnd8BitRegister(const Register8Bit source = {})
             : BaseInstruction("OR A, " + to_string(source), determine_opcode(source)),
               _source(source) {}
 
@@ -54,7 +54,7 @@ private:
 
 class XorAAnd8BitRegister : public BaseInstruction {
 public:
-    XorAAnd8BitRegister(const Register8Bit source)
+    XorAAnd8BitRegister(const Register8Bit source = {})
             : BaseInstruction("XOR A, " + to_string(source),
                               determine_opcode(source)),
               _source(source) {}
@@ -79,7 +79,7 @@ private:
 
 class CompareAAnd8BitRegister : public BaseInstruction {
 public:
-    CompareAAnd8BitRegister(const Register8Bit source)
+    CompareAAnd8BitRegister(const Register8Bit source = {})
             : BaseInstruction("CP A, " + to_string(source),
                               determine_opcode(source)),
               _source(source) {}
@@ -118,7 +118,7 @@ public:
 
 class AndAAndImmediate : public BaseInstruction {
 public:
-    AndAAndImmediate(const byte immediate)
+    AndAAndImmediate(const byte immediate = {})
             : BaseInstruction("AND A, " + to_string_hex(immediate),
                               opcodes::AND_A_AND_IMMEDIATE),
               _immediate(immediate) {}
@@ -129,7 +129,7 @@ private:
 
 class OrAAndImmediate : public BaseInstruction {
 public:
-    OrAAndImmediate(const byte immediate)
+    OrAAndImmediate(const byte immediate = {})
             : BaseInstruction("OR A, " + to_string_hex(immediate),
                               opcodes::OR_A_AND_IMMEDIATE),
               _immediate(immediate) {}
@@ -140,7 +140,7 @@ private:
 
 class XorAAndImmediate : public BaseInstruction {
 public:
-    XorAAndImmediate(const byte immediate)
+    XorAAndImmediate(const byte immediate = {})
             : BaseInstruction("XOR A, " + to_string_hex(immediate),
                               opcodes::XOR_A_AND_IMMEDIATE),
               _immediate(immediate) {}
@@ -151,7 +151,7 @@ private:
 
 class CompareAAndImmediate : public BaseInstruction {
 public:
-    CompareAAndImmediate(const byte immediate)
+    CompareAAndImmediate(const byte immediate = {})
             : BaseInstruction("CP A, " + to_string_hex(immediate),
                               opcodes::COMPARE_A_AND_IMMEDIATE),
               _immediate(immediate) {}

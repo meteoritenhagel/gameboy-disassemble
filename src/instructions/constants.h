@@ -38,7 +38,11 @@ enum class Register16Bit {
     SP
 };
 
-using Register = std::variant<std::monostate, Register8Bit, Register16Bit>;
+enum class RegisterInvalid {
+    INVALID
+};
+
+using Register = std::variant<Register8Bit, Register16Bit, RegisterInvalid>;
 
 enum class FlagCondition {
     ZERO,

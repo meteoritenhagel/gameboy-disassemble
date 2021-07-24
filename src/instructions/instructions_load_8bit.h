@@ -5,8 +5,8 @@
 
 class LoadImmediateInto8BitRegister : public BaseInstruction {
 public:
-    LoadImmediateInto8BitRegister(const Register8Bit destination,
-                                  const byte immediate)
+    LoadImmediateInto8BitRegister(const Register8Bit destination = {},
+                                  const byte immediate = {})
             : BaseInstruction("LD " + to_string(destination) + ", " + to_string_hex_prefixed(immediate),
                               determine_opcode(destination),
                               Bytestring{immediate}),
@@ -46,8 +46,8 @@ private:
 
 class Load8BitRegisterInto8BitRegister : public BaseInstruction {
 public:
-    Load8BitRegisterInto8BitRegister(const Register8Bit source,
-                                     const Register8Bit destination)
+    Load8BitRegisterInto8BitRegister(const Register8Bit source = {},
+                                     const Register8Bit destination = {})
             : BaseInstruction("LD " + to_string(destination) + ", " + to_string(source),
                               determine_opcode(source, destination)),
               _source(source),
@@ -167,7 +167,7 @@ private:
 
 class LoadAIntoAddressImmediate : public BaseInstruction {
 public:
-    LoadAIntoAddressImmediate(const word immediate)
+    LoadAIntoAddressImmediate(const word immediate = {})
             : BaseInstruction("LD (" + to_string_hex_prefixed(immediate) + "), A",
                               opcodes::LOAD_A_INTO_ADDRESS_IMMEDIATE),
               _immediate(immediate) {}
@@ -186,7 +186,7 @@ private:
 
 class LoadAddressImmediateIntoA : public BaseInstruction {
 public:
-    LoadAddressImmediateIntoA(const word immediate)
+    LoadAddressImmediateIntoA(const word immediate = {})
             : BaseInstruction("LD A, (" + to_string_hex_prefixed(immediate) + ")",
                               opcodes::LOAD_ADDRESS_IMMEDIATE_INTO_A),
               _immediate(immediate) {}
@@ -207,7 +207,7 @@ private:
 
 class LoadAIntoAddress16BitRegister : public BaseInstruction {
 public:
-    LoadAIntoAddress16BitRegister(const Register16Bit destination)
+    LoadAIntoAddress16BitRegister(const Register16Bit destination = {})
             : BaseInstruction("LD (" + to_string(destination) + "), A", determine_opcode(destination)),
               _destination(destination) {}
 
@@ -225,7 +225,7 @@ private:
 
 class LoadAddress16BitRegisterIntoA : public BaseInstruction {
 public:
-    LoadAddress16BitRegisterIntoA(const Register16Bit source)
+    LoadAddress16BitRegisterIntoA(const Register16Bit source = {})
             : BaseInstruction("LD A, (" + to_string(source) + ")", determine_opcode(source)),
               _source(source) {}
 
@@ -274,7 +274,7 @@ public:
 
 class LoadAIntoPortAddressImmediate : public BaseInstruction {
 public:
-    LoadAIntoPortAddressImmediate(const byte portAddress)
+    LoadAIntoPortAddressImmediate(const byte portAddress = {})
             : BaseInstruction("LDH (" + to_string_hex_prefixed(portAddress) + "), A",
                               opcodes::LOAD_A_INTO_PORT_ADDRESS_IMMEDIATE),
               _portAddress(portAddress) {}
@@ -292,7 +292,7 @@ public:
 
 class LoadPortAddressImmediateIntoA : public BaseInstruction {
 public:
-    LoadPortAddressImmediateIntoA(const byte portAddress)
+    LoadPortAddressImmediateIntoA(const byte portAddress = {})
             : BaseInstruction("LDH A, (" + to_string_hex_prefixed(portAddress) + ")",
                               opcodes::LOAD_PORT_ADDRESS_IMMEDIATE_INTO_A),
               _portAddress(portAddress) {}

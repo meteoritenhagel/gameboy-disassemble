@@ -5,7 +5,7 @@
 
 class Unused : public BaseInstruction {
 public:
-    Unused(const uint8_t index)
+    Unused(const uint8_t index = {})
             : BaseInstruction("??" + to_string_dec(_index),
                               determine_opcode(index)) {}
 

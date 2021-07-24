@@ -5,7 +5,7 @@
 
 class Jump : public BaseInstruction {
 public:
-    Jump(const word address)
+    Jump(const word address = {})
             : BaseInstruction(
             "JP " + to_string_hex_prefixed(address), opcodes::JUMP,
             to_bytestring_little_endian(address)),
@@ -17,7 +17,7 @@ private:
 
 class JumpConditional : public BaseInstruction {
 public:
-    JumpConditional(const FlagCondition flagCondition, const word address)
+    JumpConditional(const FlagCondition flagCondition = {}, const word address = {})
             : BaseInstruction("JP " + to_string(flagCondition) + ", " + to_string_hex_prefixed(address),
                               determine_opcode(flagCondition),
                               to_bytestring_little_endian(address)),
@@ -46,7 +46,7 @@ public:
 
 class JumpRelative : public BaseInstruction {
 public:
-    JumpRelative(const byte relativePosition)
+    JumpRelative(const byte relativePosition = {})
             : BaseInstruction(
             "JR " + to_string_hex_signed_prefixed(relativePosition), opcodes::JUMP_RELATIVE,
             Bytestring{relativePosition}),
@@ -58,7 +58,7 @@ private:
 
 class JumpRelativeConditional : public BaseInstruction {
 public:
-    JumpRelativeConditional(const FlagCondition flagCondition, const byte relativePosition)
+    JumpRelativeConditional(const FlagCondition flagCondition = {}, const byte relativePosition = {})
             : BaseInstruction("JR " + to_string(flagCondition) + ", " + to_string_hex_signed_prefixed(relativePosition),
                               determine_opcode(flagCondition),
                               Bytestring{relativePosition}),
@@ -82,7 +82,7 @@ private:
 
 class Call : public BaseInstruction {
 public:
-    Call(const word address)
+    Call(const word address = {})
             : BaseInstruction(
             "CALL " + to_string_hex_prefixed(address), opcodes::CALL,
             to_bytestring_little_endian(address)),
@@ -95,7 +95,7 @@ private:
 
 class CallConditional : public BaseInstruction {
 public:
-    CallConditional(const FlagCondition flagCondition, const word address)
+    CallConditional(const FlagCondition flagCondition = {}, const word address = {})
             : BaseInstruction("CALL " + to_string(flagCondition) + ", " + to_string_hex_prefixed(address),
                               determine_opcode(flagCondition),
                               to_bytestring_little_endian(address)),
@@ -125,7 +125,7 @@ public:
 
 class ReturnConditional : public BaseInstruction {
 public:
-    ReturnConditional(const FlagCondition flagCondition)
+    ReturnConditional(const FlagCondition flagCondition = {})
             : BaseInstruction("RET " + to_string(flagCondition), determine_opcode(flagCondition)),
               _flagCondition(flagCondition) {}
 
@@ -151,7 +151,7 @@ public:
 
 class Restart : public BaseInstruction {
 public:
-    Restart(const uint8_t jumpIndex)
+    Restart(const uint8_t jumpIndex = {})
             : BaseInstruction("RST " + to_string_dec(jumpIndex),
                               determine_opcode(jumpIndex)),
               _jumpIndex(jumpIndex) {}

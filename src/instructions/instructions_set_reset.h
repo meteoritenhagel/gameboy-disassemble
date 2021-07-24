@@ -5,7 +5,7 @@
 
 class SetBitOf8BitRegister : public BaseInstruction {
 public:
-    SetBitOf8BitRegister(const uint8_t bitIndex, const Register8Bit reg)
+    SetBitOf8BitRegister(const uint8_t bitIndex = {}, const Register8Bit reg = {})
             : BaseInstruction("SET " + to_string_dec(bitIndex) + ", " + to_string(reg),
                               determine_opcode(bitIndex, reg)),
               _bitIndex(bitIndex),
@@ -121,7 +121,7 @@ public:
               _register(reg) {}
 
 private:
-    Opcode determine_opcode(const uint8_t bitIndex, const Register8Bit reg) const {
+    Opcode determine_opcode(const uint8_t bitIndex = {}, const Register8Bit reg = {}) const {
         switch (reg) {
                 case Register8Bit::B: switch (bitIndex) {
                     case 0: return opcodes::RESET_BIT_0_OF_B;

@@ -5,7 +5,7 @@
 
 class Push16BitRegister : public BaseInstruction {
 public:
-    Push16BitRegister(const Register16Bit reg)
+    Push16BitRegister(const Register16Bit reg = {})
             : BaseInstruction("PUSH " + to_string(reg), determine_opcode(reg)),
               _register(reg) {}
 
@@ -25,7 +25,7 @@ private:
 
 class Pop16BitRegister : public BaseInstruction {
 public:
-    Pop16BitRegister(const Register16Bit reg)
+    Pop16BitRegister(const Register16Bit reg = {})
             : BaseInstruction("POP " + to_string(reg), determine_opcode(reg)),
               _register(reg) {}
 

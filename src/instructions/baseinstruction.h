@@ -4,6 +4,7 @@
 #include "constants.h"
 #include "auxiliary_and_conversions.h"
 
+#include <functional>
 #include <string>
 
 class BaseInstruction;
@@ -18,7 +19,8 @@ InstructionPtr create_instruction(Args... args) {
 
 /**
  * Class BaseInstruction. All GameBoy instructions are supposed to be derived from this class.
- * Note that all possible realizations of the same child class must have the same bytecode length.
+ * Note that all possible realizations of the same child class must have the same bytecode length each,
+ * and they must be default constructible.
  * Otherwise, when assembling, label resolution cannot work properly.
  */
 class BaseInstruction {
@@ -46,6 +48,5 @@ private:
     const std::string _string;
     const Bytestring _arguments{};
 };
-
 
 #endif //GAMEBOY_DISASSEMBLE_BASEINSTRUCTION_H

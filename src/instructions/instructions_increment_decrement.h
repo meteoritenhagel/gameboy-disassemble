@@ -5,7 +5,7 @@
 
 class IncrementRegister : public BaseInstruction {
 public:
-    IncrementRegister(const Register &reg)
+    IncrementRegister(const Register &reg = {})
             : BaseInstruction("INC " + to_string(reg),
                               determine_opcode(reg)),
               _register(reg) {}
@@ -42,7 +42,7 @@ private:
 
 class DecrementRegister : public BaseInstruction {
 public:
-    DecrementRegister(const Register &reg)
+    DecrementRegister(const Register &reg = {})
             : BaseInstruction("DEC " + to_string(reg),
                               determine_opcode(reg)),
               _register(reg) {}

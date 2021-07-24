@@ -88,7 +88,7 @@ Register to_register(const std::string &str) noexcept {
     if (str == "DE" || str == "de") return Register16Bit::DE;
     if (str == "HL" || str == "hl") return Register16Bit::HL;
     if (str == "SP" || str == "sp") return Register16Bit::SP;
-    return{};
+    return RegisterInvalid::INVALID;
 }
 
 Register8Bit to_register_8_bit(const Register& reg)
@@ -110,13 +110,13 @@ Register16Bit to_register_16_bit(const Register& reg)
 }
 
 bool is_valid(const Register &reg) noexcept {
-    return (reg.index() != 0);
+    return (reg.index() != 2);
 }
 
 bool is_register_8_bit(const Register &reg) noexcept {
-    return (reg.index() == 1);
+    return (reg.index() == 0);
 }
 
 bool is_register_16_bit(const Register &reg) noexcept {
-    return (reg.index() == 2);
+    return (reg.index() == 1);
 }

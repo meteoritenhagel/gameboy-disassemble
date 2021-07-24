@@ -5,7 +5,7 @@
 
 class BitOf8BitRegisterComplementIntoZero : public BaseInstruction {
 public:
-    BitOf8BitRegisterComplementIntoZero(const uint8_t bitIndex, const Register8Bit reg)
+    BitOf8BitRegisterComplementIntoZero(const uint8_t bitIndex = {}, const Register8Bit reg = {})
             : BaseInstruction("BIT " + to_string_dec(bitIndex) + ", " + to_string(reg), determine_opcode(bitIndex, reg)),
               _bitIndex(bitIndex),
               _register(reg) {}

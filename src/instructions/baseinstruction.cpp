@@ -1,7 +1,3 @@
-//
-// Created by tristan on 16.02.21.
-//
-
 #include "baseinstruction.h"
 
 BaseInstruction::BaseInstruction(const std::string &string, const Opcode opcode, const Bytestring &arguments)

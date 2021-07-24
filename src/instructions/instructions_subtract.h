@@ -5,7 +5,7 @@
 
 class SubtractAAnd8BitRegister : public BaseInstruction {
 public:
-    SubtractAAnd8BitRegister(const Register8Bit source)
+    SubtractAAnd8BitRegister(const Register8Bit source = {})
             : BaseInstruction("SUB A, " + to_string(source),
                               determine_opcode(source)),
               _source(source) {}
@@ -30,7 +30,7 @@ private:
 
 class SubtractWithCarryAAnd8BitRegister : public BaseInstruction {
 public:
-    SubtractWithCarryAAnd8BitRegister(const Register8Bit source)
+    SubtractWithCarryAAnd8BitRegister(const Register8Bit source = {})
             : BaseInstruction("SBC A, " + to_string(source),
                               determine_opcode(source)),
               _source(source) {}
@@ -55,7 +55,7 @@ private:
 
 class SubtractAAndImmediate : public BaseInstruction {
 public:
-    SubtractAAndImmediate(const byte immediate)
+    SubtractAAndImmediate(const byte immediate = {})
             : BaseInstruction("SUB A, " + to_string_hex(immediate),
                               opcodes::SUBTRACT_A_AND_IMMEDIATE),
               _immediate(immediate) {}
@@ -66,7 +66,7 @@ private:
 
 class SubtractWithCarryAAndImmediate : public BaseInstruction {
 public:
-    SubtractWithCarryAAndImmediate(const byte immediate)
+    SubtractWithCarryAAndImmediate(const byte immediate = {})
             : BaseInstruction("SBC A, " + to_string_hex(immediate),
                               opcodes::SUBTRACT_WITH_CARRY_A_AND_IMMEDIATE),
               _immediate(immediate) {}

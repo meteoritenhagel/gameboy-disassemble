@@ -3,6 +3,7 @@
 
 #include "auxiliary.h"
 #include "tokenizer.h"
+#include "unresolvedinstruction.h"
 #include "../instructions/instructions.h"
 
 #include <functional>
@@ -20,11 +21,10 @@
  */
 class Parser {
 public:
-    using UnresolvedInstruction = std::function<InstructionPtr(void)>;
     using SymbolToNumeric = std::map<std::string, long>;
-
     using Address = word;
     using TokenVectorPosition = size_t;
+    using ReturnedInstruction = std::function<InstructionPtr(void)>;
 
     /**
      * Default constructor
@@ -43,28 +43,28 @@ public:
      * @return vector of parsed instructions
      */
     InstructionVector parse() {
-        const std::vector<UnresolvedInstruction> unresolvedInstructions = pre_parse();
-        return resolve_symbols(unresolvedInstructions);
+        const std::vector<UnresolvedInstructionPtr> unresolvedInstructions = std::move(pre_parse());
+        return resolve_symbols(std::move(unresolvedInstructions));
     }
 
 private:
 
-    InstructionVector resolve_symbols(const std::vector<UnresolvedInstruction> unresolvedInstructions) {
+    InstructionVector resolve_symbols(const std::vector<UnresolvedInstructionPtr> &unresolvedInstructions) {
         InstructionVector resolvedInstructions(unresolvedInstructions.size());
-        std::transform(unresolvedInstructions.cbegin(), unresolvedInstructions.cend(), resolvedInstructions.begin(), [](const UnresolvedInstruction &f){ return std::move(f()); });
+        std::transform(unresolvedInstructions.cbegin(), unresolvedInstructions.cend(), resolvedInstructions.begin(), [](const UnresolvedInstructionPtr &f){ return std::move(f->resolve()); });
         return resolvedInstructions;
     }
 
-    std::vector<UnresolvedInstruction> pre_parse() {
-        std::vector<UnresolvedInstruction> returnVector{};
+    std::vector<UnresolvedInstructionPtr> pre_parse() {
+        std::vector<UnresolvedInstructionPtr> returnVector{};
 
         while (!is_finished()) {
 
-            if (std::optional<UnresolvedInstruction> unresolvedInstruction = parse_gameboy_instruction()) { // GameBoy instruction
+            if (std::optional<UnresolvedInstructionPtr> unresolvedInstruction = parse_gameboy_instruction()) { // GameBoy instruction
                 // if an error occurs while parsing, the instruction is not constructed
                 // and the address is not incremented
-                _currentAddress += get_length(unresolvedInstruction); //TODO
-                returnVector.push_back(std::move(*unresolvedInstruction)); // access std::optional via operator*
+                _currentAddress += unresolvedInstruction.value()->length();
+                returnVector.push_back(std::move(unresolvedInstruction.value())); // access std::optional via operator*
                 continue;
             }
 
@@ -115,12 +115,12 @@ private:
      * Checks if the next instruction is a GameBoy specific instruction, parses and returns it.
      * @return TODO
      */
-    std::optional<UnresolvedInstruction> parse_gameboy_instruction() {
+    std::optional<UnresolvedInstructionPtr> parse_gameboy_instruction() {
         const Token firstTokenOfInstruction = read_current();
         const std::string currStr = firstTokenOfInstruction.get_string();
         const size_t firstTokenPosition = get_current_token_position();
 
-        std::optional<UnresolvedInstruction> instruction{};
+        std::optional<UnresolvedInstructionPtr> instruction{};
 
 //        try {
             if      (to_upper(currStr) == "ADD") { instruction = parse_add(); }
@@ -146,37 +146,37 @@ private:
      * Parses "ADD" commands
      * @return pointer to parsed instruction
      */
-    UnresolvedInstruction parse_add();
+    UnresolvedInstructionPtr parse_add();
 
     /**
      * Parses "ADC" commands
      * @return pointer to parsed instruction
      */
-    UnresolvedInstruction parse_adc();
+    UnresolvedInstructionPtr parse_adc();
 
     /**
      * Parses "BIT" commands
      * @return pointer to parsed instruction
      */
-    UnresolvedInstruction parse_bit();
+    UnresolvedInstructionPtr parse_bit();
 
     /**
      * Parses "INC" commands
      * @return pointer to parsed instruction
      */
-    UnresolvedInstruction parse_inc();
+    UnresolvedInstructionPtr parse_inc();
 
     /**
      * Parses "DEC" commands
      * @return pointer to parsed instruction
      */
-    UnresolvedInstruction parse_dec();
+    UnresolvedInstructionPtr parse_dec();
 
     /**
      * Parses "JP" commands
      * @return pointer to parsed instruction
      */
-    UnresolvedInstruction parse_jp();
+    UnresolvedInstructionPtr parse_jp();
 
     /**
      * Parses "EQU" commands specific to the assembler.

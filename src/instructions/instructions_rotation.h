@@ -5,7 +5,7 @@
 
 class RotateRight8BitRegister : public BaseInstruction {
 public:
-    RotateRight8BitRegister(const Register8Bit reg)
+    RotateRight8BitRegister(const Register8Bit reg = {})
             : BaseInstruction("RR " + to_string(reg),
                               determine_opcode(reg)),
               _register(reg) {}
@@ -30,7 +30,7 @@ private:
 
 class RotateLeft8BitRegister : public BaseInstruction {
 public:
-    RotateLeft8BitRegister(const Register8Bit reg)
+    RotateLeft8BitRegister(const Register8Bit reg = {})
             : BaseInstruction("RL " + to_string(reg),
                               determine_opcode(reg)),
               _register(reg) {}
@@ -55,7 +55,7 @@ private:
 
 class RotateRightContentsOf8BitRegister : public BaseInstruction {
 public:
-    RotateRightContentsOf8BitRegister(const Register8Bit reg)
+    RotateRightContentsOf8BitRegister(const Register8Bit reg = {})
             : BaseInstruction("RRC " + to_string(reg),
                               determine_opcode(reg)),
               _register(reg) {}
@@ -80,7 +80,7 @@ private:
 
 class RotateLeftContentsOf8BitRegister : public BaseInstruction {
 public:
-    RotateLeftContentsOf8BitRegister(const Register8Bit reg)
+    RotateLeftContentsOf8BitRegister(const Register8Bit reg = {})
             : BaseInstruction("RLC " + to_string(reg),
                               determine_opcode(reg)),
               _register(reg) {}

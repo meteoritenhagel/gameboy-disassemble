@@ -5,8 +5,8 @@
 
 class LoadImmediateInto16BitRegister : public BaseInstruction {
 public:
-    LoadImmediateInto16BitRegister(const Register16Bit destination,
-                                   const word immediate)
+    LoadImmediateInto16BitRegister(const Register16Bit destination = {},
+                                   const word immediate = {})
             : BaseInstruction("LD " + to_string(destination) + ", " + to_string_hex_prefixed(immediate),
                               determine_opcode(destination),
                               to_bytestring_little_endian(immediate)),
@@ -38,7 +38,7 @@ private:
 
 class LoadSPIntoAddressImmediate : public BaseInstruction {
 public:
-    LoadSPIntoAddressImmediate(const word immediate)
+    LoadSPIntoAddressImmediate(const word immediate = {})
             : BaseInstruction("LD (" + to_string_hex_prefixed(immediate) + "), SP",
                               opcodes::LOAD_SP_INTO_ADDRESS_IMMEDIATE,
                               to_bytestring_little_endian(immediate)),
@@ -71,7 +71,7 @@ public:
 
 class LoadSPShiftedByImmediateIntoHL : public BaseInstruction {
 public:
-    LoadSPShiftedByImmediateIntoHL(const byte immediate)
+    LoadSPShiftedByImmediateIntoHL(const byte immediate = {})
             : BaseInstruction("LDHL SP," + to_string_hex_signed_prefixed(immediate),
                               opcodes::LOAD_SP_SHIFTED_BY_IMMEDIATE_INTO_HL,
                               to_bytestring_little_endian(immediate)),
