@@ -49,9 +49,26 @@ public:
 
 private:
 
+    void symbol_emplace(const Token &token)
+    {
+        if (token.get_token_type() == TokenType::GLOBAL_LABEL) {
+            // since global labels have the form 'GLOBALLABEL:',
+            // the trailing colon has to be removed
+            _symbolicTable.emplace(remove_last_character(token.get_string()), _currentAddress);
+        } else {
+            _symbolicTable.emplace(token.get_string(), _currentAddress);
+        }
+    }
+
+    long symbol_lookup(const Token &token) const
+    {
+        return _symbolicTable.at(token.get_string());
+    }
+
     InstructionVector resolve_symbols(const std::vector<UnresolvedInstructionPtr> &unresolvedInstructions) {
         InstructionVector resolvedInstructions(unresolvedInstructions.size());
-        std::transform(unresolvedInstructions.cbegin(), unresolvedInstructions.cend(), resolvedInstructions.begin(), [](const UnresolvedInstructionPtr &f){ return std::move(f->resolve()); });
+        std::transform(unresolvedInstructions.cbegin(), unresolvedInstructions.cend(), resolvedInstructions.begin(),
+                       [](const UnresolvedInstructionPtr &f) { return std::move(f->resolve()); });
         return resolvedInstructions;
     }
 
@@ -64,7 +81,7 @@ private:
                 // if an error occurs while parsing, the instruction is not constructed
                 // and the address is not incremented
                 _currentAddress += unresolvedInstruction.value()->length();
-                returnVector.push_back(std::move(unresolvedInstruction.value())); // access std::optional via operator*
+                returnVector.push_back(std::move(unresolvedInstruction.value()));
                 continue;
             }
 
@@ -98,15 +115,21 @@ private:
      * @throws std::logic_error containing an error message and highlighted code passage in case of parsing error.
      */
     bool update_label() {
-        if (read_current().get_token_type() == TokenType::GLOBAL_LABEL)
-        { // if global label, update symbolic table and advance to next token
-            _currentGlobalLabel = read_current();
-            _symbolicTable.emplace(remove_last_character(_currentGlobalLabel.get_string()), _currentAddress);
+
+        const Token currentToken = read_current();
+        if (   currentToken.get_token_type() == TokenType::GLOBAL_LABEL
+            || currentToken.get_token_type() == TokenType::LOCAL_LABEL) {
+            // if current token is a label, update symbolic table and advance to next token
+            _currentGlobalLabel = currentToken;
+            symbol_emplace(currentToken);
             increment_position();
-
+        } else {
+            return false;
         }
-        else { return false; }
 
+        // TODO: Really necessary to have end of contest after newline?
+        //       Do we even want the assembly code to end at a label?
+        //       -> points to invalid position?!
         expect_end_of_context(fetch());
         return true;
     }
@@ -208,19 +231,36 @@ private:
      */
     void reset() noexcept;
 
+    // TODO: Documentation
+    Token local_to_global(const Token &localLabel)
+    {
+        // For a local label depending on a global label we must ensure that the
+        // contained string is changed to a global label 'GLOBALLABEL.LOCALLABEL'.
+        Token globalLabel(localLabel.get_line(), localLabel.get_column(), localLabel.get_token_type(), _currentGlobalLabel.get_string() + localLabel.get_string());
+        return localLabel;
+    }
+
     /**
-     * Reads the current from the tokenizer.
+     * Reads the i-th token in the token vector.
+     * If i is not a feasible value, the very last token of the vector is returned.
+     * If the currently read token is a local label, it is converted to a global label.
+     * @return the retrieved token
+     */
+    Token read_token(const size_t index);
+
+    /**
+     * Reads the current token from the token vector.
      * If no tokens are left, the very last token of the vector is returned.
      * @return the retrieved token
      */
-    Token read_current() const;
+    Token read_current();
 
     /**
-     * Reads the next current from the tokenizer.
+     * Reads the next current from the token vector.
      * If the next token would be outside the feasible range, returns the very last token of the vector.
      * @return the retrieved token
      */
-    Token read_next() const;
+    Token read_next();
 
     /**
      * Fetches the next token from the tokenizer, i.e. reads the token and advances the position to the next token.

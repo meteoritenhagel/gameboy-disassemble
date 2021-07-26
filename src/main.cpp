@@ -110,16 +110,18 @@ int main()
 //                     );
 
     std::string code(
+                     "CONSTANT1 EQU 1\n"
+                     "CONSTANT2 EQU 2\n"
                      "LABEL1:\n"
                      "DEC HL\n"
                      "JP LABEL1\n"
-                     "JP LABEL3\n"
-                     "JP LABEL2\n"
-                     "LABEL2:\n"
+                     "JP .localLabel\n"
+                     "JP END\n"
+                     ".localLabel\n"
                      "INC HL\n"
-                     "ADD A, 0x01\n"
-                     "ADD A, 0x12\n"
-                     "LABEL3:\n"
+                     "ADD A, CONSTANT1\n"
+                     "ADD A, CONSTANT2\n"
+                     "END:\n"
                      "ADC 0x99\n"
                      );
 

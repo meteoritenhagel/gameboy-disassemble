@@ -1,6 +1,7 @@
 #include "token.h"
 
 #include "pretty_format.h"
+#include "auxiliary.h"
 
 std::string to_string(const TokenType tokenType) {
     switch(tokenType)
@@ -27,7 +28,13 @@ Token::Token(const size_t lineNumber, const size_t columnNumber, const TokenType
     if (_tokenType == TokenType::NUMBER)
     {
         // convert string (either octal, decimal or hex to the right long number)
-        _numericValue = (stol(_tokenString, nullptr, 0));
+        try {
+            _numericValue = (stol(_tokenString, nullptr, 0));
+        } catch (...) {
+            ::throw_exception_and_highlight("", get_line(), get_column(),
+                                            "Lexical error: Could not convert '" + _tokenString + "' to number");
+        }
+
     } else if (_tokenType == TokenType::ADDRESS) {
         // convert string without the enclosing brackets (e.g. "(0x1234)") to the right long number
         _numericValue = (stol(_tokenString.substr(1, _tokenString.size()-2), nullptr, 0));

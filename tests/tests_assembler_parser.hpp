@@ -1,7 +1,6 @@
 #include "../src/assembler/parser.h"
 
-TEST_CASE("'ADD' commands are parsed correctly", "[Parser::parse") {
-
+TEST_CASE("'ADD' commands are parsed correctly", "[Parser::parse]") {
     SECTION("ADD A and 8-bit register: long form") {
         TokenVector tokenVector {
                 {1, 1, TokenType::IDENTIFIER, "ADD"},
@@ -107,7 +106,7 @@ TEST_CASE("'ADD' commands are parsed correctly", "[Parser::parse") {
     }
 }
 
-TEST_CASE("'ADC' commands are parsed correctly", "[Parser::parse") {
+TEST_CASE("'ADC' commands are parsed correctly", "[Parser::parse]") {
     SECTION("ADC A and 8-bit register: long form") {
         TokenVector tokenVector {
                 {1, 1, TokenType::IDENTIFIER, "ADC"},
@@ -177,7 +176,7 @@ TEST_CASE("'ADC' commands are parsed correctly", "[Parser::parse") {
     }
 }
 
-TEST_CASE("'BIT' commands are parsed correctly", "[Parser::parse") {
+TEST_CASE("'BIT' commands are parsed correctly", "[Parser::parse]") {
     SECTION("BIT 0, B") {
         TokenVector tokenVector {
                 {1, 1, TokenType::IDENTIFIER, "BIT"},
@@ -228,7 +227,7 @@ TEST_CASE("'BIT' commands are parsed correctly", "[Parser::parse") {
     }
 }
 
-TEST_CASE("'INC' commands are parsed correctly", "[Parser::parse") {
+TEST_CASE("'INC' commands are parsed correctly", "[Parser::parse]") {
     SECTION("INC 8-bit register") {
         TokenVector tokenVector {
                 {1, 1, TokenType::IDENTIFIER, "INC"},
@@ -262,7 +261,7 @@ TEST_CASE("'INC' commands are parsed correctly", "[Parser::parse") {
     }
 }
 
-TEST_CASE("'DEC' commands are parsed correctly", "[Parser::parse") {
+TEST_CASE("'DEC' commands are parsed correctly", "[Parser::parse]") {
     SECTION("DEC 8-bit register") {
         TokenVector tokenVector {
                 {1, 1, TokenType::IDENTIFIER, "DEC"},
@@ -296,7 +295,7 @@ TEST_CASE("'DEC' commands are parsed correctly", "[Parser::parse") {
     }
 }
 
-TEST_CASE("'JP' commands are parsed correctly", "[Parser::parse") {
+TEST_CASE("'JP' commands are parsed correctly", "[Parser::parse]") {
     SECTION("JP to 16-bit immediate") {
         TokenVector tokenVector {
                 {1, 1, TokenType::IDENTIFIER, "JP"},
@@ -358,4 +357,229 @@ TEST_CASE("'JP' commands are parsed correctly", "[Parser::parse") {
         const BaseInstruction correctInstruction = Jump(0x0003);
         REQUIRE(currentInstruction == correctInstruction);
     }
+
+    SECTION("JP to previously declared local label") {
+        TokenVector tokenVector {
+                {1, 1, TokenType::GLOBAL_LABEL, "LABEL1:"},
+                {1, 1, TokenType::END_OF_LINE, "\\n"},
+
+                {1, 1, TokenType::IDENTIFIER, "DEC"},
+                {1, 1, TokenType::IDENTIFIER, "HL"},
+                {1, 1, TokenType::END_OF_LINE, "\\n"},
+
+                {1, 1, TokenType::LOCAL_LABEL, ".LOCAL"},
+                {1, 1, TokenType::END_OF_LINE, "\\n"},
+
+                {1, 1, TokenType::IDENTIFIER, "DEC"},
+                {1, 1, TokenType::IDENTIFIER, "HL"},
+                {1, 1, TokenType::END_OF_LINE, "\\n"},
+
+                {1, 1, TokenType::IDENTIFIER, "JP"},
+                {1, 1, TokenType::LOCAL_LABEL, ".LOCAL"},
+                {1, 1, TokenType::END_OF_FILE, "[EOF]"}
+        };
+        Parser parser("", tokenVector);
+        InstructionVector instructionVector = parser.parse();
+
+        REQUIRE(instructionVector.size() == 3);
+
+        const BaseInstruction currentInstruction = *instructionVector[2];
+        const BaseInstruction correctInstruction = Jump(0x0001);
+        REQUIRE(currentInstruction == correctInstruction);
+    }
+
+    SECTION("JP to local label declared later") {
+        TokenVector tokenVector {
+                {1, 1, TokenType::GLOBAL_LABEL, "LABEL1:"},
+                {1, 1, TokenType::END_OF_LINE, "\\n"},
+
+                {1, 1, TokenType::IDENTIFIER, "JP"},
+                {1, 1, TokenType::LOCAL_LABEL, ".LOCAL"},
+                {1, 1, TokenType::END_OF_LINE, "\\n"},
+
+                {1, 1, TokenType::IDENTIFIER, "DEC"},
+                {1, 1, TokenType::IDENTIFIER, "HL"},
+                {1, 1, TokenType::END_OF_LINE, "\\n"},
+
+                {1, 1, TokenType::LOCAL_LABEL, ".LOCAL"},
+                {1, 1, TokenType::END_OF_LINE, "\\n"},
+
+                {1, 1, TokenType::IDENTIFIER, "DEC"},
+                {1, 1, TokenType::IDENTIFIER, "HL"},
+                {1, 1, TokenType::END_OF_FILE, "[EOF]"}
+        };
+        Parser parser("", tokenVector);
+        InstructionVector instructionVector = parser.parse();
+
+        REQUIRE(instructionVector.size() == 3);
+
+        const BaseInstruction currentInstruction = *instructionVector[0];
+        const BaseInstruction correctInstruction = Jump(0x0004);
+        REQUIRE(currentInstruction == correctInstruction);
+    }
+
+    SECTION("JP with flag conditions") {
+        TokenVector tokenVector {
+                {1, 1, TokenType::IDENTIFIER, "JP"},
+                {1, 1, TokenType::IDENTIFIER, "NZ"},
+                {1, 1, TokenType::COMMA, ","},
+                {1, 1, TokenType::NUMBER, "0x1234"},
+                {1, 1, TokenType::END_OF_LINE, "\\n"},
+
+                {1, 1, TokenType::IDENTIFIER, "JP"},
+                {1, 1, TokenType::IDENTIFIER, "Z"},
+                {1, 1, TokenType::COMMA, ","},
+                {1, 1, TokenType::NUMBER, "0x1234"},
+                {1, 1, TokenType::END_OF_LINE, "\\n"},
+
+                {1, 1, TokenType::IDENTIFIER, "JP"},
+                {1, 1, TokenType::IDENTIFIER, "NC"},
+                {1, 1, TokenType::COMMA, ","},
+                {1, 1, TokenType::NUMBER, "0x1234"},
+                {1, 1, TokenType::END_OF_LINE, "\\n"},
+
+                {1, 1, TokenType::IDENTIFIER, "JP"},
+                {1, 1, TokenType::IDENTIFIER, "C"},
+                {1, 1, TokenType::COMMA, ","},
+                {1, 1, TokenType::NUMBER, "0x1234"},
+                {1, 1, TokenType::END_OF_FILE, "[EOF]"}
+        };
+        Parser parser("", tokenVector);
+        InstructionVector instructionVector = parser.parse();
+
+        REQUIRE(instructionVector.size() == 4);
+
+        const BaseInstruction firstInstruction = *instructionVector[0];
+        const BaseInstruction firstCorrectInstruction = JumpConditional(FlagCondition::NOT_ZERO, 0x1234);
+        REQUIRE(firstInstruction == firstCorrectInstruction);
+
+        const BaseInstruction secondInstruction = *instructionVector[1];
+        const BaseInstruction secondCorrectInstruction = JumpConditional(FlagCondition::ZERO, 0x1234);
+        REQUIRE(secondInstruction == secondCorrectInstruction);
+
+        const BaseInstruction thirdInstruction = *instructionVector[2];
+        const BaseInstruction thirdCorrectInstruction = JumpConditional(FlagCondition::NOT_CARRY, 0x1234);
+        REQUIRE(thirdInstruction == thirdCorrectInstruction);
+
+        const BaseInstruction forthInstruction = *instructionVector[3];
+        const BaseInstruction forthCorrectInstruction = JumpConditional(FlagCondition::CARRY, 0x1234);
+        REQUIRE(forthInstruction == forthCorrectInstruction);
+    }
 }
+
+TEST_CASE("Assembler specific commands are parsed correctly", "[Parser::parse]") {
+    SECTION("EQU definitions") {
+        TokenVector tokenVector {
+                {1, 1, TokenType::IDENTIFIER, "constant"},
+                {1, 1, TokenType::IDENTIFIER, "EQU"},
+                {1, 1, TokenType::NUMBER, "0xAF"},
+                {1, 1, TokenType::END_OF_LINE, "\\n"},
+
+                {1, 1, TokenType::IDENTIFIER, "ADC"},
+                {1, 1, TokenType::IDENTIFIER, "constant"},
+                {1, 1, TokenType::END_OF_FILE, "[EOF]"}
+        };
+        Parser parser("", tokenVector);
+        InstructionVector instructionVector = parser.parse();
+
+        REQUIRE(instructionVector.size() == 1);
+
+        const BaseInstruction currentInstruction = *instructionVector[0];
+        const BaseInstruction correctInstruction = AddWithCarryAAndImmediate(0xAF);
+        REQUIRE(currentInstruction == correctInstruction);
+    }
+
+    SECTION("Multiple EQU definitions") {
+        TokenVector tokenVector {
+                {1, 1, TokenType::IDENTIFIER, "constant1"},
+                {1, 1, TokenType::IDENTIFIER, "EQU"},
+                {1, 1, TokenType::NUMBER, "0xAF"},
+                {1, 1, TokenType::END_OF_LINE, "\\n"},
+
+                {1, 1, TokenType::IDENTIFIER, "constant2"},
+                {1, 1, TokenType::IDENTIFIER, "EQU"},
+                {1, 1, TokenType::NUMBER, "0xCD"},
+                {1, 1, TokenType::END_OF_LINE, "\\n"},
+
+                {1, 1, TokenType::IDENTIFIER, "ADC"},
+                {1, 1, TokenType::IDENTIFIER, "constant1"},
+                {1, 1, TokenType::END_OF_LINE, "\\n"},
+
+                {1, 1, TokenType::IDENTIFIER, "ADC"},
+                {1, 1, TokenType::IDENTIFIER, "constant2"},
+                {1, 1, TokenType::END_OF_LINE, "\\n"},
+
+                {1, 1, TokenType::IDENTIFIER, "ADC"},
+                {1, 1, TokenType::IDENTIFIER, "constant1"},
+                {1, 1, TokenType::END_OF_FILE, "[EOF]"}
+        };
+        Parser parser("", tokenVector);
+        InstructionVector instructionVector = parser.parse();
+
+        REQUIRE(instructionVector.size() == 3);
+
+        const BaseInstruction firstInstruction = *instructionVector[0];
+        const BaseInstruction firstCorrectInstruction = AddWithCarryAAndImmediate(0xAF);
+        REQUIRE(firstInstruction == firstCorrectInstruction);
+
+        const BaseInstruction secondInstruction = *instructionVector[1];
+        const BaseInstruction secondCorrectInstruction = AddWithCarryAAndImmediate(0xCD);
+        REQUIRE(secondInstruction == secondCorrectInstruction);
+
+        const BaseInstruction thirdInstruction = *instructionVector[2];
+        const BaseInstruction thirdCorrectInstruction = AddWithCarryAAndImmediate(0xAF);
+        REQUIRE(thirdInstruction == thirdCorrectInstruction);
+    }
+
+    SECTION("Using one EQU definition twice") {
+        TokenVector tokenVector {
+                {1, 1, TokenType::IDENTIFIER, "constant"},
+                {1, 1, TokenType::IDENTIFIER, "EQU"},
+                {1, 1, TokenType::NUMBER, "0xCD"},
+                {1, 1, TokenType::END_OF_LINE, "\\n"},
+
+                {1, 1, TokenType::IDENTIFIER, "ADC"},
+                {1, 1, TokenType::IDENTIFIER, "constant"},
+                {1, 1, TokenType::END_OF_LINE, "\\n"},
+
+                {1, 1, TokenType::IDENTIFIER, "ADD"},
+                {1, 1, TokenType::IDENTIFIER, "constant"},
+                {1, 1, TokenType::END_OF_FILE, "[EOF]"}
+        };
+        Parser parser("", tokenVector);
+        InstructionVector instructionVector = parser.parse();
+
+        REQUIRE(instructionVector.size() == 2);
+
+        const BaseInstruction firstInstruction = *instructionVector[0];
+        const BaseInstruction firstCorrectInstruction = AddWithCarryAAndImmediate(0xCD);
+        REQUIRE(firstInstruction == firstCorrectInstruction);
+
+        const BaseInstruction secondInstruction = *instructionVector[1];
+        const BaseInstruction secondCorrectInstruction = AddAAndImmediate(0xCD);
+        REQUIRE(secondInstruction == secondCorrectInstruction);
+    }
+
+    SECTION("EQU definition defined later") {
+        TokenVector tokenVector {
+                {1, 1, TokenType::IDENTIFIER, "ADC"},
+                {1, 1, TokenType::IDENTIFIER, "constant"},
+                {1, 1, TokenType::END_OF_LINE, "\\n"},
+
+                {1, 1, TokenType::IDENTIFIER, "constant"},
+                {1, 1, TokenType::IDENTIFIER, "EQU"},
+                {1, 1, TokenType::NUMBER, "0xBF"},
+                {1, 1, TokenType::END_OF_FILE, "[EOF]"}
+        };
+        Parser parser("", tokenVector);
+        InstructionVector instructionVector = parser.parse();
+
+        REQUIRE(instructionVector.size() == 1);
+
+        const BaseInstruction firstInstruction = *instructionVector[0];
+        const BaseInstruction firstCorrectInstruction = AddWithCarryAAndImmediate(0xBF);
+        REQUIRE(firstInstruction == firstCorrectInstruction);
+    }
+}
+
+// ...

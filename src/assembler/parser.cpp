@@ -21,20 +21,27 @@ void Parser::reset() noexcept {
     _currentTokenPosition = 0;
 }
 
-Token Parser::read_current() const {
-    if (get_current_token_position() < _tokenVector.size()) {
-        return _tokenVector.at(get_current_token_position());
+Token Parser::read_token(const size_t index) {
+    if (index < _tokenVector.size()) {
+        // convert local label to global label
+        if (_tokenVector.at(index).get_token_type() == TokenType::LOCAL_LABEL) {
+            _tokenVector.at(index) = local_to_global(_tokenVector.at(index));
+        }
+        return _tokenVector.at(index);
     } else {
+        if (_tokenVector.at(_tokenVector.size() - 1).get_token_type() == TokenType::LOCAL_LABEL) {
+            _tokenVector.at(_tokenVector.size() - 1) = local_to_global(_tokenVector.at(_tokenVector.size() - 1));
+        }
         return _tokenVector.at(_tokenVector.size() - 1);
     }
 }
 
-Token Parser::read_next() const {
-    if (get_current_token_position() < _tokenVector.size() - 1) {
-        return _tokenVector.at(get_current_token_position() + 1);
-    } else {
-        return _tokenVector.at(_tokenVector.size() - 1);
-    }
+Token Parser::read_current() {
+    return read_token(get_current_token_position());
+}
+
+Token Parser::read_next() {
+    return read_token(get_current_token_position() + 1);
 }
 
 Token Parser::fetch() {
@@ -75,7 +82,7 @@ long Parser::to_number(const Token &numToken) const {
         if (numToken.has_numeric_value()) {
             return numToken.get_numeric();
         } else {
-            return _symbolicTable.at(numToken.get_string());
+            return symbol_lookup(numToken);
         }
     } catch (...) {
         throw_invalid_argument_and_highlight(numToken,

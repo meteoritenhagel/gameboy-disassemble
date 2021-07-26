@@ -10,8 +10,7 @@ TokenVector Tokenizer::tokenize() {
     TokenVector tokenVector{};
     Token currentToken{};
 
-    do
-    {
+    do {
         currentToken = get_next_token();
         tokenVector.push_back(currentToken);
     }
