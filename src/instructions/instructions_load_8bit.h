@@ -169,7 +169,8 @@ class LoadAIntoAddressImmediate : public BaseInstruction {
 public:
     LoadAIntoAddressImmediate(const word immediate = {})
             : BaseInstruction("LD (" + to_string_hex_prefixed(immediate) + "), A",
-                              opcodes::LOAD_A_INTO_ADDRESS_IMMEDIATE),
+                              opcodes::LOAD_A_INTO_ADDRESS_IMMEDIATE,
+                              to_bytestring_little_endian(immediate)),
               _immediate(immediate) {}
 
 //    void emulate(const VirtualGameboy& gb)

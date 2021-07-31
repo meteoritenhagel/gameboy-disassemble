@@ -86,6 +86,12 @@ private:
     Token tokenize_local_label();
 
     /**
+     * Tokenizes characters to an SP_SHIFTED token.
+     * @return SP_SHIFTED token
+     */
+    Token tokenize_sp_shifted();
+
+    /**
     * Tokenizes characters to a END_OF_LINE token.
     * @return END_OF_LINE token
     */
@@ -101,6 +107,14 @@ private:
      * Increases the line counter.
      */
     void increment_linecount() noexcept;
+
+    /**
+     * Reads the character in the code at position @param index.
+     * If already out of range, return CHAR_EOF.
+     * @param index index to read from
+     * @return current character
+     */
+    char read_char(const size_t index) const noexcept;
 
     /**
      * Reads the character to which the tokenizer is currently pointing.

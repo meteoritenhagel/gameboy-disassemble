@@ -140,23 +140,22 @@ private:
      */
     std::optional<UnresolvedInstructionPtr> parse_gameboy_instruction() {
         const Token firstTokenOfInstruction = read_current();
-        const std::string currStr = firstTokenOfInstruction.get_string();
-        const size_t firstTokenPosition = get_current_token_position();
+        const std::string currStr = to_upper(firstTokenOfInstruction.get_string());
 
         std::optional<UnresolvedInstructionPtr> instruction{};
 
 //        try {
-            if      (to_upper(currStr) == "ADD") { instruction = parse_add(); }
-            else if (to_upper(currStr) == "ADC") { instruction = parse_adc(); }
-            else if (to_upper(currStr) == "BIT") { instruction = parse_bit(); }
-            else if (to_upper(currStr) == "INC") { instruction = parse_inc(); }
-            else if (to_upper(currStr) == "DEC") { instruction = parse_dec(); }
-            else if (to_upper(currStr) == "JP")  { instruction = parse_jp();  }
-//        } catch (const std::invalid_argument& e) {
-//            // if symbol resolution has failed, return instance of SymbolResolutionFailed constructed
-//            // with the starting token's position, so it can later be re-parsed.
-//            instruction = std::make_unique<SymbolResolutionFailed>(firstTokenPosition);
-//        }
+            if      (currStr == "ADD") { instruction = parse_add(); }
+            else if (currStr == "ADC") { instruction = parse_adc(); }
+            else if (currStr == "BIT") { instruction = parse_bit(); }
+            else if (currStr == "INC") { instruction = parse_inc(); }
+            else if (currStr == "DEC") { instruction = parse_dec(); }
+            else if (currStr == "JP")  { instruction = parse_jp();  }
+            else if (currStr == "LD")  { instruction = parse_ld();  }
+            else if (currStr == "LDI") { instruction = parse_ldi(); }
+            else if (currStr == "LDD") { instruction = parse_ldd(); }
+            else if (currStr == "LDH") { instruction = parse_ldh(); }
+            else if (currStr == "LDHL"){ instruction = parse_ldhl();}
 
         if (instruction.has_value()) { // only check for end of context in case that an actual GameBoy instruction has been found
             expect_end_of_context(fetch());
@@ -202,6 +201,36 @@ private:
     UnresolvedInstructionPtr parse_jp();
 
     /**
+     * Parses "LD" commands
+     * @return pointer to parsed instruction
+     */
+    UnresolvedInstructionPtr parse_ld();
+
+    /**
+     * Parses "LDI" commands
+     * @return pointer to parsed instruction
+     */
+    UnresolvedInstructionPtr parse_ldi();
+
+    /**
+     * Parses "LDD" commands
+     * @return pointer to parsed instruction
+     */
+    UnresolvedInstructionPtr parse_ldd();
+
+    /**
+     * Parses "LDH" commands
+     * @return pointer to parsed instruction
+     */
+    UnresolvedInstructionPtr parse_ldh();
+
+    /**
+     * Parses "LDHL" commands
+     * @return pointer to parsed instruction
+     */
+    UnresolvedInstructionPtr parse_ldhl();
+
+    /**
      * Parses "EQU" commands specific to the assembler.
      * @return pointer to parsed instruction
      */
@@ -241,9 +270,10 @@ private:
     }
 
     /**
-     * Reads the i-th token in the token vector.
+     * Reads the token at position @param index in the token vector.
      * If i is not a feasible value, the very last token of the vector is returned.
      * If the currently read token is a local label, it is converted to a global label.
+     * @param index index to read from
      * @return the retrieved token
      */
     Token read_token(const size_t index);

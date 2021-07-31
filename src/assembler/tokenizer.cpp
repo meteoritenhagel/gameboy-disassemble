@@ -54,7 +54,13 @@ Token Tokenizer::get_next_token() {
     }
     else if (isalpha(read_current()))
     {
-        currentToken = tokenize_identifier_or_global_label();
+        if (toupper(read_current()) == 'S'
+         && toupper(read_next()) == 'P'
+         && is_sign(read_char(_currentPosition+2))) {
+            currentToken = tokenize_sp_shifted();
+        } else {
+            currentToken = tokenize_identifier_or_global_label();
+        }
     }
     else if (read_current() == '.')
     {
@@ -99,7 +105,21 @@ Token Tokenizer::tokenize_identifier_or_global_label() {
         str += fetch();
         hasParentheses = true;
     } else if (read_current() == '[') {
+        increment_position();
+        str += '('; // convert bracket to parenthesis
         hasBrackets = true;
+    }
+
+    // special case: SP+a8
+    if (read_current() == 'S') {
+        str += fetch();
+        if (read_current() == 'P') {
+            str += fetch();
+            // TODO: Maybe also introduce spaces? SP + a8
+            if (read_current() == '+') {
+                str += fetch();
+            }
+        }
     }
 
     while (isalnum(read_current())) {
@@ -118,7 +138,8 @@ Token Tokenizer::tokenize_identifier_or_global_label() {
         if (is_sign(read_current())) {
             str += fetch();
         }
-        str += fetch_and_expect(']');
+        fetch_and_expect(']');
+        str += ')';
     }
 
     if (read_current() == ':') { // is GLOBAL_LABEL
@@ -191,6 +212,26 @@ Token Tokenizer::tokenize_local_label() {
     return Token(get_line(), columnPosition, TokenType::LOCAL_LABEL, str);
 }
 
+Token Tokenizer::tokenize_sp_shifted() {
+    std::string str{};
+    const size_t columnPosition = get_column();
+
+    increment_position(); // 'S'
+    increment_position(); // 'P'
+    const char sign = read_current(); // do not fetch, as tokenize_number() needs the sign
+
+    // number follows
+
+    const Token numberToken = tokenize_number();
+    str = "SP" + numberToken.get_string();
+
+    if (sign == '+') {
+        return Token(get_line(), columnPosition, TokenType::SP_SHIFTED, str);
+    } else { // '-'
+        return Token(get_line(), columnPosition, TokenType::SP_SHIFTED, str);
+    }
+}
+
 Token Tokenizer::tokenize_end_of_line() {
 
     const size_t initialLinePosition = get_line();
@@ -228,12 +269,16 @@ void Tokenizer::increment_linecount() noexcept {
     ++_lineCount;
 }
 
+char Tokenizer::read_char(const size_t index) const noexcept {
+    return (index >= get_code().size()) ? CHAR_EOF : get_code().at(index);
+}
+
 char Tokenizer::read_current() const noexcept {
-    return (is_out_of_range()) ? CHAR_EOF : get_code().at(_currentPosition);
+    return read_char(_currentPosition);
 }
 
 char Tokenizer::read_next() const noexcept {
-    return (is_out_of_range()) ? CHAR_EOF : get_code().at(_currentPosition+1);
+    return read_char(_currentPosition+1);
 }
 
 char Tokenizer::fetch() noexcept {

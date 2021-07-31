@@ -5,6 +5,7 @@
 #include "auxiliary_and_conversions.h"
 
 #include <functional>
+#include <ostream>
 #include <string>
 
 class BaseInstruction;
@@ -16,6 +17,22 @@ template<typename InstructionType, typename... Args>
 InstructionPtr create_instruction(Args... args) {
     return std::make_unique<InstructionType>(args...);
 }
+
+/**
+ * Ostream overloaded operator << for class BaseInstruction
+ * @param os output stream
+ * @param instruction instruction
+ * @return stream containing @param instruction's string part.
+ */
+std::ostream& operator<<(std::ostream& os, const BaseInstruction& instruction);
+
+/**
+ * Ostream overloaded operator << for class InstructionPtr
+ * @param os output stream
+ * @param instructionPtr instructionPtr
+ * @return stream containing @param instructionPtr's string part.
+ */
+std::ostream& operator<<(std::ostream& os, const InstructionPtr& instructionPtr);
 
 /**
  * Class BaseInstruction. All GameBoy instructions are supposed to be derived from this class.

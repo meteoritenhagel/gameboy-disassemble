@@ -20,6 +20,7 @@ enum class TokenType {
     END_OF_FILE,
     GLOBAL_LABEL,
     LOCAL_LABEL,
+    SP_SHIFTED,
     INVALID
 };
 
@@ -52,8 +53,8 @@ public:
      * Constructor. Initializes the token with its properties, i.e. position in source code, token type etc.
      * @param lineNumber line number
      * @param columnNumber column number
-     * @param tokenType
-     * @param tokenString
+     * @param tokenType token type
+     * @param tokenString token string
      */
     Token(const size_t lineNumber, const size_t columnNumber, const TokenType tokenType, const std::string &tokenString);
 

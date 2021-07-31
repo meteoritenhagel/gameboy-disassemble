@@ -74,7 +74,7 @@ public:
     LoadSPShiftedByImmediateIntoHL(const byte immediate = {})
             : BaseInstruction("LDHL SP," + to_string_hex_signed_prefixed(immediate),
                               opcodes::LOAD_SP_SHIFTED_BY_IMMEDIATE_INTO_HL,
-                              to_bytestring_little_endian(immediate)),
+                              {immediate}),
               _immediate(immediate) {}
 
 //    emulate(VirtualGameboy& gb)

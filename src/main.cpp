@@ -123,6 +123,8 @@ int main()
                      "ADD A, CONSTANT2\n"
                      "END:\n"
                      "ADC 0x99\n"
+                     "LD A, CONSTANT1\n"
+                     "LD HL, SP+0x11\n"
                      );
 
     Tokenizer tokenizer(code);
@@ -131,7 +133,6 @@ int main()
     Parser parser(code, tokenVector);
 
     InstructionVector instructionVector = parser.parse();
-
 
 //    while (!tokenizer.is_finished())
 //    {

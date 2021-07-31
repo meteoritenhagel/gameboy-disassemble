@@ -38,6 +38,8 @@ Token::Token(const size_t lineNumber, const size_t columnNumber, const TokenType
     } else if (_tokenType == TokenType::ADDRESS) {
         // convert string without the enclosing brackets (e.g. "(0x1234)") to the right long number
         _numericValue = (stol(_tokenString.substr(1, _tokenString.size()-2), nullptr, 0));
+    } else if (_tokenType == TokenType::SP_SHIFTED) { // cut away leading "SP"
+        _numericValue = (stol(_tokenString.substr(2, _tokenString.size()-1), nullptr, 0));
     }
 }
 

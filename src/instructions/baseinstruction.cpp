@@ -1,5 +1,13 @@
 #include "baseinstruction.h"
 
+std::ostream& operator<<(std::ostream& os, const BaseInstruction& instruction) {
+    os << instruction.str();
+}
+
+std::ostream& operator<<(std::ostream& os, const InstructionPtr& instructionPtr) {
+    os << instructionPtr->str();
+}
+
 BaseInstruction::BaseInstruction(const std::string &string, const Opcode opcode, const Bytestring &arguments)
         : _opcode(opcode),
           _string(string),
