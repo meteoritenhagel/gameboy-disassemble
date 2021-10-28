@@ -134,6 +134,24 @@ UnresolvedInstructionPtr Parser::parse_jp() {
     }
 }
 
+UnresolvedInstructionPtr Parser::parse_jr() { // JR s8
+    increment_position(); // because instruction-specific token was already checked before calling the function
+    const auto offsetToken = fetch();
+
+    if (offsetToken.get_token_type() == TokenType::NUMBER) { // relative jump to fixed address
+        return create_unresolved_instruction([this, offsetToken]() {
+            return JumpRelative(to_signed_number_8_bit(offsetToken));
+        });
+    }
+
+    // else, it has to be label or constant. Please do not use signed 8-bit constants, as they will be treated like labels!
+    expect_type(offsetToken, {TokenType::IDENTIFIER, TokenType::LOCAL_LABEL});
+    const size_t referenceAddress = _currentAddress;
+    return create_unresolved_instruction([this, offsetToken, referenceAddress]() {
+        return JumpRelative(to_relative_offset(offsetToken, referenceAddress));
+    });
+}
+
 UnresolvedInstructionPtr Parser::parse_ld() {
     increment_position(); // because instruction-specific token was already checked before calling the function
     /* The order is very specific, since for determining each subcase no

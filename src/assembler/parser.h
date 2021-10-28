@@ -51,6 +51,8 @@ private:
 
     void symbol_emplace(const Token &token)
     {
+        // TODO: change from map: string -> number
+        //           to some map: string -> token
         if (token.get_token_type() == TokenType::GLOBAL_LABEL) {
             // since global labels have the form 'GLOBALLABEL:',
             // the trailing colon has to be removed
@@ -115,7 +117,6 @@ private:
      * @throws std::logic_error containing an error message and highlighted code passage in case of parsing error.
      */
     bool update_label() {
-
         const Token currentToken = read_current();
         if (   currentToken.get_token_type() == TokenType::GLOBAL_LABEL
             || currentToken.get_token_type() == TokenType::LOCAL_LABEL) {
@@ -151,6 +152,7 @@ private:
             else if (currStr == "INC") { instruction = parse_inc(); }
             else if (currStr == "DEC") { instruction = parse_dec(); }
             else if (currStr == "JP")  { instruction = parse_jp();  }
+            else if (currStr == "JR")  { instruction = parse_jr();  }
             else if (currStr == "LD")  { instruction = parse_ld();  }
             else if (currStr == "LDI") { instruction = parse_ldi(); }
             else if (currStr == "LDD") { instruction = parse_ldd(); }
@@ -199,6 +201,12 @@ private:
      * @return pointer to parsed instruction
      */
     UnresolvedInstructionPtr parse_jp();
+
+    /**
+     * Parses "JR" commands
+     * @return pointer to parsed instruction
+     */
+    UnresolvedInstructionPtr parse_jr();
 
     /**
      * Parses "LD" commands
@@ -265,6 +273,9 @@ private:
     {
         // For a local label depending on a global label we must ensure that the
         // contained string is changed to a global label 'GLOBALLABEL.LOCALLABEL'.
+        if (_currentGlobalLabel.is_invalid())
+            throw_logic_error_and_highlight(localLabel, "Parse error: Local label \"" + localLabel.get_string() + "\" has no parent global label");
+
         Token globalLabel(localLabel.get_line(), localLabel.get_column(), localLabel.get_token_type(), _currentGlobalLabel.get_string() + localLabel.get_string());
         return localLabel;
     }
@@ -389,6 +400,16 @@ private:
      * @return the unsigned 16-bit number retrieved from @p numToken
      */
     long to_unsigned_number_16_bit(const Token &numToken) const;
+
+    /**
+     * Calculates the relative offset in bytes between the @p positionToken (e.g. a local or global label)
+     * and the @p referenceAddress. Then, this offset is tried to be converted to a signed 8-bit number.
+     * @throws std::logic_error containing an error message and highlighted code
+     * @param positionToken token indicating the position
+     * @param referenceAddress the reference address to which the offset is calculated
+     * @return the signed 8-bit offset retrieved from the distance between the token and the reference address
+     */
+    byte to_relative_offset(const Token &positionToken, const size_t referenceAddress) const;
 
     /**
      * Tries to convert a token @p indexToken into a bit index (i.e. a number between 0 and 7).

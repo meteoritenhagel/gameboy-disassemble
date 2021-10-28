@@ -72,3 +72,7 @@ std::string Token::get_position_string() const {
     return ::get_position_string(get_line(), get_column());
 }
 
+bool Token::is_invalid() const {
+    return get_token_type() == TokenType::INVALID;
+}
+

@@ -136,6 +136,17 @@ long Parser::to_unsigned_number_16_bit(const Token &numToken) const {
     return num;
 }
 
+byte Parser::to_relative_offset(const Token &positionToken, const size_t referenceAddress) const
+{
+    long tokenPosition = to_unsigned_number_16_bit(positionToken);
+    long offset = tokenPosition - referenceAddress;
+    if (!(is_signed_8_bit(offset))) {
+        throw_logic_error_and_highlight(positionToken,
+                                        "Parse error: The goal " + positionToken.get_string() + " is too far away from the current line. Please use JP instead of JR");
+    }
+    return offset;
+}
+
 byte Parser::to_index(const Token &indexToken) const {
     const long num = to_number(indexToken);
     if (!is_index(num)) {

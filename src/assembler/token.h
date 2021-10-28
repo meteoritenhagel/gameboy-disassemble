@@ -104,6 +104,12 @@ public:
      */
     std::string get_position_string() const;
 
+    /**
+     * Checks whether the token is of type TokenType::INVALID and returns it.
+     * @return true when the token is of TokenType::INVALID
+     */
+    bool is_invalid() const;
+
 private:
     size_t _lineNumber{0}; ///< line position in source code
     size_t _columnNumber{0}; ///< column position in source code
