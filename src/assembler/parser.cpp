@@ -91,49 +91,33 @@ long Parser::to_number(const Token &numToken) const {
     }
 }
 
-byte Parser::to_number_8_bit(const Token &numToken) const {
-    const long num = to_number(numToken);
-    if (!is_8_bit(num)) {
+long Parser::to_number_conditional(const Token &numToken, const std::function<bool(long)> &condition, const std::string &errorStr) const {
+    long tokenNumber = to_number(numToken);
+    if (!condition(tokenNumber)) {
         throw_logic_error_and_highlight(numToken,
-                                        "Parse error: Number " + std::to_string(num) + " is expected to be 8-bit");
+                                        "Parse error: Number " + std::to_string(tokenNumber) + " is expected to be " + errorStr);
     }
-    return static_cast<byte>(num);
+    return tokenNumber;
+}
+
+byte Parser::to_number_8_bit(const Token &numToken) const {
+    return static_cast<byte>(to_number_conditional(numToken, is_8_bit<long>, "8-bit"));
 }
 
 byte Parser::to_unsigned_number_8_bit(const Token &numToken) const {
-    const long num = to_number(numToken);
-    if (!is_unsigned_8_bit(num)) {
-        throw_logic_error_and_highlight(numToken, "Parse error: Number " + std::to_string(num) +
-                                                  " is expected to be unsigned 8-bit");
-    }
-    return static_cast<byte>(num);
+    return static_cast<byte>(to_number_conditional(numToken, is_unsigned_8_bit<long>, "unsigned 8-bit"));
 }
 
 byte Parser::to_signed_number_8_bit(const Token &numToken) const {
-    const long num = to_number(numToken);
-    if (!is_signed_8_bit(num)) {
-        throw_logic_error_and_highlight(numToken, "Parse error: Number " + std::to_string(num) +
-                                                  " is expected to be signed 8-bit");
-    }
-    return static_cast<byte>(num);
+    return static_cast<byte>(to_number_conditional(numToken, is_signed_8_bit<long>, "signed 8-bit"));
 }
 
 long Parser::to_number_16_bit(const Token &numToken) const {
-    const long num = to_number(numToken);
-    if (!((-32768 <= num && num <= 32767) || (0 <= num && num <= 65535))) {
-        throw_logic_error_and_highlight(numToken,
-                                        "Parse error: Number " + std::to_string(num) + " is expected to be 16-bit");
-    }
-    return num;
+    return to_number_conditional(numToken, is_16_bit<long>, "16-bit");
 }
 
 long Parser::to_unsigned_number_16_bit(const Token &numToken) const {
-    const long num = to_number(numToken);
-    if (!(is_signed_16_bit(num) || is_unsigned_16_bit(num))) {
-        throw_logic_error_and_highlight(numToken,
-                                        "Parse error: Number " + std::to_string(num) + " is expected to be 16-bit");
-    }
-    return num;
+    return to_number_conditional(numToken, is_unsigned_16_bit<long>, "unsigned 16-bit");
 }
 
 byte Parser::to_relative_offset(const Token &positionToken, const size_t referenceAddress) const

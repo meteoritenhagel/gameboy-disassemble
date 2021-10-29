@@ -119,7 +119,7 @@ UnresolvedInstructionPtr Parser::parse_jp() {
         const Token addressToken = fetch();
 
         return create_unresolved_instruction([this, conditionToken, addressToken]() {
-            return JumpConditional(to_flag_condition(conditionToken), to_number_16_bit(addressToken));
+            return JumpConditional(to_flag_condition(conditionToken), to_unsigned_number_16_bit(addressToken));
         });
     } else { // short version
         const Token addressToken = fetch();
@@ -129,7 +129,7 @@ UnresolvedInstructionPtr Parser::parse_jp() {
             return create_unresolved_instruction([]() { return JumpToHL(); });
         } else { // has to be numeric value
             return create_unresolved_instruction(
-                    [this, addressToken]() { return Jump(to_number_16_bit(addressToken)); });
+                    [this, addressToken]() { return Jump(to_unsigned_number_16_bit(addressToken)); });
         }
     }
 }

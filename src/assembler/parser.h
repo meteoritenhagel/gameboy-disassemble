@@ -362,6 +362,14 @@ private:
     long to_number(const Token &numToken) const;
 
     /**
+     * Tries to convert a token @p numToken into a long number fulfilling a certain condition.
+     * @throws std::logic_error containing an error message and highlighted code
+     * @param numToken token
+     * @return the long number retrieved from @p numToken
+     */
+    long to_number_conditional(const Token &numToken, const std::function<bool(long)> &condition, const std::string &errorStr) const;
+
+    /**
      * Tries to convert a token @p numToken into an 8-bit number.
      * @throws std::logic_error containing an error message and highlighted code
      * @param numToken token

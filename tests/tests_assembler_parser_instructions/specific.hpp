@@ -1,5 +1,49 @@
 #include "../../src/assembler/parser.h"
 
+TEST_CASE("Numeric conversions throw when a number cannot be converted properly", "[Parser::numeric_conversions]") {
+    SECTION("8-bit numbers") {
+        TokenVector tokenVector {
+                {1, 1, TokenType::IDENTIFIER, "LD"},
+                {1, 1, TokenType::IDENTIFIER, "B"},
+                {1, 1, TokenType::COMMA, ","},
+                {1, 1, TokenType::NUMBER, "0xFFFF"},
+                {1, 1, TokenType::END_OF_FILE, "[EOF]"}
+        };
+        Parser parser("", tokenVector);
+        REQUIRE_THROWS_WITH(parser.parse(), Catch::Contains("8-bit"));
+    }
+
+    SECTION("signed 8-bit numbers") {
+        TokenVector tokenVector {
+                {1, 1, TokenType::IDENTIFIER, "JR"},
+                {1, 1, TokenType::NUMBER, "0xFF"},
+                {1, 1, TokenType::END_OF_FILE, "[EOF]"}
+        };
+        Parser parser("", tokenVector);
+        REQUIRE_THROWS_WITH(parser.parse(), Catch::Contains("signed 8-bit"));
+    }
+
+    SECTION("16-bit numbers") {
+        TokenVector tokenVector {
+                {1, 1, TokenType::IDENTIFIER, "JP"},
+                {1, 1, TokenType::NUMBER, "0x12345678"},
+                {1, 1, TokenType::END_OF_FILE, "[EOF]"}
+        };
+        Parser parser("", tokenVector);
+        REQUIRE_THROWS_WITH(parser.parse(), Catch::Contains("16-bit"));
+    }
+
+    SECTION("unsigned 16-bit numbers") {
+        TokenVector tokenVector {
+                {1, 1, TokenType::IDENTIFIER, "JP"},
+                {1, 1, TokenType::NUMBER, "-0x1234"},
+                {1, 1, TokenType::END_OF_FILE, "[EOF]"}
+        };
+        Parser parser("", tokenVector);
+        REQUIRE_THROWS_WITH(parser.parse(), Catch::Contains("unsigned 16-bit"));
+    }
+}
+
 TEST_CASE("Local labels can only occur after some global label", "[Parser::local_labels]") {
     SECTION("Local labels after global label parse without problems") {
         TokenVector tokenVector {
