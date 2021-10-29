@@ -2,14 +2,14 @@
 #define GAMEBOY_DISASSEMBLE_PARSER_H
 
 #include "auxiliary.h"
+#include "numericfromtoken.h"
 #include "tokenizer.h"
 #include "unresolvedinstruction.h"
 #include "../instructions/instructions.h"
 
-#include <functional>
-
 #include "pretty_format.h"
 
+#include <functional>
 #include <map>
 
 /**
@@ -21,7 +21,7 @@
  */
 class Parser {
 public:
-    using SymbolToNumeric = std::map<std::string, long>;
+    using SymbolToNumeric = std::map<std::string, NumericFromToken>;
     using Address = word;
     using TokenVectorPosition = size_t;
     using ReturnedInstruction = std::function<InstructionPtr(void)>;
@@ -49,24 +49,40 @@ public:
 
 private:
 
-    void symbol_emplace(const Token &token)
+    void symbol_emplace(const long number, const Token &token)
     {
         // TODO: change from map: string -> number
         //           to some map: string -> token
         if (token.get_token_type() == TokenType::GLOBAL_LABEL) {
             // since global labels have the form 'GLOBALLABEL:',
             // the trailing colon has to be removed
-            _symbolicTable.emplace(remove_last_character(token.get_string()), _currentAddress);
+            _symbolicTable.emplace(remove_last_character(token.get_string()), NumericFromToken(number, token));
         } else {
-            _symbolicTable.emplace(token.get_string(), _currentAddress);
+            _symbolicTable.emplace(token.get_string(), NumericFromToken(number, token));
         }
     }
 
+    /**
+     * Looks up a token in the symbolic table and returns it if found.
+     * @throws std::logic_error containing an error message and highlighted code passage in case of parsing error.
+     * @param token token to look up in the symbolic table
+     * @return the numeric value associated with the token
+     */
     long symbol_lookup(const Token &token) const
     {
-        return _symbolicTable.at(token.get_string());
+        // TODO: change return type from long to NumericFromToken
+        try {
+            return _symbolicTable.at(token.get_string()).get_numeric();
+        } catch (...) {
+            throw_logic_error_and_highlight(token, "Parse error: Using the symbol \"" + token.get_string() + "\" which has not been assigned yet");
+        }
     }
 
+    /**
+     * Takes a vector of UnresolvedInstructionPtr, resolves them and returns the vector of resolved instructions
+     * @param unresolvedInstructions Vector of unresolved instructions
+     * @return vector containing resolved instructions
+     */
     InstructionVector resolve_symbols(const std::vector<UnresolvedInstructionPtr> &unresolvedInstructions) {
         InstructionVector resolvedInstructions(unresolvedInstructions.size());
         std::transform(unresolvedInstructions.cbegin(), unresolvedInstructions.cend(), resolvedInstructions.begin(),
@@ -74,6 +90,11 @@ private:
         return resolvedInstructions;
     }
 
+    /**
+     * Builds a vector of unresolved instructions from the available tokens.
+     * @throws std::logic_error containing an error message and highlighted code passage in case of parsing error.
+     * @return Vector of unresolved instructions
+     */
     std::vector<UnresolvedInstructionPtr> pre_parse() {
         std::vector<UnresolvedInstructionPtr> returnVector{};
 
@@ -122,13 +143,13 @@ private:
             || currentToken.get_token_type() == TokenType::LOCAL_LABEL) {
             // if current token is a label, update symbolic table and advance to next token
             _currentGlobalLabel = currentToken;
-            symbol_emplace(currentToken);
+            symbol_emplace(_currentAddress, currentToken);
             increment_position();
         } else {
             return false;
         }
 
-        // TODO: Really necessary to have end of contest after newline?
+        // TODO: Really necessary to have end of context after newline?
         //       Do we even want the assembly code to end at a label?
         //       -> points to invalid position?!
         expect_end_of_context(fetch());

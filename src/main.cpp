@@ -115,7 +115,6 @@ int main()
                      "LABEL1:\n"
                      "DEC HL\n"
                      "JP LABEL1\n"
-                     "JP -0x2345\n"
                      "JP .localLabel\n"
                      "JP END\n"
                      ".localLabel\n"

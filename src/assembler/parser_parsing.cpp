@@ -396,10 +396,7 @@ void Parser::parse_equ() {
     }
 
     expect_string(equToken, "EQU");
-
-    const long numeric = to_number(numericToken);
-
-    _symbolicTable.emplace(symbolicName.get_string(), numeric);
+    symbol_emplace(to_number(numericToken), symbolicName);
 }
 
 
