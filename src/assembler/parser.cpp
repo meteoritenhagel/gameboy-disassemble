@@ -156,7 +156,7 @@ byte Parser::to_relative_offset(const Token &positionToken, const size_t referen
 
     if (!(is_signed_8_bit(offset))) {
         const std::string errorMessage = "Parse error: The goal \"" + positionToken.get_string() +
-                                         "\" is too far away from the current line. Please use JP instead of JR";
+                                         "\" results in a jump of " + to_string_hex_signed_prefixed(offset) + ", which is not a signed 8-bit number. Please use JP instead of JR";
         if (referenceType == TokenType::INVALID) { // token contains no reference
             throw_logic_error_and_highlight(positionToken, errorMessage);
         } else {
