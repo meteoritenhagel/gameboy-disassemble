@@ -1,5 +1,8 @@
 #include "parser.h"
 
+/******************************/
+/******** ADD COMMANDS ********/
+/******************************/
 UnresolvedInstructionPtr Parser::parse_add() {
     increment_position(); // because instruction-specific token was already checked before calling the function
 
@@ -73,6 +76,10 @@ UnresolvedInstructionPtr Parser::parse_adc() {
     }
 }
 
+/*****************************************/
+/******** BIT COMPLEMENT COMMANDS ********/
+/*****************************************/
+
 UnresolvedInstructionPtr Parser::parse_bit() {
     increment_position(); // because instruction-specific token was already checked before calling the function
 
@@ -89,6 +96,10 @@ UnresolvedInstructionPtr Parser::parse_bit() {
                                                    to_register_8_bit(registerToken));
     });
 }
+
+/**********************************/
+/******** INC/DEC COMMANDS ********/
+/**********************************/
 
 UnresolvedInstructionPtr Parser::parse_inc() {
     increment_position(); // because instruction-specific token was already checked before calling the function
@@ -109,6 +120,10 @@ UnresolvedInstructionPtr Parser::parse_dec() {
     return create_unresolved_instruction(
             [this, registerToken]() { return DecrementRegister(to_register(registerToken)); });
 }
+
+/*******************************/
+/******** JUMP COMMANDS ********/
+/*******************************/
 
 UnresolvedInstructionPtr Parser::parse_jp() {
     increment_position(); // because instruction-specific token was already checked before calling the function
@@ -151,6 +166,10 @@ UnresolvedInstructionPtr Parser::parse_jr() { // JR s8
         return JumpRelative(to_relative_offset(offsetToken, referenceAddress));
     });
 }
+
+/*******************************/
+/******** LOAD COMMANDS ********/
+/*******************************/
 
 UnresolvedInstructionPtr Parser::parse_ld() {
     increment_position(); // because instruction-specific token was already checked before calling the function
@@ -380,6 +399,10 @@ UnresolvedInstructionPtr Parser::parse_ldhl() {
     });
 }
 
+/**********************************/
+/******** LOGICAL COMMANDS ********/
+/**********************************/
+
 UnresolvedInstructionPtr Parser::parse_and() {
     increment_position(); // because instruction-specific token was already checked before calling the function
     if (read_next().get_token_type() == TokenType::COMMA) { // long version, e.g. AND A, B
@@ -494,6 +517,10 @@ UnresolvedInstructionPtr Parser::parse_daa() {
     );
 }
 
+/**********************************/
+/******** MACHINE COMMANDS ********/
+/**********************************/
+
 UnresolvedInstructionPtr Parser::parse_nop() {
     increment_position(); // because instruction-specific token was already checked before calling the function
     return create_unresolved_instruction(
@@ -557,7 +584,9 @@ UnresolvedInstructionPtr Parser::parse_di(){
     );
 }
 
-////
+/***********************************/
+/******** SPECIFIC COMMANDS ********/
+/***********************************/
 
 void Parser::parse_equ() {
     const Token symbolicName = fetch();
