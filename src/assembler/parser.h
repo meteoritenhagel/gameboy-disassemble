@@ -241,6 +241,15 @@ private:
             else if (currStr == "PUSH"){ instruction = parse_push();}
             else if (currStr == "POP") { instruction = parse_pop(); }
 
+            else if (currStr == "RR")  { instruction = parse_rr();  }
+            else if (currStr == "RL")  { instruction = parse_rl();  }
+            else if (currStr == "RRC") { instruction = parse_rrc(); }
+            else if (currStr == "RLC") { instruction = parse_rlc(); }
+            else if (currStr == "RLA") { instruction = parse_rla(); }
+            else if (currStr == "RRA") { instruction = parse_rra(); }
+            else if (currStr == "RLCA"){ instruction = parse_rlca();}
+            else if (currStr == "RRCA"){ instruction = parse_rrca();}
+
         if (instruction.has_value()) { // only check for end of context in case that an actual GameBoy instruction has been found
             expect_end_of_context(fetch());
         }
@@ -409,6 +418,54 @@ private:
      * @return pointer to parsed instruction
      */
     UnresolvedInstructionPtr parse_pop();
+
+    /**
+     * Parses "RR" commands
+     * @return pointer to parsed instruction
+     */
+    UnresolvedInstructionPtr parse_rr();
+
+    /**
+     * Parses "RL" commands
+     * @return pointer to parsed instruction
+     */
+    UnresolvedInstructionPtr parse_rl();
+
+    /**
+     * Parses "RRC" commands
+     * @return pointer to parsed instruction
+     */
+    UnresolvedInstructionPtr parse_rrc();
+
+    /**
+     * Parses "RLC" commands
+     * @return pointer to parsed instruction
+     */
+    UnresolvedInstructionPtr parse_rlc();
+
+    /**
+     * Parses "RLA" commands
+     * @return pointer to parsed instruction
+     */
+    UnresolvedInstructionPtr parse_rla();
+
+    /**
+     * Parses "RRA" commands
+     * @return pointer to parsed instruction
+     */
+    UnresolvedInstructionPtr parse_rra();
+
+    /**
+     * Parses "RLCA" commands
+     * @return pointer to parsed instruction
+     */
+    UnresolvedInstructionPtr parse_rlca();
+
+    /**
+     * Parses "RRCA" commands
+     * @return pointer to parsed instruction
+     */
+    UnresolvedInstructionPtr parse_rrca();
 
     /**
      * Parses "EQU" commands specific to the assembler.

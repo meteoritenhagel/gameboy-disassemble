@@ -605,6 +605,70 @@ UnresolvedInstructionPtr Parser::parse_pop() {
 }
 
 /***********************************/
+/******** ROTATION COMMANDS ********/
+/***********************************/
+
+UnresolvedInstructionPtr Parser::parse_rr() {
+    increment_position(); // because instruction-specific token was already checked before calling the function
+    const Token operandToken = fetch();
+    return create_unresolved_instruction([this, operandToken]() {
+        return RotateRight8BitRegister(to_register_8_bit(operandToken));
+    });
+}
+
+UnresolvedInstructionPtr Parser::parse_rl() {
+    increment_position(); // because instruction-specific token was already checked before calling the function
+    const Token operandToken = fetch();
+    return create_unresolved_instruction([this, operandToken]() {
+        return RotateLeft8BitRegister(to_register_8_bit(operandToken));
+    });
+}
+
+UnresolvedInstructionPtr Parser::parse_rrc() {
+    increment_position(); // because instruction-specific token was already checked before calling the function
+    const Token operandToken = fetch();
+    return create_unresolved_instruction([this, operandToken]() {
+        return RotateRightCircular8BitRegister(to_register_8_bit(operandToken));
+    });
+}
+
+UnresolvedInstructionPtr Parser::parse_rlc() {
+    increment_position(); // because instruction-specific token was already checked before calling the function
+    const Token operandToken = fetch();
+    return create_unresolved_instruction([this, operandToken]() {
+        return RotateLeftCircular8BitRegister(to_register_8_bit(operandToken));
+    });
+}
+
+UnresolvedInstructionPtr Parser::parse_rla() {
+    increment_position(); // because instruction-specific token was already checked before calling the function
+    return create_unresolved_instruction([]() {
+        return RotateLeftAAndClearZero();
+    });
+}
+
+UnresolvedInstructionPtr Parser::parse_rra() {
+    increment_position(); // because instruction-specific token was already checked before calling the function
+    return create_unresolved_instruction([]() {
+        return RotateRightAAndClearZero();
+    });
+}
+
+UnresolvedInstructionPtr Parser::parse_rlca() {
+    increment_position(); // because instruction-specific token was already checked before calling the function
+    return create_unresolved_instruction([]() {
+        return RotateLeftCircularAAndClearZero();
+    });
+}
+
+UnresolvedInstructionPtr Parser::parse_rrca() {
+    increment_position(); // because instruction-specific token was already checked before calling the function
+    return create_unresolved_instruction([]() {
+        return RotateRightCircularAAndClearZero();
+    });
+}
+
+/***********************************/
 /******** SPECIFIC COMMANDS ********/
 /***********************************/
 

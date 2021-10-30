@@ -60,7 +60,7 @@ TEST_CASE("'RLC' commands are parsed correctly", "[Parser::parse]") {
     REQUIRE(instructionVector.size() == 1);
 
     const BaseInstruction currentInstruction = *instructionVector[0];
-    const BaseInstruction correctInstruction = RotateRightCircular8BitRegister(Register8Bit::L);
+    const BaseInstruction correctInstruction = RotateLeftCircular8BitRegister(Register8Bit::L);
     REQUIRE(currentInstruction == correctInstruction);
 }
 
