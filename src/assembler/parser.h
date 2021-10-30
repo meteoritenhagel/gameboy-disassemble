@@ -80,6 +80,9 @@ private:
     /**
      * Determines and returns the token which is referred to by @p token.
      * The type is determined by the token which is used for lookup of @p token's string in the symbol table.
+     * In case the symbol does not refer to something in the symbol table (e.g. numeral constants like 0x1234),
+     * an empty token of TokenType::INVALID is returned.
+     *
      * This is e.g. used for the relative jump "JR GOAL", since it must determine whether GOAL is a constant or
      * a label, since for labels the calculation involves calculating the offset.
      *

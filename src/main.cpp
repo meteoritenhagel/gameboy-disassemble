@@ -125,7 +125,8 @@ int main()
                      "END:\n"
                      "ADC 0x99\n"
                      //"ADC 0xFFFFF\n"
-                     "ADC CONSTANT3\n"
+                     //"ADC CONSTANT3\n"
+                     "JR CONSTANT3\n"
                      "LD A, CONSTANT1\n"
                      "LD HL, SP+0x11\n"
                      );
