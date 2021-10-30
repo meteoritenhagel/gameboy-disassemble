@@ -380,6 +380,119 @@ UnresolvedInstructionPtr Parser::parse_ldhl() {
     });
 }
 
+UnresolvedInstructionPtr Parser::parse_and() {
+    increment_position(); // because instruction-specific token was already checked before calling the function
+    if (read_next().get_token_type() == TokenType::COMMA) { // long version, e.g. AND A, B
+        to_register_expect(fetch(), Register8Bit::A);
+        const Token commaToken = fetch();
+    } // else short version
+
+    const Token sourceToken = fetch();
+
+    if (is_register_8_bit(sourceToken)) {
+        return create_unresolved_instruction(
+                [this, sourceToken]() {
+                    return AndAAnd8BitRegister(to_register_8_bit(sourceToken));
+                }
+        );
+    } else { // number or symbol
+        return create_unresolved_instruction(
+                [this, sourceToken]() {
+                    return AndAAndImmediate(to_number_8_bit(sourceToken));
+                }
+        );
+    }
+}
+
+UnresolvedInstructionPtr Parser::parse_or() {
+    increment_position(); // because instruction-specific token was already checked before calling the function
+    if (read_next().get_token_type() == TokenType::COMMA) { // long version, e.g. AND A, B
+        to_register_expect(fetch(), Register8Bit::A);
+        const Token commaToken = fetch();
+    } // else short version
+
+    const Token sourceToken = fetch();
+
+    if (is_register_8_bit(sourceToken)) {
+        return create_unresolved_instruction(
+                [this, sourceToken]() {
+                    return OrAAnd8BitRegister(to_register_8_bit(sourceToken));
+                }
+        );
+    } else { // number or symbol
+        return create_unresolved_instruction(
+                [this, sourceToken]() {
+                    return OrAAndImmediate(to_number_8_bit(sourceToken));
+                }
+        );
+    }
+}
+
+UnresolvedInstructionPtr Parser::parse_xor() {
+    increment_position(); // because instruction-specific token was already checked before calling the function
+    if (read_next().get_token_type() == TokenType::COMMA) { // long version, e.g. AND A, B
+        to_register_expect(fetch(), Register8Bit::A);
+        const Token commaToken = fetch();
+    } // else short version
+
+    const Token sourceToken = fetch();
+
+    if (is_register_8_bit(sourceToken)) {
+        return create_unresolved_instruction(
+                [this, sourceToken]() {
+                    return XorAAnd8BitRegister(to_register_8_bit(sourceToken));
+                }
+        );
+    } else { // number or symbol
+        return create_unresolved_instruction(
+                [this, sourceToken]() {
+                    return XorAAndImmediate(to_number_8_bit(sourceToken));
+                }
+        );
+    }
+}
+
+UnresolvedInstructionPtr Parser::parse_cp() {
+    increment_position(); // because instruction-specific token was already checked before calling the function
+    if (read_next().get_token_type() == TokenType::COMMA) { // long version, e.g. AND A, B
+        to_register_expect(fetch(), Register8Bit::A);
+        const Token commaToken = fetch();
+    } // else short version
+
+    const Token sourceToken = fetch();
+
+    if (is_register_8_bit(sourceToken)) {
+        return create_unresolved_instruction(
+                [this, sourceToken]() {
+                    return CompareAAnd8BitRegister(to_register_8_bit(sourceToken));
+                }
+        );
+    } else { // number or symbol
+        return create_unresolved_instruction(
+                [this, sourceToken]() {
+                    return CompareAAndImmediate(to_number_8_bit(sourceToken));
+                }
+        );
+    }
+}
+
+UnresolvedInstructionPtr Parser::parse_cpl() {
+    increment_position(); // because instruction-specific token was already checked before calling the function
+    return create_unresolved_instruction(
+            [this]() {
+                return ComplementA();
+            }
+    );
+}
+
+UnresolvedInstructionPtr Parser::parse_daa() {
+    increment_position(); // because instruction-specific token was already checked before calling the function
+    return create_unresolved_instruction(
+            [this]() {
+                return DecimalAdjustA();
+            }
+    );
+}
 
 ////
 
