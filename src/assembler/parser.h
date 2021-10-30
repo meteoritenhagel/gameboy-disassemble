@@ -253,6 +253,11 @@ private:
             else if (currStr == "SET") { instruction = parse_set(); }
             else if (currStr == "RES") { instruction = parse_res(); }
 
+            else if (currStr == "SLA") { instruction = parse_sla(); }
+            else if (currStr == "SRA") { instruction = parse_sra(); }
+            else if (currStr == "SRL") { instruction = parse_srl(); }
+            else if (currStr == "SWAP"){ instruction = parse_swap();}
+
         if (instruction.has_value()) { // only check for end of context in case that an actual GameBoy instruction has been found
             expect_end_of_context(fetch());
         }
@@ -481,6 +486,30 @@ private:
      * @return pointer to parsed instruction
      */
     UnresolvedInstructionPtr parse_res();
+
+    /**
+     * Parses "SLA" commands
+     * @return pointer to parsed instruction
+     */
+    UnresolvedInstructionPtr parse_sla();
+
+    /**
+     * Parses "SRA" commands
+     * @return pointer to parsed instruction
+     */
+    UnresolvedInstructionPtr parse_sra();
+
+    /**
+     * Parses "SRL" commands
+     * @return pointer to parsed instruction
+     */
+    UnresolvedInstructionPtr parse_srl();
+
+    /**
+     * Parses "SWAP" commands
+     * @return pointer to parsed instruction
+     */
+    UnresolvedInstructionPtr parse_swap();
 
     /**
      * Parses "EQU" commands specific to the assembler.

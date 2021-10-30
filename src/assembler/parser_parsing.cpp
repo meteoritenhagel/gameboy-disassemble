@@ -704,6 +704,42 @@ UnresolvedInstructionPtr Parser::parse_res() {
     });
 }
 
+/*************************************/
+/******** SHIFT/SWAP COMMANDS ********/
+/*************************************/
+
+UnresolvedInstructionPtr Parser::parse_sla() {
+    increment_position(); // because instruction-specific token was already checked before calling the function
+    const Token operandToken = fetch();
+    return create_unresolved_instruction([this, operandToken]() {
+        return ShiftLeftArithmetical8BitRegister(to_register_8_bit(operandToken));
+    });
+}
+
+UnresolvedInstructionPtr Parser::parse_sra() {
+    increment_position(); // because instruction-specific token was already checked before calling the function
+    const Token operandToken = fetch();
+    return create_unresolved_instruction([this, operandToken]() {
+        return ShiftRightArithmetical8BitRegister(to_register_8_bit(operandToken));
+    });
+}
+
+UnresolvedInstructionPtr Parser::parse_srl() {
+    increment_position(); // because instruction-specific token was already checked before calling the function
+    const Token operandToken = fetch();
+    return create_unresolved_instruction([this, operandToken]() {
+        return ShiftRightLogical8BitRegister(to_register_8_bit(operandToken));
+    });
+}
+
+UnresolvedInstructionPtr Parser::parse_swap() {
+    increment_position(); // because instruction-specific token was already checked before calling the function
+    const Token operandToken = fetch();
+    return create_unresolved_instruction([this, operandToken]() {
+        return Swap8BitRegister(to_register_8_bit(operandToken));
+    });
+}
+
 /***********************************/
 /******** SPECIFIC COMMANDS ********/
 /***********************************/
