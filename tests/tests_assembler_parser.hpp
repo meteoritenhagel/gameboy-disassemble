@@ -8,5 +8,6 @@
 #include "tests_assembler_parser_instructions/push_pop.hpp"
 #include "tests_assembler_parser_instructions/rotation.hpp"
 #include "tests_assembler_parser_instructions/set_reset.hpp"
+#include "tests_assembler_parser_instructions/shift_swap.hpp"
 
 #include "tests_assembler_parser_instructions/specific.hpp"
