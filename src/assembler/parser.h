@@ -250,6 +250,9 @@ private:
             else if (currStr == "RLCA"){ instruction = parse_rlca();}
             else if (currStr == "RRCA"){ instruction = parse_rrca();}
 
+            else if (currStr == "SET") { instruction = parse_set(); }
+            else if (currStr == "RES") { instruction = parse_res(); }
+
         if (instruction.has_value()) { // only check for end of context in case that an actual GameBoy instruction has been found
             expect_end_of_context(fetch());
         }
@@ -466,6 +469,18 @@ private:
      * @return pointer to parsed instruction
      */
     UnresolvedInstructionPtr parse_rrca();
+
+    /**
+     * Parses "SET" commands
+     * @return pointer to parsed instruction
+     */
+    UnresolvedInstructionPtr parse_set();
+
+    /**
+     * Parses "RES" commands
+     * @return pointer to parsed instruction
+     */
+    UnresolvedInstructionPtr parse_res();
 
     /**
      * Parses "EQU" commands specific to the assembler.
