@@ -1,6 +1,6 @@
 #include "../../src/assembler/parser.h"
 
-TEST_CASE("Numeric conversions throw when a number cannot be converted properly", "[Parser::numeric_conversions]") {
+TEST_CASE("Numeric conversions throw when a number cannot be converted properly", "[Parser::parse]") {
     SECTION("8-bit numbers") {
         TokenVector tokenVector {
                 {1, 1, TokenType::IDENTIFIER, "LD"},
@@ -44,7 +44,7 @@ TEST_CASE("Numeric conversions throw when a number cannot be converted properly"
     }
 }
 
-TEST_CASE("Local labels can only occur after some global label", "[Parser::local_labels]") {
+TEST_CASE("Local labels can only occur after some global label", "[Parser::parse]") {
     SECTION("Local labels after global label parse without problems") {
         TokenVector tokenVector {
                 {1, 1, TokenType::GLOBAL_LABEL, "LABEL1:"},
