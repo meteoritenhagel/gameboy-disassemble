@@ -5,5 +5,6 @@
 #include "tests_assembler_parser_instructions/load.hpp"
 #include "tests_assembler_parser_instructions/logical.hpp"
 #include "tests_assembler_parser_instructions/machine.hpp"
+#include "tests_assembler_parser_instructions/push_pop.hpp"
 
 #include "tests_assembler_parser_instructions/specific.hpp"
