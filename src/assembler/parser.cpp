@@ -102,12 +102,7 @@ long Parser::to_number_conditional(const Token &numToken, const std::function<bo
 
     if (!condition(tokenNumber)) {
         // Get the reference token (e.g. a global or local label, or a constant) if present
-        Token referenceToken;
-        try {
-            referenceToken = symbol_lookup(numToken).get_token();
-        } catch (...) {
-            referenceToken = Token{};
-        }
+        const Token referenceToken = determine_reference_token(numToken);
 
         if (referenceToken.is_invalid()) {
             throw_logic_error_and_highlight(numToken,
