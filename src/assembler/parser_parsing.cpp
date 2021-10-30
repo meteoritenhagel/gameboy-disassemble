@@ -668,6 +668,42 @@ UnresolvedInstructionPtr Parser::parse_rrca() {
     });
 }
 
+/************************************/
+/******** SET/RESET COMMANDS ********/
+/************************************/
+
+UnresolvedInstructionPtr Parser::parse_set() {
+    increment_position(); // because instruction-specific token was already checked before calling the function
+
+    const Token indexToken = fetch();
+    const Token commaToken = fetch();
+    const Token registerToken = fetch();
+
+    // SET INDEX, 8BitRegister
+
+    expect_type(commaToken, TokenType::COMMA);
+
+    return create_unresolved_instruction([this, indexToken, registerToken]() {
+        return SetBitOf8BitRegister(to_index(indexToken),to_register_8_bit(registerToken));
+    });
+}
+
+UnresolvedInstructionPtr Parser::parse_res() {
+    increment_position(); // because instruction-specific token was already checked before calling the function
+
+    const Token indexToken = fetch();
+    const Token commaToken = fetch();
+    const Token registerToken = fetch();
+
+    // SET INDEX, 8BitRegister
+
+    expect_type(commaToken, TokenType::COMMA);
+
+    return create_unresolved_instruction([this, indexToken, registerToken]() {
+        return ResetBitOf8BitRegister(to_index(indexToken),to_register_8_bit(registerToken));
+    });
+}
+
 /***********************************/
 /******** SPECIFIC COMMANDS ********/
 /***********************************/
