@@ -676,12 +676,10 @@ UnresolvedInstructionPtr Parser::parse_set() {
     increment_position(); // because instruction-specific token was already checked before calling the function
 
     const Token indexToken = fetch();
-    const Token commaToken = fetch();
+    const Token commaToken = fetch_and_expect({TokenType::COMMA});
     const Token registerToken = fetch();
 
     // SET INDEX, 8BitRegister
-
-    expect_type(commaToken, TokenType::COMMA);
 
     return create_unresolved_instruction([this, indexToken, registerToken]() {
         return SetBitOf8BitRegister(to_index(indexToken),to_register_8_bit(registerToken));
@@ -692,12 +690,10 @@ UnresolvedInstructionPtr Parser::parse_res() {
     increment_position(); // because instruction-specific token was already checked before calling the function
 
     const Token indexToken = fetch();
-    const Token commaToken = fetch();
+    const Token commaToken = fetch_and_expect({TokenType::COMMA});
     const Token registerToken = fetch();
 
     // SET INDEX, 8BitRegister
-
-    expect_type(commaToken, TokenType::COMMA);
 
     return create_unresolved_instruction([this, indexToken, registerToken]() {
         return ResetBitOf8BitRegister(to_index(indexToken),to_register_8_bit(registerToken));
@@ -741,15 +737,82 @@ UnresolvedInstructionPtr Parser::parse_swap() {
 }
 
 /***********************************/
+/******** SUBTRACT COMMANDS ********/
+/***********************************/
+
+UnresolvedInstructionPtr Parser::parse_sub() {
+    increment_position(); // because instruction-specific token was already checked before calling the function
+    if (read_next().get_token_type() == TokenType::COMMA) { // long version, e.g. ADC A, B
+        to_register_expect(fetch(), Register8Bit::A);
+        const Token commaToken = fetch();
+    } // else short version
+
+    const Token sourceToken = fetch();
+
+    if (is_register_8_bit(sourceToken)) {
+        return create_unresolved_instruction(
+                [this, sourceToken]() {
+                    return SubtractAAnd8BitRegister(to_register_8_bit(sourceToken));
+                }
+        );
+    } else { // number or symbol
+        return create_unresolved_instruction(
+                [this, sourceToken]() {
+                    return SubtractAAndImmediate(to_number_8_bit(sourceToken));
+                }
+        );
+    }
+}
+
+UnresolvedInstructionPtr Parser::parse_sbc() {
+    increment_position(); // because instruction-specific token was already checked before calling the function
+    if (read_next().get_token_type() == TokenType::COMMA) { // long version, e.g. ADC A, B
+        to_register_expect(fetch(), Register8Bit::A);
+        const Token commaToken = fetch();
+    } // else short version
+
+    const Token sourceToken = fetch();
+
+    if (is_register_8_bit(sourceToken)) {
+        return create_unresolved_instruction(
+                [this, sourceToken]() {
+                    return SubtractWithCarryAAnd8BitRegister(to_register_8_bit(sourceToken));
+                }
+        );
+    } else { // number or symbol
+        return create_unresolved_instruction(
+                [this, sourceToken]() {
+                    return SubtractWithCarryAAndImmediate(to_number_8_bit(sourceToken));
+                }
+        );
+    }
+}
+
+/*********************************/
+/******** UNUSED COMMANDS ********/
+/*********************************/
+
+UnresolvedInstructionPtr Parser::parse_unu() {
+    increment_position(); // because instruction-specific token was already checked before calling the function
+
+    const Token indexToken = fetch_and_expect({TokenType::NUMBER});
+
+    return create_unresolved_instruction([this, indexToken]() {
+        return Unused(
+                to_number_conditional(indexToken, [](const uint8_t index) { return (0 <= index) && (index <= 11); },
+                                      "Parse error: Found " + indexToken.get_string() +
+                                      ", but index for unused commands (UNU) is expected to be between 0 and 11"));
+    });
+}
+
+/***********************************/
 /******** SPECIFIC COMMANDS ********/
 /***********************************/
 
 void Parser::parse_equ() {
-    const Token symbolicName = fetch();
+    const Token symbolicName = fetch_and_expect({TokenType::IDENTIFIER});
     const Token equToken = fetch();
     const Token numericToken = fetch();
-
-    expect_type(symbolicName, TokenType::IDENTIFIER);
 
     if (is_register(symbolicName)) { // registers may not be assigned
         throw_logic_error_and_highlight(symbolicName, "Parse error: Expression " + symbolicName.get_string() +

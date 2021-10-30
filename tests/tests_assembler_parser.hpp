@@ -9,5 +9,7 @@
 #include "tests_assembler_parser_instructions/rotation.hpp"
 #include "tests_assembler_parser_instructions/set_reset.hpp"
 #include "tests_assembler_parser_instructions/shift_swap.hpp"
+#include "tests_assembler_parser_instructions/subtract.hpp"
+#include "tests_assembler_parser_instructions/unused.hpp"
 
 #include "tests_assembler_parser_instructions/specific.hpp"

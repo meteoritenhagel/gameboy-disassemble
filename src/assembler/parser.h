@@ -258,6 +258,11 @@ private:
             else if (currStr == "SRL") { instruction = parse_srl(); }
             else if (currStr == "SWAP"){ instruction = parse_swap();}
 
+            else if (currStr == "SUB") { instruction = parse_sub(); }
+            else if (currStr == "SBC") { instruction = parse_sbc(); }
+
+            else if (currStr == "UNU") { instruction = parse_unu(); }
+
         if (instruction.has_value()) { // only check for end of context in case that an actual GameBoy instruction has been found
             expect_end_of_context(fetch());
         }
@@ -510,6 +515,24 @@ private:
      * @return pointer to parsed instruction
      */
     UnresolvedInstructionPtr parse_swap();
+
+    /**
+     * Parses "SUB" commands
+     * @return pointer to parsed instruction
+     */
+    UnresolvedInstructionPtr parse_sub();
+
+    /**
+     * Parses "SBC" commands
+     * @return pointer to parsed instruction
+     */
+    UnresolvedInstructionPtr parse_sbc();
+
+    /**
+     * Parses "UNU" commands (short for seemingly unused opcodes, where no mnemonic exists)
+     * @return pointer to parsed instruction
+     */
+    UnresolvedInstructionPtr parse_unu();
 
     /**
      * Parses "EQU" commands specific to the assembler.
