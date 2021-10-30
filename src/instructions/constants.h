@@ -83,7 +83,7 @@ namespace opcodes {
     constexpr Opcode INCREMENT_B                                {0x04};
     constexpr Opcode DECREMENT_B                                {0x05};
     constexpr Opcode LOAD_IMMEDIATE_INTO_B                      {0x06};
-    constexpr Opcode ROTATE_LEFT_CONTENTS_OF_A_AND_CLEAR_ZERO   {0x07};
+    constexpr Opcode ROTATE_LEFT_CIRCULAR_A_AND_CLEAR_ZERO      {0x07};
     constexpr Opcode LOAD_SP_INTO_ADDRESS_IMMEDIATE             {0x08};
     constexpr Opcode ADD_HL_AND_BC                              {0x09};
     constexpr Opcode LOAD_ADDRESS_BC_INTO_A                     {0x0A};
@@ -91,7 +91,7 @@ namespace opcodes {
     constexpr Opcode INCREMENT_C                                {0x0C};
     constexpr Opcode DECREMENT_C                                {0x0D};
     constexpr Opcode LOAD_IMMEDIATE_INTO_C                      {0x0E};
-    constexpr Opcode ROTATE_RIGHT_CONTENTS_OF_A_AND_CLEAR_ZERO  {0x0F};
+    constexpr Opcode ROTATE_RIGHT_CIRCULAR_A_AND_CLEAR_ZERO     {0x0F};
 
     constexpr Opcode STOP                                       {0x10};
     constexpr Opcode LOAD_IMMEDIATE_INTO_DE                     {0x11};
@@ -350,22 +350,22 @@ namespace opcodes {
 
     //
 
-    constexpr Opcode ROTATE_LEFT_CONTENTS_OF_B                  {0xCB00};
-    constexpr Opcode ROTATE_LEFT_CONTENTS_OF_C                  {0xCB01};
-    constexpr Opcode ROTATE_LEFT_CONTENTS_OF_D                  {0xCB02};
-    constexpr Opcode ROTATE_LEFT_CONTENTS_OF_E                  {0xCB03};
-    constexpr Opcode ROTATE_LEFT_CONTENTS_OF_H                  {0xCB04};
-    constexpr Opcode ROTATE_LEFT_CONTENTS_OF_L                  {0xCB05};
-    constexpr Opcode ROTATE_LEFT_CONTENTS_OF_ADDRESS_HL         {0xCB06};
-    constexpr Opcode ROTATE_LEFT_CONTENTS_OF_A                  {0xCB07};
-    constexpr Opcode ROTATE_RIGHT_CONTENTS_OF_B                 {0xCB08};
-    constexpr Opcode ROTATE_RIGHT_CONTENTS_OF_C                 {0xCB09};
-    constexpr Opcode ROTATE_RIGHT_CONTENTS_OF_D                 {0xCB0A};
-    constexpr Opcode ROTATE_RIGHT_CONTENTS_OF_E                 {0xCB0B};
-    constexpr Opcode ROTATE_RIGHT_CONTENTS_OF_H                 {0xCB0C};
-    constexpr Opcode ROTATE_RIGHT_CONTENTS_OF_L                 {0xCB0D};
-    constexpr Opcode ROTATE_RIGHT_CONTENTS_OF_ADDRESS_HL        {0xCB0E};
-    constexpr Opcode ROTATE_RIGHT_CONTENTS_OF_A                 {0xCB0F};
+    constexpr Opcode ROTATE_LEFT_CIRCULAR_B                     {0xCB00};
+    constexpr Opcode ROTATE_LEFT_CIRCULAR_C                     {0xCB01};
+    constexpr Opcode ROTATE_LEFT_CIRCULAR_D                     {0xCB02};
+    constexpr Opcode ROTATE_LEFT_CIRCULAR_E                     {0xCB03};
+    constexpr Opcode ROTATE_LEFT_CIRCULAR_H                     {0xCB04};
+    constexpr Opcode ROTATE_LEFT_CIRCULAR_L                     {0xCB05};
+    constexpr Opcode ROTATE_LEFT_CIRCULAR_ADDRESS_HL            {0xCB06};
+    constexpr Opcode ROTATE_LEFT_CIRCULAR_A                     {0xCB07};
+    constexpr Opcode ROTATE_RIGHT_CIRCULAR_B                    {0xCB08};
+    constexpr Opcode ROTATE_RIGHT_CIRCULAR_C                    {0xCB09};
+    constexpr Opcode ROTATE_RIGHT_CIRCULAR_D                    {0xCB0A};
+    constexpr Opcode ROTATE_RIGHT_CIRCULAR_E                    {0xCB0B};
+    constexpr Opcode ROTATE_RIGHT_CIRCULAR_H                    {0xCB0C};
+    constexpr Opcode ROTATE_RIGHT_CIRCULAR_L                    {0xCB0D};
+    constexpr Opcode ROTATE_RIGHT_CIRCULAR_ADDRESS_HL           {0xCB0E};
+    constexpr Opcode ROTATE_RIGHT_CIRCULAR_A                    {0xCB0F};
 
     constexpr Opcode ROTATE_LEFT_B                              {0xCB10};
     constexpr Opcode ROTATE_LEFT_C                              {0xCB11};

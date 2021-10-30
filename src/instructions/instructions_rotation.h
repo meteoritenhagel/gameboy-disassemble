@@ -53,9 +53,9 @@ private:
     const Register8Bit _register;
 };
 
-class RotateRightContentsOf8BitRegister : public BaseInstruction {
+class RotateRightCircular8BitRegister : public BaseInstruction {
 public:
-    RotateRightContentsOf8BitRegister(const Register8Bit reg = {})
+    RotateRightCircular8BitRegister(const Register8Bit reg = {})
             : BaseInstruction("RRC " + to_string(reg),
                               determine_opcode(reg)),
               _register(reg) {}
@@ -63,14 +63,14 @@ public:
 private:
     Opcode determine_opcode(const Register8Bit reg) const {
         switch (reg) {
-            case Register8Bit::B:          return opcodes::ROTATE_RIGHT_CONTENTS_OF_B;
-            case Register8Bit::C:          return opcodes::ROTATE_RIGHT_CONTENTS_OF_C;
-            case Register8Bit::D:          return opcodes::ROTATE_RIGHT_CONTENTS_OF_D;
-            case Register8Bit::E:          return opcodes::ROTATE_RIGHT_CONTENTS_OF_E;
-            case Register8Bit::H:          return opcodes::ROTATE_RIGHT_CONTENTS_OF_H;
-            case Register8Bit::L:          return opcodes::ROTATE_RIGHT_CONTENTS_OF_L;
-            case Register8Bit::ADDRESS_HL: return opcodes::ROTATE_RIGHT_CONTENTS_OF_ADDRESS_HL;
-            case Register8Bit::A:          return opcodes::ROTATE_RIGHT_CONTENTS_OF_A;
+            case Register8Bit::B:          return opcodes::ROTATE_RIGHT_CIRCULAR_B;
+            case Register8Bit::C:          return opcodes::ROTATE_RIGHT_CIRCULAR_C;
+            case Register8Bit::D:          return opcodes::ROTATE_RIGHT_CIRCULAR_D;
+            case Register8Bit::E:          return opcodes::ROTATE_RIGHT_CIRCULAR_E;
+            case Register8Bit::H:          return opcodes::ROTATE_RIGHT_CIRCULAR_H;
+            case Register8Bit::L:          return opcodes::ROTATE_RIGHT_CIRCULAR_L;
+            case Register8Bit::ADDRESS_HL: return opcodes::ROTATE_RIGHT_CIRCULAR_ADDRESS_HL;
+            case Register8Bit::A:          return opcodes::ROTATE_RIGHT_CIRCULAR_A;
             default:                       return opcodes::INVALID_OPCODE;
         }
     }
@@ -78,9 +78,9 @@ private:
     const Register8Bit _register;
 };
 
-class RotateLeftContentsOf8BitRegister : public BaseInstruction {
+class RotateLeftCircular8BitRegister : public BaseInstruction {
 public:
-    RotateLeftContentsOf8BitRegister(const Register8Bit reg = {})
+    RotateLeftCircular8BitRegister(const Register8Bit reg = {})
             : BaseInstruction("RLC " + to_string(reg),
                               determine_opcode(reg)),
               _register(reg) {}
@@ -88,14 +88,14 @@ public:
 private:
     Opcode determine_opcode(const Register8Bit reg) const {
         switch (reg) {
-            case Register8Bit::B:          return opcodes::ROTATE_LEFT_CONTENTS_OF_B;
-            case Register8Bit::C:          return opcodes::ROTATE_LEFT_CONTENTS_OF_C;
-            case Register8Bit::D:          return opcodes::ROTATE_LEFT_CONTENTS_OF_D;
-            case Register8Bit::E:          return opcodes::ROTATE_LEFT_CONTENTS_OF_E;
-            case Register8Bit::H:          return opcodes::ROTATE_LEFT_CONTENTS_OF_H;
-            case Register8Bit::L:          return opcodes::ROTATE_LEFT_CONTENTS_OF_L;
-            case Register8Bit::ADDRESS_HL: return opcodes::ROTATE_LEFT_CONTENTS_OF_ADDRESS_HL;
-            case Register8Bit::A:          return opcodes::ROTATE_LEFT_CONTENTS_OF_A;
+            case Register8Bit::B:          return opcodes::ROTATE_LEFT_CIRCULAR_B;
+            case Register8Bit::C:          return opcodes::ROTATE_LEFT_CIRCULAR_C;
+            case Register8Bit::D:          return opcodes::ROTATE_LEFT_CIRCULAR_D;
+            case Register8Bit::E:          return opcodes::ROTATE_LEFT_CIRCULAR_E;
+            case Register8Bit::H:          return opcodes::ROTATE_LEFT_CIRCULAR_H;
+            case Register8Bit::L:          return opcodes::ROTATE_LEFT_CIRCULAR_L;
+            case Register8Bit::ADDRESS_HL: return opcodes::ROTATE_LEFT_CIRCULAR_ADDRESS_HL;
+            case Register8Bit::A:          return opcodes::ROTATE_LEFT_CIRCULAR_A;
             default:                       return opcodes::INVALID_OPCODE;
         }
     }
@@ -118,19 +118,18 @@ public:
                               opcodes::ROTATE_RIGHT_A_AND_CLEAR_ZERO) {}
 };
 
-class RotateLeftContentsOfAAndClearZero : public BaseInstruction {
+class RotateLeftCircularAAndClearZero : public BaseInstruction {
 public:
-    RotateLeftContentsOfAAndClearZero()
+    RotateLeftCircularAAndClearZero()
             : BaseInstruction("RLCA",
-                              opcodes::ROTATE_LEFT_CONTENTS_OF_A_AND_CLEAR_ZERO) {}
+                              opcodes::ROTATE_LEFT_CIRCULAR_A_AND_CLEAR_ZERO) {}
 };
 
-class RotateRightContentsOfAAndClearZero : public BaseInstruction {
+class RotateRightCircularAAndClearZero : public BaseInstruction {
 public:
-    RotateRightContentsOfAAndClearZero()
+    RotateRightCircularAAndClearZero()
             : BaseInstruction("RRCA",
-                              opcodes::ROTATE_RIGHT_CONTENTS_OF_A_AND_CLEAR_ZERO) {}
+                              opcodes::ROTATE_RIGHT_CIRCULAR_A_AND_CLEAR_ZERO) {}
 };
-
 
 #endif //GAMEBOY_DISASSEMBLE_INSTRUCTIONS_ROTATION_H

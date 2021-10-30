@@ -77,7 +77,7 @@ InstructionPtr Decoder::decode_opcode(const Opcode opcode) {
         case opcodes::INCREMENT_B                                : return create_instruction<IncrementRegister>(Register8Bit::B);
         case opcodes::DECREMENT_B                                : return create_instruction<DecrementRegister>(Register8Bit::B);
         case opcodes::LOAD_IMMEDIATE_INTO_B                      : return create_instruction<LoadImmediateInto8BitRegister>(Register8Bit::B, fetch_byte());
-        case opcodes::ROTATE_LEFT_CONTENTS_OF_A_AND_CLEAR_ZERO   : return create_instruction<RotateLeftContentsOfAAndClearZero>();
+        case opcodes::ROTATE_LEFT_CIRCULAR_A_AND_CLEAR_ZERO   : return create_instruction<RotateLeftCircularAAndClearZero>();
         case opcodes::LOAD_SP_INTO_ADDRESS_IMMEDIATE             : return create_instruction<LoadSPIntoAddressImmediate>(fetch_word());
         case opcodes::ADD_HL_AND_BC                              : return create_instruction<AddHLAnd16BitRegister>(Register16Bit::BC);
         case opcodes::LOAD_ADDRESS_BC_INTO_A                     : return create_instruction<LoadAddress16BitRegisterIntoA>(Register16Bit::BC);
@@ -85,7 +85,7 @@ InstructionPtr Decoder::decode_opcode(const Opcode opcode) {
         case opcodes::INCREMENT_C                                : return create_instruction<IncrementRegister>(Register8Bit::C);
         case opcodes::DECREMENT_C                                : return create_instruction<DecrementRegister>(Register8Bit::C);
         case opcodes::LOAD_IMMEDIATE_INTO_C                      : return create_instruction<LoadImmediateInto8BitRegister>(Register8Bit::C, fetch_byte());
-        case opcodes::ROTATE_RIGHT_CONTENTS_OF_A_AND_CLEAR_ZERO  : return create_instruction<RotateRightContentsOfAAndClearZero>();
+        case opcodes::ROTATE_RIGHT_CIRCULAR_A_AND_CLEAR_ZERO  : return create_instruction<RotateRightCircularAAndClearZero>();
 
         case opcodes::STOP                                       : return create_instruction<Stop>();
         case opcodes::LOAD_IMMEDIATE_INTO_DE                     : return create_instruction<LoadImmediateInto16BitRegister>(Register16Bit::DE, fetch_word());
@@ -344,22 +344,22 @@ InstructionPtr Decoder::decode_opcode(const Opcode opcode) {
 
             //
 
-        case opcodes::ROTATE_LEFT_CONTENTS_OF_B                  : return create_instruction<RotateLeftContentsOf8BitRegister>(Register8Bit::B);
-        case opcodes::ROTATE_LEFT_CONTENTS_OF_C                  : return create_instruction<RotateLeftContentsOf8BitRegister>(Register8Bit::C);
-        case opcodes::ROTATE_LEFT_CONTENTS_OF_D                  : return create_instruction<RotateLeftContentsOf8BitRegister>(Register8Bit::D);
-        case opcodes::ROTATE_LEFT_CONTENTS_OF_E                  : return create_instruction<RotateLeftContentsOf8BitRegister>(Register8Bit::E);
-        case opcodes::ROTATE_LEFT_CONTENTS_OF_H                  : return create_instruction<RotateLeftContentsOf8BitRegister>(Register8Bit::H);
-        case opcodes::ROTATE_LEFT_CONTENTS_OF_L                  : return create_instruction<RotateLeftContentsOf8BitRegister>(Register8Bit::L);
-        case opcodes::ROTATE_LEFT_CONTENTS_OF_ADDRESS_HL         : return create_instruction<RotateLeftContentsOf8BitRegister>(Register8Bit::ADDRESS_HL);
-        case opcodes::ROTATE_LEFT_CONTENTS_OF_A                  : return create_instruction<RotateLeftContentsOf8BitRegister>(Register8Bit::A);
-        case opcodes::ROTATE_RIGHT_CONTENTS_OF_B                 : return create_instruction<RotateRightContentsOf8BitRegister>(Register8Bit::B);
-        case opcodes::ROTATE_RIGHT_CONTENTS_OF_C                 : return create_instruction<RotateRightContentsOf8BitRegister>(Register8Bit::C);
-        case opcodes::ROTATE_RIGHT_CONTENTS_OF_D                 : return create_instruction<RotateRightContentsOf8BitRegister>(Register8Bit::D);
-        case opcodes::ROTATE_RIGHT_CONTENTS_OF_E                 : return create_instruction<RotateRightContentsOf8BitRegister>(Register8Bit::E);
-        case opcodes::ROTATE_RIGHT_CONTENTS_OF_H                 : return create_instruction<RotateRightContentsOf8BitRegister>(Register8Bit::H);
-        case opcodes::ROTATE_RIGHT_CONTENTS_OF_L                 : return create_instruction<RotateRightContentsOf8BitRegister>(Register8Bit::L);
-        case opcodes::ROTATE_RIGHT_CONTENTS_OF_ADDRESS_HL        : return create_instruction<RotateRightContentsOf8BitRegister>(Register8Bit::ADDRESS_HL);
-        case opcodes::ROTATE_RIGHT_CONTENTS_OF_A                 : return create_instruction<RotateRightContentsOf8BitRegister>(Register8Bit::A);
+        case opcodes::ROTATE_LEFT_CIRCULAR_B                  : return create_instruction<RotateLeftCircular8BitRegister>(Register8Bit::B);
+        case opcodes::ROTATE_LEFT_CIRCULAR_C                  : return create_instruction<RotateLeftCircular8BitRegister>(Register8Bit::C);
+        case opcodes::ROTATE_LEFT_CIRCULAR_D                  : return create_instruction<RotateLeftCircular8BitRegister>(Register8Bit::D);
+        case opcodes::ROTATE_LEFT_CIRCULAR_E                  : return create_instruction<RotateLeftCircular8BitRegister>(Register8Bit::E);
+        case opcodes::ROTATE_LEFT_CIRCULAR_H                  : return create_instruction<RotateLeftCircular8BitRegister>(Register8Bit::H);
+        case opcodes::ROTATE_LEFT_CIRCULAR_L                  : return create_instruction<RotateLeftCircular8BitRegister>(Register8Bit::L);
+        case opcodes::ROTATE_LEFT_CIRCULAR_ADDRESS_HL         : return create_instruction<RotateLeftCircular8BitRegister>(Register8Bit::ADDRESS_HL);
+        case opcodes::ROTATE_LEFT_CIRCULAR_A                  : return create_instruction<RotateLeftCircular8BitRegister>(Register8Bit::A);
+        case opcodes::ROTATE_RIGHT_CIRCULAR_B                 : return create_instruction<RotateRightCircular8BitRegister>(Register8Bit::B);
+        case opcodes::ROTATE_RIGHT_CIRCULAR_C                 : return create_instruction<RotateRightCircular8BitRegister>(Register8Bit::C);
+        case opcodes::ROTATE_RIGHT_CIRCULAR_D                 : return create_instruction<RotateRightCircular8BitRegister>(Register8Bit::D);
+        case opcodes::ROTATE_RIGHT_CIRCULAR_E                 : return create_instruction<RotateRightCircular8BitRegister>(Register8Bit::E);
+        case opcodes::ROTATE_RIGHT_CIRCULAR_H                 : return create_instruction<RotateRightCircular8BitRegister>(Register8Bit::H);
+        case opcodes::ROTATE_RIGHT_CIRCULAR_L                 : return create_instruction<RotateRightCircular8BitRegister>(Register8Bit::L);
+        case opcodes::ROTATE_RIGHT_CIRCULAR_ADDRESS_HL        : return create_instruction<RotateRightCircular8BitRegister>(Register8Bit::ADDRESS_HL);
+        case opcodes::ROTATE_RIGHT_CIRCULAR_A                 : return create_instruction<RotateRightCircular8BitRegister>(Register8Bit::A);
 
         case opcodes::ROTATE_LEFT_B                              : return create_instruction<RotateLeft8BitRegister>(Register8Bit::B);
         case opcodes::ROTATE_LEFT_C                              : return create_instruction<RotateLeft8BitRegister>(Register8Bit::C);

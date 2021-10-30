@@ -1,8 +1,9 @@
 #include "../../src/assembler/parser.h"
 
-TEST_CASE("'NOP' command is parsed correctly", "[Parser::parse]") {
+TEST_CASE("'RR' commands are parsed correctly", "[Parser::parse]") {
     TokenVector tokenVector{
-            {1, 1, TokenType::IDENTIFIER,  "NOP"},
+            {1, 1, TokenType::IDENTIFIER,  "RR"},
+            {1, 1, TokenType::IDENTIFIER,  "B"},
             {1, 1, TokenType::END_OF_FILE, "[EOF]"}
     };
     Parser parser("", tokenVector);
@@ -11,13 +12,14 @@ TEST_CASE("'NOP' command is parsed correctly", "[Parser::parse]") {
     REQUIRE(instructionVector.size() == 1);
 
     const BaseInstruction currentInstruction = *instructionVector[0];
-    const BaseInstruction correctInstruction = Nop();
+    const BaseInstruction correctInstruction = RotateRight8BitRegister(Register8Bit::B);
     REQUIRE(currentInstruction == correctInstruction);
 }
 
-TEST_CASE("'STOP' command is parsed correctly", "[Parser::parse]") {
+TEST_CASE("'RL' commands are parsed correctly", "[Parser::parse]") {
     TokenVector tokenVector{
-            {1, 1, TokenType::IDENTIFIER,  "STOP"},
+            {1, 1, TokenType::IDENTIFIER,  "RL"},
+            {1, 1, TokenType::IDENTIFIER,  "A"},
             {1, 1, TokenType::END_OF_FILE, "[EOF]"}
     };
     Parser parser("", tokenVector);
@@ -26,13 +28,14 @@ TEST_CASE("'STOP' command is parsed correctly", "[Parser::parse]") {
     REQUIRE(instructionVector.size() == 1);
 
     const BaseInstruction currentInstruction = *instructionVector[0];
-    const BaseInstruction correctInstruction = Stop();
+    const BaseInstruction correctInstruction = RotateLeft8BitRegister(Register8Bit::A);
     REQUIRE(currentInstruction == correctInstruction);
 }
 
-TEST_CASE("'HALT' command is parsed correctly", "[Parser::parse]") {
+TEST_CASE("'RRC' commands are parsed correctly", "[Parser::parse]") {
     TokenVector tokenVector{
-            {1, 1, TokenType::IDENTIFIER,  "HALT"},
+            {1, 1, TokenType::IDENTIFIER,  "RRC"},
+            {1, 1, TokenType::IDENTIFIER,  "H"},
             {1, 1, TokenType::END_OF_FILE, "[EOF]"}
     };
     Parser parser("", tokenVector);
@@ -41,13 +44,14 @@ TEST_CASE("'HALT' command is parsed correctly", "[Parser::parse]") {
     REQUIRE(instructionVector.size() == 1);
 
     const BaseInstruction currentInstruction = *instructionVector[0];
-    const BaseInstruction correctInstruction = Halt();
+    const BaseInstruction correctInstruction = RotateRightCircular8BitRegister(Register8Bit::H);
     REQUIRE(currentInstruction == correctInstruction);
 }
 
-TEST_CASE("'SCF' command is parsed correctly", "[Parser::parse]") {
+TEST_CASE("'RLC' commands are parsed correctly", "[Parser::parse]") {
     TokenVector tokenVector{
-            {1, 1, TokenType::IDENTIFIER,  "SCF"},
+            {1, 1, TokenType::IDENTIFIER,  "RLC"},
+            {1, 1, TokenType::IDENTIFIER,  "L"},
             {1, 1, TokenType::END_OF_FILE, "[EOF]"}
     };
     Parser parser("", tokenVector);
@@ -56,13 +60,13 @@ TEST_CASE("'SCF' command is parsed correctly", "[Parser::parse]") {
     REQUIRE(instructionVector.size() == 1);
 
     const BaseInstruction currentInstruction = *instructionVector[0];
-    const BaseInstruction correctInstruction = SetCarry();
+    const BaseInstruction correctInstruction = RotateRightCircular8BitRegister(Register8Bit::L);
     REQUIRE(currentInstruction == correctInstruction);
 }
 
-TEST_CASE("'CCF' command is parsed correctly", "[Parser::parse]") {
+TEST_CASE("'RLA' command is parsed correctly", "[Parser::parse]") {
     TokenVector tokenVector{
-            {1, 1, TokenType::IDENTIFIER,  "CCF"},
+            {1, 1, TokenType::IDENTIFIER,  "RLA"},
             {1, 1, TokenType::END_OF_FILE, "[EOF]"}
     };
     Parser parser("", tokenVector);
@@ -71,13 +75,13 @@ TEST_CASE("'CCF' command is parsed correctly", "[Parser::parse]") {
     REQUIRE(instructionVector.size() == 1);
 
     const BaseInstruction currentInstruction = *instructionVector[0];
-    const BaseInstruction correctInstruction = FlipCarry();
+    const BaseInstruction correctInstruction = RotateLeftAAndClearZero();
     REQUIRE(currentInstruction == correctInstruction);
 }
 
-TEST_CASE("'EI' command is parsed correctly", "[Parser::parse]") {
+TEST_CASE("'RRA' command is parsed correctly", "[Parser::parse]") {
     TokenVector tokenVector{
-            {1, 1, TokenType::IDENTIFIER,  "EI"},
+            {1, 1, TokenType::IDENTIFIER,  "RRA"},
             {1, 1, TokenType::END_OF_FILE, "[EOF]"}
     };
     Parser parser("", tokenVector);
@@ -86,13 +90,13 @@ TEST_CASE("'EI' command is parsed correctly", "[Parser::parse]") {
     REQUIRE(instructionVector.size() == 1);
 
     const BaseInstruction currentInstruction = *instructionVector[0];
-    const BaseInstruction correctInstruction = EnableInterrupts();
+    const BaseInstruction correctInstruction = RotateRightAAndClearZero();
     REQUIRE(currentInstruction == correctInstruction);
 }
 
-TEST_CASE("'DI' command is parsed correctly", "[Parser::parse]") {
+TEST_CASE("'RLCA' command is parsed correctly", "[Parser::parse]") {
     TokenVector tokenVector{
-            {1, 1, TokenType::IDENTIFIER,  "DI"},
+            {1, 1, TokenType::IDENTIFIER,  "RLCA"},
             {1, 1, TokenType::END_OF_FILE, "[EOF]"}
     };
     Parser parser("", tokenVector);
@@ -101,6 +105,21 @@ TEST_CASE("'DI' command is parsed correctly", "[Parser::parse]") {
     REQUIRE(instructionVector.size() == 1);
 
     const BaseInstruction currentInstruction = *instructionVector[0];
-    const BaseInstruction correctInstruction = DisableInterrupts();
+    const BaseInstruction correctInstruction = RotateLeftCircularAAndClearZero();
+    REQUIRE(currentInstruction == correctInstruction);
+}
+
+TEST_CASE("'RRCA' command is parsed correctly", "[Parser::parse]") {
+    TokenVector tokenVector{
+            {1, 1, TokenType::IDENTIFIER,  "RRCA"},
+            {1, 1, TokenType::END_OF_FILE, "[EOF]"}
+    };
+    Parser parser("", tokenVector);
+    InstructionVector instructionVector = parser.parse();
+
+    REQUIRE(instructionVector.size() == 1);
+
+    const BaseInstruction currentInstruction = *instructionVector[0];
+    const BaseInstruction correctInstruction = RotateRightCircularAAndClearZero();
     REQUIRE(currentInstruction == correctInstruction);
 }
