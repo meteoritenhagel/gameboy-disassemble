@@ -35,7 +35,7 @@ void throw_exception_and_highlight_with_reference(const std::string &code, const
     std::string extendedString = errorMessage + " at " + get_position_string(lineNumber, columnNumber) + '\n';
     if (!code.empty()) {
         extendedString += to_string_line_and_highlight(code, lineNumber, columnNumber, highlightWidth);
-        extendedString += "The expression is referring to\n";
+        extendedString += "This expression is referring to\n";
         extendedString += to_string_line_and_highlight(code, referenceLineNumber, referenceColumnNumber, referenceHighlightWidth);
     }
     throw ExceptionType(extendedString);

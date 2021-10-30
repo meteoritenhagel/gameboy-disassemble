@@ -102,12 +102,7 @@ long Parser::to_number_conditional(const Token &numToken, const std::function<bo
 
     if (!condition(tokenNumber)) {
         // Get the reference token (e.g. a global or local label, or a constant) if present
-        Token referenceToken;
-        try {
-            referenceToken = symbol_lookup(numToken).get_token();
-        } catch (...) {
-            referenceToken = Token{};
-        }
+        const Token referenceToken = determine_reference_token(numToken);
 
         if (referenceToken.is_invalid()) {
             throw_logic_error_and_highlight(numToken,
@@ -144,11 +139,29 @@ long Parser::to_unsigned_number_16_bit(const Token &numToken) const {
 
 byte Parser::to_relative_offset(const Token &positionToken, const size_t referenceAddress) const
 {
-    long tokenPosition = to_unsigned_number_16_bit(positionToken);
-    long offset = tokenPosition - referenceAddress;
+    long tokenValue = to_unsigned_number_16_bit(positionToken);
+
+    // In case the positionToken is referring to a label, we must treat it differently
+    const Token referenceToken = determine_reference_token(positionToken);
+    const TokenType referenceType = referenceToken.get_token_type();
+
+    long offset;
+    if (referenceType == TokenType::LOCAL_LABEL || referenceType == TokenType::GLOBAL_LABEL) {
+        // the offset is determined by the number of words between the referenceAddress and the label's address
+        offset = tokenValue - referenceAddress;
+    } else {
+        // otherwise it is the plain numeric value of the token
+        offset = tokenValue;
+    }
+
     if (!(is_signed_8_bit(offset))) {
-        throw_logic_error_and_highlight(positionToken,
-                                        "Parse error: The goal " + positionToken.get_string() + " is too far away from the current line. Please use JP instead of JR");
+        const std::string errorMessage = "Parse error: The goal \"" + positionToken.get_string() +
+                                         "\" results in a jump of " + to_string_hex_signed_prefixed(offset) + ", which is not a signed 8-bit number. Please use JP instead of JR";
+        if (referenceType == TokenType::INVALID) { // token contains no reference
+            throw_logic_error_and_highlight(positionToken, errorMessage);
+        } else {
+            throw_logic_error_and_highlight_with_reference(positionToken, referenceToken, errorMessage);
+        }
     }
     return offset;
 }

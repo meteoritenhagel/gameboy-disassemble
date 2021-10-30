@@ -303,6 +303,27 @@ TEST_CASE("'JR' commands are parsed correctly", "[Parser::parse]") {
         REQUIRE(currentInstruction == correctInstruction);
     }
 
+    SECTION("JR to constant jump declared before") {
+        TokenVector tokenVector {
+                {1, 1, TokenType::IDENTIFIER, "CONSTANT"},
+                {1, 1, TokenType::IDENTIFIER, "EQU"},
+                {1, 1, TokenType::NUMBER, "0x7F"},
+                {1, 1, TokenType::END_OF_LINE, "\\n"},
+
+                {1, 1, TokenType::IDENTIFIER, "JR"},
+                {1, 1, TokenType::IDENTIFIER, "CONSTANT"},
+                {1, 1, TokenType::END_OF_FILE, "[EOF]"}
+        };
+        Parser parser("", tokenVector);
+        InstructionVector instructionVector = parser.parse();
+
+        REQUIRE(instructionVector.size() == 1);
+
+        const BaseInstruction currentInstruction = *instructionVector[0];
+        const BaseInstruction correctInstruction = JumpRelative(0x7F);
+        REQUIRE(currentInstruction == correctInstruction);
+    }
+
     SECTION("JR throws an error if goal label is too far away") {
         TokenVector tokenVector {
                 {1, 1, TokenType::GLOBAL_LABEL, "LABEL1:"},

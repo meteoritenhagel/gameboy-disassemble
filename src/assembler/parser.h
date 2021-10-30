@@ -78,6 +78,44 @@ private:
     }
 
     /**
+     * Determines and returns the token which is referred to by @p token.
+     * The type is determined by the token which is used for lookup of @p token's string in the symbol table.
+     * In case the symbol does not refer to something in the symbol table (e.g. numeral constants like 0x1234),
+     * an empty token of TokenType::INVALID is returned.
+     *
+     * This is e.g. used for the relative jump "JR GOAL", since it must determine whether GOAL is a constant or
+     * a label, since for labels the calculation involves calculating the offset.
+     *
+     * See the following table for some further examples:
+     *      Assume that we have assembly code:
+     *          1 | CONSTANT EQU 0xBEEF
+     *          2 | LABEL:
+     *          3 |    NOP
+     *          4 | .LOCAL
+     *          5 |    JR 0x1234
+     *          6 |    JR CONSTANT
+     *          7 |    JR LABEL
+     *          8 |    JR .LOCAL
+     *      0x1234    -> TokenType::INVALID (since it is a constant numeral and not referring to anything in the symbol table)
+     *      CONSTANT  -> referring to the first token with TokenType::IDENTIFIER in line 1
+     *      LABEL     -> referring to the label with TokenType::GLOBAL_LABEL in line 2
+     *      .LOCAL    -> referring to the label with TokenType::LOCAL_LABEL in line 4
+     *
+     * @param token the token whose reference type is determined
+     * @return the token which is referred to by @p token
+     */
+    Token determine_reference_token(const Token &token) const {
+        Token referenceToken;
+        try {
+            referenceToken = symbol_lookup(token).get_token();
+        } catch (...) {
+            referenceToken = Token{};
+        }
+
+        return referenceToken;
+    }
+
+    /**
      * Takes a vector of UnresolvedInstructionPtr, resolves them and returns the vector of resolved instructions
      * @param unresolvedInstructions Vector of unresolved instructions
      * @return vector containing resolved instructions
