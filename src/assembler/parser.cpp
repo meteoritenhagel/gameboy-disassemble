@@ -100,8 +100,6 @@ long Parser::to_number(const Token &numToken) const {
 long Parser::to_number_conditional(const Token &numToken, const std::function<bool(long)> &condition, const std::string &errorStr) const {
     long tokenNumber = to_number(numToken);
 
-
-
     if (!condition(tokenNumber)) {
         // Get the reference token (e.g. a global or local label, or a constant) if present
         Token referenceToken;
