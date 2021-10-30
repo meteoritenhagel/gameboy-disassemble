@@ -479,7 +479,7 @@ UnresolvedInstructionPtr Parser::parse_cp() {
 UnresolvedInstructionPtr Parser::parse_cpl() {
     increment_position(); // because instruction-specific token was already checked before calling the function
     return create_unresolved_instruction(
-            [this]() {
+            []() {
                 return ComplementA();
             }
     );
@@ -488,8 +488,71 @@ UnresolvedInstructionPtr Parser::parse_cpl() {
 UnresolvedInstructionPtr Parser::parse_daa() {
     increment_position(); // because instruction-specific token was already checked before calling the function
     return create_unresolved_instruction(
-            [this]() {
+            []() {
                 return DecimalAdjustA();
+            }
+    );
+}
+
+UnresolvedInstructionPtr Parser::parse_nop() {
+    increment_position(); // because instruction-specific token was already checked before calling the function
+    return create_unresolved_instruction(
+            []() {
+                return Nop();
+            }
+    );
+}
+
+UnresolvedInstructionPtr Parser::parse_stop(){
+    increment_position(); // because instruction-specific token was already checked before calling the function
+    return create_unresolved_instruction(
+            []() {
+                return Stop();
+            }
+    );
+}
+
+UnresolvedInstructionPtr Parser::parse_halt(){
+    increment_position(); // because instruction-specific token was already checked before calling the function
+    return create_unresolved_instruction(
+            []() {
+                return Halt();
+            }
+    );
+}
+
+UnresolvedInstructionPtr Parser::parse_scf(){
+    increment_position(); // because instruction-specific token was already checked before calling the function
+    return create_unresolved_instruction(
+            []() {
+                return SetCarry();
+            }
+    );
+}
+
+UnresolvedInstructionPtr Parser::parse_ccf(){
+    increment_position(); // because instruction-specific token was already checked before calling the function
+    return create_unresolved_instruction(
+            []() {
+                return FlipCarry();
+            }
+    );
+}
+
+UnresolvedInstructionPtr Parser::parse_ei(){
+    increment_position(); // because instruction-specific token was already checked before calling the function
+    return create_unresolved_instruction(
+            []() {
+                return EnableInterrupts();
+            }
+    );
+}
+
+UnresolvedInstructionPtr Parser::parse_di(){
+    increment_position(); // because instruction-specific token was already checked before calling the function
+    return create_unresolved_instruction(
+            []() {
+                return DisableInterrupts();
             }
     );
 }

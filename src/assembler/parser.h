@@ -222,6 +222,13 @@ private:
             else if (currStr == "CP")  { instruction = parse_cp();  }
             else if (currStr == "CPL") { instruction = parse_cpl(); }
             else if (currStr == "DAA") { instruction = parse_daa(); }
+            else if (currStr == "NOP") { instruction = parse_nop(); }
+            else if (currStr == "STOP"){ instruction = parse_stop();}
+            else if (currStr == "HALT"){ instruction = parse_halt();}
+            else if (currStr == "SCF") { instruction = parse_scf(); }
+            else if (currStr == "CCF") { instruction = parse_ccf(); }
+            else if (currStr == "EI")  { instruction = parse_ei();  }
+            else if (currStr == "DI")  { instruction = parse_di();  }
 
         if (instruction.has_value()) { // only check for end of context in case that an actual GameBoy instruction has been found
             expect_end_of_context(fetch());
@@ -337,6 +344,48 @@ private:
      * @return pointer to parsed instruction
      */
     UnresolvedInstructionPtr parse_daa();
+
+    /**
+     * Parses "NOP" commands
+     * @return pointer to parsed instruction
+     */
+    UnresolvedInstructionPtr parse_nop();
+
+    /**
+     * Parses "STOP" commands
+     * @return pointer to parsed instruction
+     */
+    UnresolvedInstructionPtr parse_stop();
+
+    /**
+     * Parses "HALT" commands
+     * @return pointer to parsed instruction
+     */
+    UnresolvedInstructionPtr parse_halt();
+
+    /**
+     * Parses "SCF" commands
+     * @return pointer to parsed instruction
+     */
+    UnresolvedInstructionPtr parse_scf();
+
+    /**
+     * Parses "CCF" commands
+     * @return pointer to parsed instruction
+     */
+    UnresolvedInstructionPtr parse_ccf();
+
+    /**
+     * Parses "EI" commands
+     * @return pointer to parsed instruction
+     */
+    UnresolvedInstructionPtr parse_ei();
+
+    /**
+     * Parses "DI" commands
+     * @return pointer to parsed instruction
+     */
+    UnresolvedInstructionPtr parse_di();
 
     /**
      * Parses "EQU" commands specific to the assembler.
