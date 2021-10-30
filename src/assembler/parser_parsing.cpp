@@ -585,6 +585,26 @@ UnresolvedInstructionPtr Parser::parse_di(){
 }
 
 /***********************************/
+/******** PUSH/POP COMMANDS ********/
+/***********************************/
+
+UnresolvedInstructionPtr Parser::parse_push() {
+    increment_position(); // because instruction-specific token was already checked before calling the function
+    const Token operandToken = fetch();
+    return create_unresolved_instruction([this, operandToken]() {
+        return Push16BitRegister(to_register_16_bit(operandToken));
+    });
+}
+
+UnresolvedInstructionPtr Parser::parse_pop() {
+    increment_position(); // because instruction-specific token was already checked before calling the function
+    const Token operandToken = fetch();
+    return create_unresolved_instruction([this, operandToken]() {
+        return Pop16BitRegister(to_register_16_bit(operandToken));
+    });
+}
+
+/***********************************/
 /******** SPECIFIC COMMANDS ********/
 /***********************************/
 

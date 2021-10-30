@@ -206,22 +206,28 @@ private:
 //        try {
             if      (currStr == "ADD") { instruction = parse_add(); }
             else if (currStr == "ADC") { instruction = parse_adc(); }
+
             else if (currStr == "BIT") { instruction = parse_bit(); }
+
             else if (currStr == "INC") { instruction = parse_inc(); }
             else if (currStr == "DEC") { instruction = parse_dec(); }
+
             else if (currStr == "JP")  { instruction = parse_jp();  }
             else if (currStr == "JR")  { instruction = parse_jr();  }
+
             else if (currStr == "LD")  { instruction = parse_ld();  }
             else if (currStr == "LDI") { instruction = parse_ldi(); }
             else if (currStr == "LDD") { instruction = parse_ldd(); }
             else if (currStr == "LDH") { instruction = parse_ldh(); }
             else if (currStr == "LDHL"){ instruction = parse_ldhl();}
+
             else if (currStr == "AND") { instruction = parse_and(); }
             else if (currStr == "OR")  { instruction = parse_or();  }
             else if (currStr == "XOR") { instruction = parse_xor(); }
             else if (currStr == "CP")  { instruction = parse_cp();  }
             else if (currStr == "CPL") { instruction = parse_cpl(); }
             else if (currStr == "DAA") { instruction = parse_daa(); }
+
             else if (currStr == "NOP") { instruction = parse_nop(); }
             else if (currStr == "STOP"){ instruction = parse_stop();}
             else if (currStr == "HALT"){ instruction = parse_halt();}
@@ -229,6 +235,11 @@ private:
             else if (currStr == "CCF") { instruction = parse_ccf(); }
             else if (currStr == "EI")  { instruction = parse_ei();  }
             else if (currStr == "DI")  { instruction = parse_di();  }
+            else if (currStr == "EI")  { instruction = parse_ei();  }
+            else if (currStr == "DI")  { instruction = parse_di();  }
+
+            else if (currStr == "PUSH"){ instruction = parse_push();}
+            else if (currStr == "POP") { instruction = parse_pop(); }
 
         if (instruction.has_value()) { // only check for end of context in case that an actual GameBoy instruction has been found
             expect_end_of_context(fetch());
@@ -386,6 +397,18 @@ private:
      * @return pointer to parsed instruction
      */
     UnresolvedInstructionPtr parse_di();
+
+    /**
+     * Parses "PUSH" commands
+     * @return pointer to parsed instruction
+     */
+    UnresolvedInstructionPtr parse_push();
+
+    /**
+     * Parses "POP" commands
+     * @return pointer to parsed instruction
+     */
+    UnresolvedInstructionPtr parse_pop();
 
     /**
      * Parses "EQU" commands specific to the assembler.
