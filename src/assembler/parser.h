@@ -216,6 +216,12 @@ private:
             else if (currStr == "LDD") { instruction = parse_ldd(); }
             else if (currStr == "LDH") { instruction = parse_ldh(); }
             else if (currStr == "LDHL"){ instruction = parse_ldhl();}
+            else if (currStr == "AND") { instruction = parse_and(); }
+            else if (currStr == "OR")  { instruction = parse_or();  }
+            else if (currStr == "XOR") { instruction = parse_xor(); }
+            else if (currStr == "CP")  { instruction = parse_cp();  }
+            else if (currStr == "CPL") { instruction = parse_cpl(); }
+            else if (currStr == "DAA") { instruction = parse_daa(); }
 
         if (instruction.has_value()) { // only check for end of context in case that an actual GameBoy instruction has been found
             expect_end_of_context(fetch());
@@ -295,6 +301,42 @@ private:
      * @return pointer to parsed instruction
      */
     UnresolvedInstructionPtr parse_ldhl();
+
+    /**
+     * Parses "AND" commands
+     * @return pointer to parsed instruction
+     */
+    UnresolvedInstructionPtr parse_and();
+
+    /**
+     * Parses "OR" commands
+     * @return pointer to parsed instruction
+     */
+    UnresolvedInstructionPtr parse_or();
+
+    /**
+     * Parses "XOR" commands
+     * @return pointer to parsed instruction
+     */
+    UnresolvedInstructionPtr parse_xor();
+
+    /**
+     * Parses "CP" commands
+     * @return pointer to parsed instruction
+     */
+    UnresolvedInstructionPtr parse_cp();
+
+    /**
+     * Parses "CPL" commands
+     * @return pointer to parsed instruction
+     */
+    UnresolvedInstructionPtr parse_cpl();
+
+    /**
+     * Parses "DAA" commands
+     * @return pointer to parsed instruction
+     */
+    UnresolvedInstructionPtr parse_daa();
 
     /**
      * Parses "EQU" commands specific to the assembler.
