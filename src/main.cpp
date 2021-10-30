@@ -112,6 +112,7 @@ int main()
     std::string code(
                      "CONSTANT1 EQU 1\n"
                      "CONSTANT2 EQU 2\n"
+                     "CONSTANT3 EQU 0xFFFFF\n"
                      "LABEL1:\n"
                      "DEC HL\n"
                      "JP LABEL1\n"
@@ -123,6 +124,8 @@ int main()
                      "ADD A, CONSTANT2\n"
                      "END:\n"
                      "ADC 0x99\n"
+                     //"ADC 0xFFFFF\n"
+                     "ADC CONSTANT3\n"
                      "LD A, CONSTANT1\n"
                      "LD HL, SP+0x11\n"
                      );

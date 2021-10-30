@@ -18,12 +18,25 @@ std::string to_string(const std::vector<T> &vector) {
 }
 
 template<typename ExceptionType>
-void throw_exception_and_highlight(const std::string& code, const size_t lineNumber, const size_t columnNumber, const std::string &errorMessage, const size_t highlightWidth)
-{
+void throw_exception_and_highlight(const std::string &code, const size_t lineNumber, const size_t columnNumber,
+                                   const std::string &errorMessage, const size_t highlightWidth) {
     std::string extendedString = errorMessage + " at " + get_position_string(lineNumber, columnNumber) + '\n';
-    if (!code.empty())
-    {
+    if (!code.empty()) {
         extendedString += to_string_line_and_highlight(code, lineNumber, columnNumber, highlightWidth);
+    }
+    throw ExceptionType(extendedString);
+}
+
+template<typename ExceptionType>
+void throw_exception_and_highlight_with_reference(const std::string &code, const size_t lineNumber,
+                                                  const size_t columnNumber, const size_t referenceLineNumber,
+                                                  const size_t referenceColumnNumber, const std::string &errorMessage,
+                                                  const size_t highlightWidth, const size_t referenceHighlightWidth) {
+    std::string extendedString = errorMessage + " at " + get_position_string(lineNumber, columnNumber) + '\n';
+    if (!code.empty()) {
+        extendedString += to_string_line_and_highlight(code, lineNumber, columnNumber, highlightWidth);
+        extendedString += "The expression is referring to\n";
+        extendedString += to_string_line_and_highlight(code, referenceLineNumber, referenceColumnNumber, referenceHighlightWidth);
     }
     throw ExceptionType(extendedString);
 }
