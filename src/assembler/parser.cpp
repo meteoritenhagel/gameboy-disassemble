@@ -72,6 +72,12 @@ void Parser::throw_logic_error_and_highlight(const Token &token, const std::stri
                                     token.get_string().size());
 }
 
+void Parser::throw_logic_error_and_highlight_with_reference(const Token &token, const Token &referenceToken, const std::string &errorMessage) const {
+    ::throw_exception_and_highlight_with_reference(get_code(), token.get_line(), token.get_column(),
+                                                   referenceToken.get_line(), referenceToken.get_column(),
+                                                   errorMessage, token.get_string().size(), referenceToken.get_string().size());
+}
+
 void Parser::throw_invalid_argument_and_highlight(const Token &token, const std::string &errorMessage) const {
     ::throw_exception_and_highlight<std::invalid_argument>(get_code(), token.get_line(), token.get_column(), errorMessage,
                                                            token.get_string().size());
@@ -82,7 +88,7 @@ long Parser::to_number(const Token &numToken) const {
         if (numToken.has_numeric_value()) {
             return numToken.get_numeric();
         } else {
-            return symbol_lookup(numToken);
+            return symbol_lookup(numToken).get_numeric();
         }
     } catch (...) {
         throw_invalid_argument_and_highlight(numToken,
@@ -93,9 +99,25 @@ long Parser::to_number(const Token &numToken) const {
 
 long Parser::to_number_conditional(const Token &numToken, const std::function<bool(long)> &condition, const std::string &errorStr) const {
     long tokenNumber = to_number(numToken);
+
     if (!condition(tokenNumber)) {
-        throw_logic_error_and_highlight(numToken,
-                                        "Parse error: Number " + std::to_string(tokenNumber) + " is expected to be " + errorStr);
+        // Get the reference token (e.g. a global or local label, or a constant) if present
+        Token referenceToken;
+        try {
+            referenceToken = symbol_lookup(numToken).get_token();
+        } catch (...) {
+            referenceToken = Token{};
+        }
+
+        if (referenceToken.is_invalid()) {
+            throw_logic_error_and_highlight(numToken,
+                                            "Parse error: Number " + std::to_string(tokenNumber) +
+                                            " is expected to be " + errorStr);
+        } else {
+            throw_logic_error_and_highlight_with_reference(numToken, referenceToken,
+                                                           "Parse error: Number " + std::to_string(tokenNumber) +
+                                                           " is expected to be " + errorStr);
+        }
     }
     return tokenNumber;
 }

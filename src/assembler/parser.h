@@ -68,11 +68,10 @@ private:
      * @param token token to look up in the symbolic table
      * @return the numeric value associated with the token
      */
-    long symbol_lookup(const Token &token) const
+    NumericFromToken symbol_lookup(const Token &token) const
     {
-        // TODO: change return type from long to NumericFromToken
         try {
-            return _symbolicTable.at(token.get_string()).get_numeric();
+            return _symbolicTable.at(token.get_string());
         } catch (...) {
             throw_logic_error_and_highlight(token, "Parse error: Using the symbol \"" + token.get_string() + "\" which has not been assigned yet");
         }
@@ -364,6 +363,15 @@ private:
      * @param errorMessage an error message printed before the highlighted line
      */
     void throw_logic_error_and_highlight(const Token &token, const std::string &errorMessage) const;
+
+    /**
+     * Throws a logic error exception containing a string, in which the token is highlighted.
+     * Additionally, the token @p referenceToken which is referenced by @p token is mentioned in the error message.
+     * @throws std::logic_error
+     * @param token the token to highlight
+     * @param errorMessage an error message printed before the highlighted line
+     */
+    void throw_logic_error_and_highlight_with_reference(const Token &token, const Token &referenceToken, const std::string &errorMessage) const;
 
     /**
      * Throws an invalid argument exception containing a string, in which the token is highlighted.
